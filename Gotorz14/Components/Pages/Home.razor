@@ -1,19 +1,35 @@
-﻿@page "/"
+﻿
+
+@page "/"
+@using static Gotorz14.Model.Fligth
 
 <PageTitle>Home</PageTitle>
 
 <h1>Hello, world!</h1>
+
+
+<ul>
+    @foreach (var fare in fares)
+    {
+        if (@fare.Price != null)    
+            {
+                <li>@fare.Price.Value @fare.ArrivalDate</li>
+            }   
+    }
+
+</ul>
 
 <p>Pris: @Pris</p>
 
 Welcome to your new app.
 
 @code {
-	string jsontext = Services.ReadJsonFile.StringFromJsonFile();
+    string jsontext = Services.ReadJsonFile.StringFromJsonFile();
 
-	double Pris = Services.jsonToObject.JsonDeserialize1(Services.ReadJsonFile.StringFromJsonFile()).Outbound.MinFare.Price.Value;
-	
+    double Pris = Services.jsonToObject.JsonDeserialize1(Services.ReadJsonFile.StringFromJsonFile()).Outbound.MinFare.Price.Value;
 
+    List<Gotorz14.Model.Fligth.Fare> fares = Services.jsonToObject.JsonDeserialize1(Services.ReadJsonFile.StringFromJsonFile()).Outbound.Fares;
 
+    
 
 }
