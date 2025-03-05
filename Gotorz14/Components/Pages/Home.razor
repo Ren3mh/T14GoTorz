@@ -4,12 +4,15 @@
 
 <h1>Hello, world!</h1>
 
-<p>@jsontext</p>
+<p>Pris: @Pris</p>
 
 Welcome to your new app.
 
 @code {
 	string jsontext = Services.ReadJsonFile.StringFromJsonFile();
+
+	double Pris = Services.jsonToObject.JsonDeserialize1(Services.ReadJsonFile.StringFromJsonFile()).Outbound.MinFare.Price.Value;
+	
 
 
 
