@@ -12,12 +12,37 @@
     @foreach (var fare in fares)
     {
         if (@fare.Price != null)    
-            {
-                <li>@fare.Price.Value @fare.ArrivalDate</li>
-            }   
+        {
+            <li>Pris: @fare.Price.Value </li>
+            <li>Afrejse: @fare.DepartureDate</li>
+        }   
     }
 
 </ul>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Pris</th>
+            <th>Afrejse</th>
+
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var fare in fares)
+        {
+            if (@fare.Price != null)
+            {
+            <tr>
+                    <td>@fare.Price.Value</td>
+                    <td>@fare.DepartureDate</td>
+
+            </tr>
+                
+            }
+        }
+    </tbody>
+</table>
 
 <p>Pris: @Pris</p>
 
