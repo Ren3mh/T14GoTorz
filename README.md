@@ -1,2 +1,2 @@
-# T15GoTorz
-Team 15 GoTorz 3. semesterprojekt
+# T14GoTorz
+Team 14 GoTorz 3. semesterprojekt
