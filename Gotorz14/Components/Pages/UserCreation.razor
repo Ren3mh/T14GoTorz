@@ -1,0 +1,40 @@
+﻿@page "/UserCreation"
+@using Gotorz14.Model
+
+<PageTitle>Create an User</PageTitle>
+
+<h1>Hello, world!</h1>
+
+<div class="row">
+    <div class="col-md-8">
+        <EditForm method="post" Model="User" OnValidSubmit="AddUser" FormName="CreateUser" Enhance>
+            <DataAnnotationsValidator />
+            <ValidationSummary class="text-danger" />
+            <div class="mb-3">
+                <label for="firstName" class="form-label">FirstName:</label>
+                <InputText id="firstName" @bind-Value="User.FirstName" class="form-control" />
+                <ValidationMessage For="() => User.FirstName" class="text-danger" />
+            </div>
+
+            <div class="mb-3">
+                <label for="lastname" class="form-label">Lastname:</label>
+                <InputText id="lastname" @bind-Value="User.LastName" class="form-control" />
+                <ValidationMessage For="() => User.LastName" class="text-danger" />
+            </div>
+
+            
+            <button type="submit" class="btn btn-primary">Create User</button>
+        </EditForm>
+    </div>
+</div>
+
+@inject 
+@code {
+    [SupplyParameterFromForm(FormName = "CreateUser")]
+    public User User { get; set; } = new();
+
+    public async Task AddUser()
+    {
+        
+    }
+}

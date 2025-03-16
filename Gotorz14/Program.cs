@@ -1,4 +1,6 @@
 using Gotorz14.Components;
+using Gotorz14.Services;
+using Microsoft.EntityFrameworkCore;
 
 namespace Gotorz14;
 
@@ -11,6 +13,12 @@ public class Program
         // Add services to the container.
         builder.Services.AddRazorComponents()
             .AddInteractiveServerComponents();
+
+        //Add database context
+        builder.Services.AddDbContext<AppDbContext>(options =>
+            options.UseSqlServer(builder.Configuration.GetConnectionString("DbConnectionString")));
+        
+        builder.Services.AddScoped<IUserService, UserService>();
 
         var app = builder.Build();
 
