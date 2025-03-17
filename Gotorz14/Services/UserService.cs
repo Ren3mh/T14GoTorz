@@ -11,9 +11,9 @@ namespace Gotorz14.Services
         {
             _context = context;
         }
-        public Task<List<User>> GetAllUsers()
-        {
-            async _context.Users
-        }
+        //public Task<List<User>> GetAllUsers()
+        //{
+        //    //async _context.Users
+        //}
     }
 }

@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Gotorz14.Model;
+using Microsoft.EntityFrameworkCore;
 
 namespace Gotorz14.Services
 {
@@ -8,5 +9,9 @@ namespace Gotorz14.Services
             : base(options)
         {
         }
+
+        public DbSet<User> Users { get; set; }
+
+
     }
 }

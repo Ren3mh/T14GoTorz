@@ -22,13 +22,13 @@
                 <ValidationMessage For="() => User.LastName" class="text-danger" />
             </div>
 
-            
+
             <button type="submit" class="btn btn-primary">Create User</button>
         </EditForm>
     </div>
 </div>
 
-@inject 
+@inject Services.AppDbContext context
 @code {
     [SupplyParameterFromForm(FormName = "CreateUser")]
     public User User { get; set; } = new();

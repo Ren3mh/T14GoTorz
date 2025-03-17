@@ -1,5 +1,6 @@
 using Gotorz14.Components;
 using Gotorz14.Services;
+using Gotorz14.Model;
 using Microsoft.EntityFrameworkCore;
 
 namespace Gotorz14;
