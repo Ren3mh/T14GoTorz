@@ -1,8 +1,10 @@
 ﻿using Gotorz14.Model;
+using Microsoft.EntityFrameworkCore.Query.Internal;
 
 namespace Gotorz14.Services
 {
-    public class IUserService
+    public interface IUserService
     {
+        Task<List<User>> GetAllUsers();
     }
 }

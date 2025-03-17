@@ -1,4 +1,5 @@
 ﻿using Gotorz14.Model;
+using Microsoft.EntityFrameworkCore;
 
 namespace Gotorz14.Services
 {
@@ -11,9 +12,10 @@ namespace Gotorz14.Services
         {
             _context = context;
         }
-        //public Task<List<User>> GetAllUsers()
-        //{
-        //    //async _context.Users
-        //}
+        public async Task<List<User>> GetAllUsers()
+        {
+            var users = await _context.Users.ToListAsync();
+            return users;
+        }
     }
 }
