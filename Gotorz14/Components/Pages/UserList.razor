@@ -1,7 +1,9 @@
 ﻿@page "/users"
 @inject IUserService UserService
+@inject NavigationManager NavigationManager
 @attribute [StreamRendering]
-
+@* @attribute [RenderModeInteractiveServer] *@
+@* @rendermode InteractiveServer  *@
 
 <h3>UserList</h3>
 
@@ -23,12 +25,19 @@ else
 	</ul>
 }
 
+<button @onclick="AddUser" class="btn btn-primary">Add User</button>
+
 @code {
 	List<User>? users = null;
 
 	protected override async Task OnInitializedAsync()
 	{
 		users = await UserService.GetAllUsers();
+	}
+
+	void AddUser()
+	{
+		NavigationManager.NavigateTo("/UserCreation");
 	}
 
 }
