@@ -14,7 +14,10 @@ namespace Gotorz14.Services
         }
         public async Task<List<FlightPath>> GetAllUsers()
         {
-            var users = await _context.FlightPathsTable.ToListAsync();
+            var users = await _context.FlightPathsTable
+                .Include(fp => fp.Outbound)
+                .Include(fp => fp.Homebound)
+                .ToListAsync();
             return users;
         }
     }

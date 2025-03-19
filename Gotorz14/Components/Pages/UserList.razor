@@ -18,9 +18,14 @@ else if(users.Count == 0)
 else
 {
 	<ul>
-		@foreach (var user in users)
+		@foreach (FlightPath user in users)
 		{
-			<li>@user.FirstName</li>
+			<li>@user.Luggage</li>
+			<li>@user.Fare</li>
+			<li>@user.Outbound.IataOrigin</li>
+			<li>@user.Outbound.IataDestination</li>
+			<li>@user.Homebound.IataOrigin</li>
+			<li>@user.Homebound.IataDestination</li>
 		}
 	</ul>
 }
@@ -28,11 +33,11 @@ else
 <button @onclick="AddUser" class="btn btn-primary">Add User</button>
 
 @code {
-	List<User>? users = null;
+	List<FlightPath>? users;
 
 	protected override async Task OnInitializedAsync()
 	{
-		users = await UserService.GetAllUsers();
+		users = await UserService.GetAllUsers() ?? new List<FlightPath>();
 	}
 
 	void AddUser()

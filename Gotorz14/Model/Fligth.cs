@@ -11,5 +11,6 @@ namespace Gotorz14.Model
         public string Origin { get; set; }
         public string IataDestination { get; set; }
         public string IataOrigin { get; set; }
+
     }
 }

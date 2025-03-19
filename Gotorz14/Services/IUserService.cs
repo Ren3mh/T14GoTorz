@@ -5,6 +5,6 @@ namespace Gotorz14.Services
 {
     public interface IUserService
     {
-        Task<List<User>> GetAllUsers();
+        Task<List<FlightPath>> GetAllUsers();
     }
 }
