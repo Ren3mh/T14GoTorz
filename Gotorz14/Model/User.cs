@@ -12,5 +12,8 @@ namespace Gotorz14.Model
 
         [Required]
         public string LastName { get; set; }
+
+        
+        public string? Email { get; set; }
     }
 }

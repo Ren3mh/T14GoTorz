@@ -12,9 +12,9 @@ namespace Gotorz14.Services
         {
             _context = context;
         }
-        public async Task<List<User>> GetAllUsers()
+        public async Task<List<FlightPath>> GetAllUsers()
         {
-            var users = await _context.Users.ToListAsync();
+            var users = await _context.FlightPathsTable.ToListAsync();
             return users;
         }
     }
