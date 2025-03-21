@@ -32,8 +32,8 @@
             <h3>Outbound Flight</h3>
             <div class="mb-3">
                 <label for="departureTime" class="form-label">Departure Time:</label>
-                <InputDate id="departureTime" @bind-Value="TravelPackage.FlightPaths[0].Outbound.DepartureTime" class="form-control" />
-                <ValidationMessage For="() => TravelPackage.FlightPaths[0].Outbound.DepartureTime" class="text-danger" />
+                <InputDate id="departureTime" @bind-Value="TravelPackage.Flightpaths[0].Outbound.DepartureTime" class="form-control" />
+                <ValidationMessage For="() => TravelPackage.Flightpaths[0].Outbound.DepartureTime" class="text-danger" />
             </div>
 
             <!-- Add the rest of the form here -->
@@ -61,9 +61,9 @@
     [SupplyParameterFromForm(FormName = "CreateTravelPackage")]
     public TravelPackage TravelPackage { get; set; } = new()
     {
-           FlightPaths = new List<FlightPath>() 
+            Flightpaths = new List<Flightpath>()
            { 
-               new FlightPath() { Outbound = new Fligth(), Homebound = new Fligth() }
+               new Flightpath() { Outbound = new Fligth(), Homebound = new Fligth() }
            }
     };
 

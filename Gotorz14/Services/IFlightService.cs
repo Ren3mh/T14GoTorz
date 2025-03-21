@@ -3,8 +3,8 @@ using Microsoft.EntityFrameworkCore.Query.Internal;
 
 namespace Gotorz14.Services
 {
-    public interface IUserService
+    public interface IFlightService
     {
-        Task<List<FlightPath>> GetAllUsers();
+        Task<List<Fligth>> GetAllFlights();
     }
 }

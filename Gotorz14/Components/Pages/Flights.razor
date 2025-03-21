@@ -1,0 +1,48 @@
+﻿@page "/flights"
+@inject IFlightService FlightService
+@inject NavigationManager NavigationManager
+@attribute [StreamRendering]
+@* @attribute [RenderModeInteractiveServer] *@
+@* @rendermode InteractiveServer  *@
+
+<h3>Flight List</h3>
+
+@if (flights == null)
+{
+	<span>Loading...</span>
+}
+else if(flights.Count == 0)
+{
+	<span>No games found.</span>
+}
+else
+{
+	<ul>
+		@foreach (Fligth flight in flights)
+		{
+			<li>@flight.DepartureTime</li>
+			<li>@flight.ArrivalTime</li>
+			<li>@flight.Destination</li>
+			<li>@flight.Origin</li>
+			<li>@flight.IataDestination</li>
+			<li>@flight.IataOrigin</li>
+		}
+	</ul>
+}
+
+<button @onclick="AddFlight" class="btn btn-primary">Add Flight</button>
+
+@code {
+	List<Fligth>? flights;
+
+	protected override async Task OnInitializedAsync()
+	{
+		flights = await FlightService.GetAllFlights() ?? new List<Fligth>();
+	}
+
+	void AddFlight()
+	{
+		NavigationManager.NavigateTo("/FlightCreation");
+	}
+
+}

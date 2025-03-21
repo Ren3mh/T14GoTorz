@@ -16,10 +16,10 @@ public class Program
             .AddInteractiveServerComponents();
 
         //Add database context
-        builder.Services.AddDbContext<AppDbContext>(options =>
+        builder.Services.AddDbContext<FlightContext>(options =>
             options.UseSqlServer(builder.Configuration.GetConnectionString("DbConnectionString")));
         
-        builder.Services.AddScoped<IUserService, UserService>();
+        builder.Services.AddScoped<IFlightService, FlightService>();
 
         var app = builder.Build();
 

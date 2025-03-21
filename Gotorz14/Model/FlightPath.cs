@@ -2,7 +2,7 @@
 
 namespace Gotorz14.Model
 {
-    public class FlightPath
+    public class Flightpath
     {
         public int Id { get; set; }
         public double Fare { get; set; }
