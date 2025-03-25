@@ -1,16 +1,9 @@
-USE [Users]
+USE [Gotorz]
 GO
 
-/****** Object: View [dbo].[Flights] Script Date: 19-03-2025 22:37:39 ******/
-SET ANSI_NULLS ON
-GO
-
-SET QUOTED_IDENTIFIER ON
-GO
-
-ALTER VIEW Flights AS
+Create VIEW vwFlights AS
 SELECT
-	[Id]
+	ft.[Id]
 	,[DepartureTime] 
 	,[ArrivalTime]
 	,dest.[City] AS [Destination]
@@ -18,8 +11,8 @@ SELECT
 	,dest.[IATA] AS [IataDestination]
 	,ori.[IATA] AS [IataOrigin]
 FROM 
-	FlightsTable1 AS ft 
+	Flights AS ft 
 	INNER JOIN
-	IATA_locations AS dest ON ft.IataDestination = dest.IATA
+	IATA_locations AS dest ON ft.IataDestinationId = dest.Id
 	INNER JOIN
-	IATA_locations AS ori ON ft.IataOrigin = ori.IATA;
+	IATA_locations AS ori ON ft.IataOriginId = ori.Id;

@@ -2,6 +2,7 @@
 {
     public class Hotel
     {
+        public int Id { get; set; }
         public DateTime CheckIn { get; set; }
         public DateTime CheckOut { get; set; }
         public double Rate { get; set; }

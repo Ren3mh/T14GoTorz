@@ -4,6 +4,7 @@ namespace Gotorz14.Model
 {
     public class TravelPackage
     {
+        public int Id { get; set; }
         [Required]
         public string Title { get; set; }
 

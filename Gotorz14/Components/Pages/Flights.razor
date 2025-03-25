@@ -1,5 +1,6 @@
-﻿@page "/flights"
-@inject IFlightService FlightService
+﻿
+@page "/flights"
+@inject IService<Gotorz14.Models.Flightpath> FlightpathService
 @inject NavigationManager NavigationManager
 @attribute [StreamRendering]
 @* @attribute [RenderModeInteractiveServer] *@
@@ -7,42 +8,75 @@
 
 <h3>Flight List</h3>
 
-@if (flights == null)
+@if (flightpaths == null)
 {
 	<span>Loading...</span>
 }
-else if(flights.Count == 0)
+else if(flightpaths.Count == 0)
 {
 	<span>No games found.</span>
 }
 else
 {
-	<ul>
-		@foreach (Fligth flight in flights)
-		{
-			<li>@flight.DepartureTime</li>
-			<li>@flight.ArrivalTime</li>
-			<li>@flight.Destination</li>
-			<li>@flight.Origin</li>
-			<li>@flight.IataDestination</li>
-			<li>@flight.IataOrigin</li>
-		}
-	</ul>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    Fare
+                </th>
+                <th>
+                    Luggage
+                </th>
+                <th>
+                    Origin
+                </th>
+                <th>
+                    Destination
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in flightpaths)
+            {
+                <tr>
+                    <td>
+                        @item.Fare
+                    </td>
+                    <td>
+                        @item.Luggage
+                    </td>
+                    <td>
+                        @item.Outbound.IataOrigin
+                    </td>
+                    <td>
+                        @item.Homebound.IataOrigin
+                    </td>
+                    <td>
+                        <a asp-page="./Edit" asp-route-id="@item.Id">Edit</a> |
+                        <a asp-page="./Details" asp-route-id="@item.Id">Details</a> |
+                        <a asp-page="./Delete" asp-route-id="@item.Id">Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
 }
 
 <button @onclick="AddFlight" class="btn btn-primary">Add Flight</button>
 
 @code {
-	List<Fligth>? flights;
+	List<Gotorz14.Models.Flightpath>? flightpaths;
 
 	protected override async Task OnInitializedAsync()
 	{
-		flights = await FlightService.GetAllFlights() ?? new List<Fligth>();
+		flightpaths = await FlightpathService.GetAll() ?? new List<Gotorz14.Models.Flightpath>();
 	}
 
 	void AddFlight()
 	{
-		NavigationManager.NavigateTo("/FlightCreation");
+		NavigationManager.NavigateTo("/flightCreation");
 	}
 
 }
