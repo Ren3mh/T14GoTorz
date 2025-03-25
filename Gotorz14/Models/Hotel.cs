@@ -15,7 +15,7 @@ public partial class Hotel
 
     public decimal Rate { get; set; }
 
-    public string HotelName { get; set; }
+    public string Name { get; set; }
 
     public string Address { get; set; }
 

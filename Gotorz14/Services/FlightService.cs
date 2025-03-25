@@ -1,4 +1,5 @@
-﻿using Gotorz14.Models;
+﻿using Gotorz14.Data;
+using Gotorz14.Models;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 

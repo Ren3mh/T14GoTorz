@@ -3,9 +3,10 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection.Metadata;
+using Gotorz14.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace Gotorz14.Models;
+namespace Gotorz14.Data;
 
 public partial class GotorzContext : DbContext
 {
@@ -41,7 +42,7 @@ public partial class GotorzContext : DbContext
             entity.Property(e => e.CheckOut).HasColumnType("datetime");
             entity.Property(e => e.Description).IsRequired();
             entity.Property(e => e.Email).IsRequired();
-            entity.Property(e => e.HotelName).IsRequired();
+            entity.Property(e => e.Name).IsRequired().HasColumnName("HotelName");
             entity.Property(e => e.Rate).HasColumnType("decimal(15, 2)");
             entity.Property(e => e.Telephonenumber).IsRequired();
         });

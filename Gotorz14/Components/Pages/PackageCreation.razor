@@ -1,9 +1,9 @@
 ﻿@page "/PackageCreation"
-@using Gotorz14.Model
+@using Gotorz14.Models
 
 <PageTitle>Create a package</PageTitle>
 
-<h1>Hello, world!</h1>
+@* <h1>Hello, world!</h1>
 
 <div class="row">
     <div class="col-md-8">
@@ -61,10 +61,6 @@
     [SupplyParameterFromForm(FormName = "CreateTravelPackage")]
     public TravelPackage TravelPackage { get; set; } = new()
     {
-            Flightpaths = new List<Flightpath>()
-           { 
-               new Flightpath() { Outbound = new Fligth(), Homebound = new Fligth() }
-           }
     };
 
 
@@ -73,3 +69,4 @@
         //do something
     }
 }
+ *@

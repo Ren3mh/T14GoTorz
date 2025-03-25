@@ -2,6 +2,7 @@ using Gotorz14.Components;
 using Gotorz14.Services;
 using Gotorz14.Models;
 using Microsoft.EntityFrameworkCore;
+using Gotorz14.Data;
 
 namespace Gotorz14;
 
@@ -21,6 +22,7 @@ public class Program
         
         builder.Services.AddScoped<IService<Flight>, FlightService>();
         builder.Services.AddScoped<IService<Flightpath>, FlightpathService>();
+        builder.Services.AddScoped<IService<TravelPackage>, TravelPackageService>();
 
         var app = builder.Build();
 
