@@ -1,4 +1,7 @@
 ﻿@page "/flightCreation"
+@using Gotorz14.Models1
+@inject IService<Gotorz14.Models1.Flight> FlightService
+
 <h3>FlightCreation</h3>
 
 <div class="row">
@@ -56,10 +59,34 @@
 
 @code {
     [SupplyParameterFromForm(FormName = "CreateFlight")]
-    public Flight NewFlight { get; set; } = new();
+    public Gotorz14.Models.Flight NewFlight { get; set; } = new();
+
 
     public async Task AddFlight()
     {
-        // Implement your logic to add the flight
+        IataLocation iataLocationOri = new IataLocation()
+        {
+            Iata = NewFlight.IataOrigin,
+            City = NewFlight.Origin,
+
+        };
+
+        IataLocation iataLocationDest = new IataLocation()
+            {
+                Iata = NewFlight.IataDestination,
+                City = NewFlight.Destination,
+
+            };
+
+        Gotorz14.Models1.Flight flight;
+     flight = new Models1.Flight()
+            {
+                ArrivalTime = NewFlight.ArrivalTime,
+                DepartureTime = NewFlight.DepartureTime,
+                Iatadestination = iataLocationDest,
+                Iataorigin = iataLocationOri,
+
+        };
+        await FlightService.Create(flight);
     }
 }

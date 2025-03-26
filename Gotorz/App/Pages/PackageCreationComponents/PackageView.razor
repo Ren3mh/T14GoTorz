@@ -1,0 +1,54 @@
+﻿@page "/travelpackages"
+@using Shared1
+@* @inject IService<TravelPackage> TravelPackageService  *@
+<h3>Travel Packages</h3>
+
+@if (travelPackages == null)
+{
+	<span>Loading...</span>
+}
+else if(travelPackages.Count == 0)
+{
+	<span>No games found.</span>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Title</th>
+                <th>Description</th>
+                <th>Hotel</th>
+                <th>Flightpaths</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var travelPackage in travelPackages)
+            {
+                <tr>
+                    <td>@travelPackage.Id</td>
+                    <td>@travelPackage.Title</td>
+                    <td>@travelPackage.Description</td>
+                    <td>@travelPackage.Hotel?.HotelName</td>
+                    <td>
+                        <ul>
+                            @foreach (var flightpath in travelPackage.Flightpaths)
+                            {
+                                <li>@flightpath.OutboundFlight -> @flightpath.HomeboundFlight (@flightpath.Fare)</li>
+                            }
+                        </ul>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+@code {
+    private List<TravelPackage> travelPackages = new List<TravelPackage>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        //travelPackages = await TravelPackageService.GetAll() ?? new List<TravelPackage>();
+    }
+}

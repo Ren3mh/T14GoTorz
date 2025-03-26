@@ -1,0 +1,71 @@
+﻿
+<h1>Hotel Creation</h1>
+
+<div class="row">
+    <div class="col-md-8">
+        <EditForm method="post" Model="NewHotel" OnValidSubmit="AddHotel" FormName="CreateHotel" Enhance>
+            <DataAnnotationsValidator />
+            <ValidationSummary class="text-danger" />
+
+            <div class="mb-3">
+                <label for="CheckIn" class="form-label">Check-In:</label>
+                <InputDate id="CheckIn" @bind-Value="NewHotel.CheckIn" class="form-control" />
+                <ValidationMessage For="() => NewHotel.CheckIn" class="text-danger" />
+            </div>
+
+            <div class="mb-3">
+                <label for="CheckOut" class="form-label">Check-Out:</label>
+                <InputDate id="CheckOut" @bind-Value="NewHotel.CheckOut" class="form-control" />
+                <ValidationMessage For="() => NewHotel.CheckOut" class="text-danger" />
+            </div>
+
+            <div class="mb-3">
+                <label for="Rate" class="form-label">Rate:</label>
+                <InputNumber id="Rate" @bind-Value="NewHotel.Rate" class="form-control" />
+                <ValidationMessage For="() => NewHotel.Rate" class="text-danger" />
+            </div>
+
+            <div class="mb-3">
+                <label for="Name" class="form-label">Name:</label>
+                <InputText id="Name" @bind-Value="NewHotel.Name" class="form-control" />
+                <ValidationMessage For="() => NewHotel.Name" class="text-danger" />
+            </div>
+
+            <div class="mb-3">
+                <label for="Address" class="form-label">Address:</label>
+                <InputText id="Address" @bind-Value="NewHotel.Address" class="form-control" />
+                <ValidationMessage For="() => NewHotel.Address" class="text-danger" />
+            </div>
+
+            <div class="mb-3">
+                <label for="TelephoneNumber" class="form-label">Telephone Number:</label>
+                <InputText id="TelephoneNumber" @bind-Value="NewHotel.Telephonenumber" class="form-control" />
+                <ValidationMessage For="() => NewHotel.Telephonenumber" class="text-danger" />
+            </div>
+
+            <div class="mb-3">
+                <label for="Email" class="form-label">Email:</label>
+                <InputText id="Email" @bind-Value="NewHotel.Email" class="form-control" />
+                <ValidationMessage For="() => NewHotel.Email" class="text-danger" />
+            </div>
+
+            <div class="mb-3">
+                <label for="Description" class="form-label">Description:</label>
+                <InputTextArea id="Description" @bind-Value="NewHotel.Description" class="form-control" />
+                <ValidationMessage For="() => NewHotel.Description" class="text-danger" />
+            </div>
+
+            <button type="submit" class="btn btn-primary">Create Hotel</button>
+        </EditForm>
+    </div>
+</div>
+
+@code {
+    [SupplyParameterFromForm(FormName = "CreateHotel")]
+    public Hotel NewHotel { get; set; } = new();
+
+    public async Task AddHotel()
+    {
+        //Do something
+    }
+}

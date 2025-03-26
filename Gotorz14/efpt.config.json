@@ -6,7 +6,7 @@
    "IncludeConnectionString": false,
    "ModelNamespace": null,
    "OutputContextPath": null,
-   "OutputPath": "Models1",
+   "OutputPath": "Models2",
    "PreserveCasingWithRegex": true,
    "ProjectRootNamespace": "Gotorz14",
    "Schemas": null,
@@ -27,12 +27,12 @@
          "ObjectType": 0
       },
       {
-         "Name": "[dbo].[IATA_locations]",
+         "Name": "[dbo].[TravelPackages]",
          "ObjectType": 0
       },
       {
-         "Name": "[dbo].[TravelPackages]",
-         "ObjectType": 0
+         "Name": "[dbo].[vwFlights]",
+         "ObjectType": 3
       }
    ],
    "UiHint": null,

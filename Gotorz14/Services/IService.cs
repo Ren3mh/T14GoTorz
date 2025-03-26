@@ -5,6 +5,6 @@ namespace Gotorz14.Services
     {
         Task<List<T>> GetAll();
 
-        Task<T> Create();
+        Task Create(T x);
     }
 }

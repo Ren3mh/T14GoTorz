@@ -1,8 +1,8 @@
 using Gotorz14.Components;
 using Gotorz14.Services;
-using Gotorz14.Models;
+using Gotorz14.Models1;
 using Microsoft.EntityFrameworkCore;
-using Gotorz14.Data;
+//using Gotorz14.Data;
 
 namespace Gotorz14;
 
@@ -18,11 +18,11 @@ public class Program
 
         //Add database context
         builder.Services.AddDbContext<GotorzContext>(options =>
-            options.UseSqlServer(builder.Configuration.GetConnectionString("LocalString")));
+            options.UseSqlServer(builder.Configuration.GetConnectionString("DbConnectionString")));
         
-        builder.Services.AddScoped<IService<Flight>, FlightService>();
-        builder.Services.AddScoped<IService<Flightpath>, FlightpathService>();
-        builder.Services.AddScoped<IService<TravelPackage>, TravelPackageService>();
+        //builder.Services.AddScoped<IService<Flightpath>, FlightpathService>();
+       // builder.Services.AddScoped<IService<TravelPackage>, TravelPackageService>();
+        builder.Services.AddScoped<IService<Gotorz14.Models1.Flight>, FlightService>();
 
         var app = builder.Build();
 

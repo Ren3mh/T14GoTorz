@@ -12,6 +12,12 @@ namespace Gotorz14.Services
         {
             _context = context;
         }
+
+        public Task Create(Flightpath x)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task<List<Flightpath>> GetAll()
         {
             var flightpaths = await _context.Flightpaths

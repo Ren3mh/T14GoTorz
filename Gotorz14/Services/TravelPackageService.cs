@@ -12,6 +12,12 @@ namespace Gotorz14.Services
         {
             _context = context;
         }
+
+        public Task Create(TravelPackage x)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task<List<TravelPackage>> GetAll()
         {
             var travelPackages = await _context.TravelPackages
