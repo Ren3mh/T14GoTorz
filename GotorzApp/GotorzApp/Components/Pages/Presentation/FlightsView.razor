@@ -1,5 +1,5 @@
 ﻿@page "/flights"
-@*@inject IService<Flight> FlightService*@
+@inject IService<Flight> FlightService
 @inject NavigationManager NavigationManager
 
 <h3>Flight List</h3>
@@ -70,14 +70,12 @@ else
 
 @code {
 
-
-
     List<Flight>? flights;
 
     protected override async Task OnInitializedAsync()
     {
 
-        flights = GetDummyFlights();
+        flightpaths = await FlightService.GetAll();
     }
 
 
