@@ -8,12 +8,6 @@
             <DataAnnotationsValidator />
             <ValidationSummary class="text-danger" />
 
-            @* <div class="mb-3"> *@
-            @* <label for="Id" class="form-label">ID:</label> *@
-            @* <InputNumber id="Id" @bind-Value="NewFlight.Id" class="form-control" /> *@
-            @* <ValidationMessage For="() => NewFlight.Id" class="text-danger" /> *@
-            @* </div> *@
-
             <div class="mb-3">
                 <label for="DepartureTime" class="form-label">Departure Time:</label>
                 <InputDate id="DepartureTime" @bind-Value="NewFlight.DepartureTime" class="form-control" />
@@ -26,17 +20,6 @@
                 <ValidationMessage For="() => NewFlight.ArrivalTime" class="text-danger" />
             </div>
 
-            @* <div class="mb-3">
-                <label for="IataDestination" class="form-label">Select IATA Destination:</label>
-                <InputText id="IataDestination" @bind-Value="NewFlight.Iatadestination" class="form-control" />
-                <ValidationMessage For="() => NewFlight.Iatadestination" class="text-danger" />
-            </div> *@
-
-            @* <div class="mb-3">
-                <label for="IataOrigin" class="form-label">Select IATA Origin:</label>
-                <InputText id="IataOrigin" @bind-Value="NewFlight.IataoriginId" class="form-control" />
-                <ValidationMessage For="() => NewFlight.IataoriginId" class="text-danger" />
-            </div> *@
             <div class="mb-3">
                 <h4>Select Origin:</h4>
                 <InputSelect id="IataOriginId" @bind-Value="NewFlight.IataoriginId">
@@ -106,29 +89,29 @@
     }
     public async Task AddFlight()
     {
-    //     IataLocation iataLocationOri = new IataLocation()
-    //     {
-    //         Iata = NewFlight.IataOrigin,
-    //         City = NewFlight.Origin,
+     //    IataLocation iataLocationOri = new IataLocation()
+     //    {
+     //        Iata = NewFlight.IataOrigin,
+     //        City = NewFlight.Origin,
 
-    //     };
+     //    };
 
-    //     IataLocation iataLocationDest = new IataLocation()
-    //         {
-    //             Iata = NewFlight.IataDestination,
-    //             City = NewFlight.Destination,
+     //    IataLocation iataLocationDest = new IataLocation()
+     //        {
+     //            Iata = NewFlight.IataDestination,
+     //            City = NewFlight.Destination,
 
-    //         };
+     //        };
 
-    //     Flight flight;
-    //  flight = new Flight()
-    //         {
-    //             ArrivalTime = NewFlight.ArrivalTime,
-    //             DepartureTime = NewFlight.DepartureTime,
-    //             Iatadestination = iataLocationDest,
-    //             Iataorigin = iataLocationOri,
+     //    Flight flight;
+     // flight = new Flight()
+     //        {
+     //            ArrivalTime = NewFlight.ArrivalTime,
+     //            DepartureTime = NewFlight.DepartureTime,
+     //            Iatadestination = iataLocationDest,
+     //            Iataorigin = iataLocationOri,
 
-    //     };
-    //     await FlightService.Create(flight);
+     //    };
+     //    await FlightService.Create(flight);
     }
 }

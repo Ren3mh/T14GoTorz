@@ -40,16 +40,16 @@ else
             {
                 <tr>
                     <td>
-                        @item.ArrivalTime
+                        @item.Iataorigin.City
                     </td>
                     <td>
-                        @item.ArrivalTime
+                        @item.Iatadestination.City
                     </td>
                     <td>
-                        @item.ArrivalTime
+                        @item.Iataorigin.Iata
                     </td>
                     <td>
-                        @item.ArrivalTime
+                        @item.Iatadestination.Iata
                     </td>
                     <td>
                         @item.ArrivalTime
@@ -75,7 +75,7 @@ else
     protected override async Task OnInitializedAsync()
     {
 
-        flightpaths = await FlightService.GetAll();
+        flights = await FlightService.GetAll() ?? new List<Flight>();
     }
 
 

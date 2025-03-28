@@ -1,5 +1,5 @@
-﻿@page "/Hotels"
-@*@inject IService<Flight> FlightService*@
+﻿@page "/hotels"
+@inject IService<Hotel> HotelService
 @inject NavigationManager NavigationManager
 
 <h1>Hotel List</h1>
@@ -60,15 +60,11 @@ else
 }
 @code
 {
-    private void Clicked()
-    {
-        
-    }
-    private List<Hotel> hotels = new List<Hotel>();
+    private List<Hotel> hotels;
 
     protected override async Task OnInitializedAsync()
     {
-        hotels = GetDummy() ?? new List<Hotel>();
+        hotels = await HotelService.GetAll() ?? new List<Hotel>();
     }
 
     public static List<Hotel> GetDummy()

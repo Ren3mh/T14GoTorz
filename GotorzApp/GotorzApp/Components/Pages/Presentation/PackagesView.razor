@@ -1,5 +1,5 @@
-﻿@page "/"
-@* @inject IService<TravelPackage> TravelPackageService*@
+﻿@page "/packages"
+@inject IService<TravelPackage> TravelPackageService
 
 <h2>Travel Packages</h2>
 
@@ -89,12 +89,12 @@ else
 @code {
     public TravelPackage? SelectedPackage => travelPackages.FirstOrDefault();
 
-    private List<TravelPackage> travelPackages = new List<TravelPackage>();
+    private List<TravelPackage> travelPackages;
 
     protected override async Task OnInitializedAsync()
     {
-        //travelPackages = await TravelPackageService.GetAll() ?? new List<TravelPackage>();
-        travelPackages = GetDummyTravelPackages() ?? new List<TravelPackage>();
+        travelPackages = await TravelPackageService.GetAll() ?? new List<TravelPackage>();
+        
     }
 
     public static List<TravelPackage> GetDummyTravelPackages()

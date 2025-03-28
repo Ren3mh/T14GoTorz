@@ -24,6 +24,9 @@ namespace GotorzApp
                 options.UseSqlServer(builder.Configuration.GetConnectionString("LocalString")));
 
             builder.Services.AddScoped<IService<Flight>, FlightService>();
+            builder.Services.AddScoped<IService<Hotel>, HotelService>();
+            builder.Services.AddScoped<IService<TravelPackage>, TravelPackageService>();
+            builder.Services.AddScoped<IService<Flightpath>, FlightpathService>();
 
             var app = builder.Build();
 

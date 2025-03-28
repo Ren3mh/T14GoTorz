@@ -8,22 +8,22 @@ using Shared.Data;
 
 namespace Shared.Service
 {
-    public class FlightService : IService<Flight>
+    public class FlightpathService : IService<Flightpath>
     {
 
         private readonly GotorzContext _context;
 
-        public FlightService(GotorzContext context)
+        public FlightpathService(GotorzContext context)
         {
             _context = context;
         }
-        public async Task<List<Flight>> GetAll()
+        public async Task<List<Flightpath>> GetAll()
         {
-            var flights = await _context.Flights
-                .Include(e => e.Iataorigin)
-                .Include(e => e.Iatadestination)
+            var flightpaths = await _context.Flightpaths
+                .Include(e => e.HomeboundFlight)
+                .Include(e => e.OutboundFlight)
                 .ToListAsync();
-            return flights;
+            return flightpaths;
         }
 
         //private readonly GotorzContext _context;
