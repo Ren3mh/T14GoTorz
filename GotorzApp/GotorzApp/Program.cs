@@ -27,6 +27,7 @@ namespace GotorzApp
             builder.Services.AddScoped<IService<Hotel>, HotelService>();
             builder.Services.AddScoped<IService<TravelPackage>, TravelPackageService>();
             builder.Services.AddScoped<IService<Flightpath>, FlightpathService>();
+            builder.Services.AddScoped<IService<IataLocation>, IataLocationService>();
 
             var app = builder.Build();
 

@@ -1,6 +1,6 @@
 ﻿@page "/fc"
-@using Shared
-@*@inject IService<Flight> FlightService*@
+@inject IService<IataLocation> IataLocationService
+
 <h3>Flight Creation</h3>
 <div class="row">
     <div class="col-md-8">
@@ -10,31 +10,47 @@
 
             <div class="mb-3">
                 <label for="DepartureTime" class="form-label">Departure Time:</label>
-                <InputDate id="DepartureTime" @bind-Value="NewFlight.DepartureTime" class="form-control" />
+                <InputDate Type="InputDateType.DateTimeLocal"
+                           min="@DateTime.Now.ToString("yyyy-MM-dd HH:mm")" 
+                           id="DepartureTime" @bind-Value="NewFlight.DepartureTime" class="form-control" />
                 <ValidationMessage For="() => NewFlight.DepartureTime" class="text-danger" />
             </div>
 
             <div class="mb-3">
                 <label for="ArrivalTime" class="form-label">Arrival Time:</label>
-                <InputDate id="ArrivalTime" @bind-Value="NewFlight.ArrivalTime" class="form-control" />
+                <InputDate Type="InputDateType.DateTimeLocal"
+                           min="@DateTime.Now.ToString("yyyy-MM-dd HH:mm")" 
+                           id="ArrivalTime" @bind-Value="NewFlight.ArrivalTime" class="form-control" />
                 <ValidationMessage For="() => NewFlight.ArrivalTime" class="text-danger" />
             </div>
 
             <div class="mb-3">
                 <h4>Select Origin:</h4>
                 <InputSelect id="IataOriginId" @bind-Value="NewFlight.IataoriginId">
-                    @foreach (var iata in Iatas)
+                    @if (Iatas.Count() == 0)
                     {
-                        <option value="@iata">From: @iata.Iata (@iata.City)</option>
+                        <span>Loading...</span>
+                    }
+                                        else
+                    {@foreach (var iata in Iatas)
+                        {
+                            <option value="@iata">From: @iata.Iata (@iata.City)</option>
+                        }
                     }
                 </InputSelect>
             </div>
             <div class="mb-3">
                 <h4>Select Destination:</h4>
                 <InputSelect id="IataDestinationId" @bind-Value="NewFlight.IatadestinationId">
-                    @foreach (var iata in Iatas)
+                    @if (Iatas.Count() == 0)
                     {
-                        <option value="@iata">To: @iata.Iata (@iata.City)</option>
+                        <span>Loading...</span>
+                    }
+                                        else
+                    {@foreach (var iata in Iatas)
+                        {
+                            <option value="@iata">To: @iata.Iata (@iata.City)</option>
+                        }
                     }
                 </InputSelect>
             </div>
@@ -43,6 +59,8 @@
         </EditForm>
     </div>
 </div>
+
+<h1>Test @NewFlight.ArrivalTime</h1>
 
 @code {
     [SupplyParameterFromForm(FormName = "CreateFlight")]
@@ -56,62 +74,13 @@
     protected override async Task OnInitializedAsync()
     {
 
-        Iatas = GetDummyIatas();
+        Iatas = await IataLocationService.GetAll() ?? new List<IataLocation>();
     }
 
-    public List<IataLocation> Iatas;
-    public List<IataLocation> GetDummyIatas()
-    {
-        return new List<IataLocation>
-    {
+    public List<IataLocation>? Iatas = new List<IataLocation>();
 
-        new IataLocation { Id = 1, Iata = "JFK", City = "New York" },
-
-        new IataLocation { Id = 2, Iata = "LAX", City = "Los Angeles" },
-
-        new IataLocation { Id = 3, Iata = "LHR", City = "London" },
-
-        new IataLocation { Id = 4, Iata = "CDG", City = "Paris" },
-
-        new IataLocation { Id = 5, Iata = "DXB", City = "Dubai" },
-
-        new IataLocation { Id = 6, Iata = "HKG", City = "Hong Kong" },
-
-        new IataLocation { Id = 7, Iata = "SYD", City = "Sydney" },
-
-        new IataLocation { Id = 8, Iata = "FRA", City = "Frankfurt" },
-
-        new IataLocation { Id = 9, Iata = "SIN", City = "Singapore" },
-
-        new IataLocation { Id = 10, Iata = "NRT", City = "Tokyo" }
-
-    };
-    }
     public async Task AddFlight()
     {
-     //    IataLocation iataLocationOri = new IataLocation()
-     //    {
-     //        Iata = NewFlight.IataOrigin,
-     //        City = NewFlight.Origin,
 
-     //    };
-
-     //    IataLocation iataLocationDest = new IataLocation()
-     //        {
-     //            Iata = NewFlight.IataDestination,
-     //            City = NewFlight.Destination,
-
-     //        };
-
-     //    Flight flight;
-     // flight = new Flight()
-     //        {
-     //            ArrivalTime = NewFlight.ArrivalTime,
-     //            DepartureTime = NewFlight.DepartureTime,
-     //            Iatadestination = iataLocationDest,
-     //            Iataorigin = iataLocationOri,
-
-     //    };
-     //    await FlightService.Create(flight);
     }
 }
