@@ -1,19 +1,16 @@
 ﻿@page "/flights"
 @*@inject IService<Flight> FlightService*@
 @inject NavigationManager NavigationManager
-@attribute [StreamRendering]
-@* @attribute [RenderModeInteractiveServer] *@
-@* @rendermode InteractiveServer  *@
 
 <h3>Flight List</h3>
 
-@if (flightpaths == null)
+@if (flights == null)
 {
     <span>Loading...</span>
 }
-else if(flightpaths.Count == 0)
+else if(flights.Count == 0)
 {
-    <span>No games found.</span>
+    <span>No flights found.</span>
 }
 else
 {
@@ -39,7 +36,7 @@ else
             </tr>
         </thead>
         <tbody>
-            @foreach (var item in flightpaths)
+            @foreach (var item in flights)
             {
                 <tr>
                     <td>
@@ -75,12 +72,12 @@ else
 
 
 
-    List<Flight>? flightpaths;
+    List<Flight>? flights;
 
     protected override async Task OnInitializedAsync()
     {
 
-        flightpaths = GetDummyFlights();
+        flights = GetDummyFlights();
     }
 
 
