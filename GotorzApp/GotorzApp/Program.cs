@@ -1,5 +1,10 @@
 //using GotorzApp.Client.Pages;
+using System;
 using GotorzApp.Components;
+using Microsoft.EntityFrameworkCore;
+using Shared;
+using Shared.Data;
+using Shared.Service;
 
 namespace GotorzApp
 {
@@ -13,6 +18,12 @@ namespace GotorzApp
             builder.Services.AddRazorComponents()
                 .AddInteractiveServerComponents()
                 .AddInteractiveWebAssemblyComponents();
+
+            //Add database context
+            builder.Services.AddDbContext<GotorzContext>(options =>
+                options.UseSqlServer(builder.Configuration.GetConnectionString("LocalString")));
+
+            builder.Services.AddScoped<IService<Flight>, FlightService>();
 
             var app = builder.Build();
 

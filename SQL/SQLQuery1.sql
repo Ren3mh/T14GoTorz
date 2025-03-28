@@ -9,7 +9,7 @@ CREATE TABLE IATA_locations (
     Id   INT            IDENTITY (1, 1),
     IATA NVARCHAR (3)   NOT NULL,
     City NVARCHAR (MAX) NOT NULL,
-    CONSTRaint PK_IATA_locarions PRIMARY KEY (Id)
+    CONSTRaint PK_IATA_locations PRIMARY KEY (Id)
 );
 
 CREATE TABLE Flights (

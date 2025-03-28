@@ -7,8 +7,8 @@ using Shared;
 
 namespace Shared.Service
 {
-    public interface IFlightService
+    public interface IService<T> where T : class
     {
-        Task<List<Flight>> GetAllFlights();
+        Task<List<T>> GetAll();
     }
 }
