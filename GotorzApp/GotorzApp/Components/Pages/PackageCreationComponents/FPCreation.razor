@@ -1,6 +1,6 @@
-﻿@page "/hc"
-<h3>FlightPath creation</h3>
-
+﻿@page "/fpc"
+@using Shared
+<h3>Flightpath Creation</h3>
 <div class="row">
     <div class="col-md-8">
         <EditForm method="post" Model="NewFlightpath" OnValidSubmit="AddFlightPath" FormName="CreateFlightPath" Enhance>
@@ -11,29 +11,29 @@
                 <InputNumber id="fare" @bind-Value="NewFlightpath.Fare" class="form-control" />
                 <ValidationMessage For="() => NewFlightpath.Fare" class="text-danger" />
             </div>
-            <div>
+            <div class="mb-3">
                 <label for="luggage" class="form-label">Luggage:</label>
-                <InputCheckbox id="luggage" @bind-Value="NewFlightpath.Luggage" class="form-control"/>
+                <InputCheckbox id="luggage" @bind-Value="NewFlightpath.Luggage" class="form-check-inline"/>
                 <ValidationMessage For="() => NewFlightpath.Luggage" class="text-danger" />
             </div>
-
-            <h4>Outbound Flight kode linje 20-50</h4>
-            <InputSelect id="outboundDestination" @bind-Value="NewFlightpath.OutboundFlight">
-                @foreach (var flight in Flights)
-                {
-                    <option value="@flight">From: @flight.Iataorigin.Iata To: @flight.Iatadestination.Iata To</option>
-                }
-
-            </InputSelect>
-
-            <h4>Homebound Flight kode line 51-81</h4>
-            <InputSelect id="homeboundDestination" @bind-Value="NewFlightpath.HomeboundFlight">
-                @foreach (var flight in Flights)
-                {
-                    <option value="@flight">From: @flight.Iataorigin.Iata To: @flight.Iatadestination.Iata</option>
-                }
-
-            </InputSelect>
+            <div class="mb-3">
+                <h4>Outbound</h4>
+                <InputSelect id="outboundDestination" @bind-Value="NewFlightpath.OutboundFlight">
+                    @foreach (var flight in Flights)
+                    {
+                        <option value="@flight">From: @flight.Iataorigin.Iata To: @flight.Iatadestination.Iata To</option>
+                    }
+                </InputSelect>
+            </div>
+            <div class="mb-3">
+                <h4>Homebound</h4>
+                <InputSelect id="homeboundDestination" @bind-Value="NewFlightpath.HomeboundFlight">
+                    @foreach (var flight in Flights)
+                    {
+                        <option value="@flight">From: @flight.Iataorigin.Iata To: @flight.Iatadestination.Iata</option>
+                    }
+                </InputSelect>
+            </div>
             <button type="submit" class="btn btn-primary">Submit</button>
         </EditForm>
     </div>

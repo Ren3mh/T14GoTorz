@@ -1,20 +1,18 @@
-﻿@* @page "/flightCreation"
-@using Shared1
-@inject IService<Flight> FlightService
-
-<h3>FlightCreation</h3>
-
+﻿@page "/fc"
+@using Shared
+@*@inject IService<Flight> FlightService*@
+<h3>Flight Creation</h3>
 <div class="row">
     <div class="col-md-8">
         <EditForm method="post" Model="NewFlight" OnValidSubmit="AddFlight" FormName="CreateFlight" Enhance>
             <DataAnnotationsValidator />
             <ValidationSummary class="text-danger" />
 
-            <div class="mb-3">
-                <label for="Id" class="form-label">ID:</label>
-                <InputNumber id="Id" @bind-Value="NewFlight.Id" class="form-control" />
-                <ValidationMessage For="() => NewFlight.Id" class="text-danger" />
-            </div>
+            @* <div class="mb-3"> *@
+            @* <label for="Id" class="form-label">ID:</label> *@
+            @* <InputNumber id="Id" @bind-Value="NewFlight.Id" class="form-control" /> *@
+            @* <ValidationMessage For="() => NewFlight.Id" class="text-danger" /> *@
+            @* </div> *@
 
             <div class="mb-3">
                 <label for="DepartureTime" class="form-label">Departure Time:</label>
@@ -28,28 +26,34 @@
                 <ValidationMessage For="() => NewFlight.ArrivalTime" class="text-danger" />
             </div>
 
-            <div class="mb-3">
-                <label for="Destination" class="form-label">Destination:</label>
-                <InputText id="Destination" @bind-Value="NewFlight.Destination" class="form-control" />
-                <ValidationMessage For="() => NewFlight.Destination" class="text-danger" />
-            </div>
+            @* <div class="mb-3">
+                <label for="IataDestination" class="form-label">Select IATA Destination:</label>
+                <InputText id="IataDestination" @bind-Value="NewFlight.Iatadestination" class="form-control" />
+                <ValidationMessage For="() => NewFlight.Iatadestination" class="text-danger" />
+            </div> *@
 
+            @* <div class="mb-3">
+                <label for="IataOrigin" class="form-label">Select IATA Origin:</label>
+                <InputText id="IataOrigin" @bind-Value="NewFlight.IataoriginId" class="form-control" />
+                <ValidationMessage For="() => NewFlight.IataoriginId" class="text-danger" />
+            </div> *@
             <div class="mb-3">
-                <label for="Origin" class="form-label">Origin:</label>
-                <InputText id="Origin" @bind-Value="NewFlight.Origin" class="form-control" />
-                <ValidationMessage For="() => NewFlight.Origin" class="text-danger" />
+                <h4>Select Origin:</h4>
+                <InputSelect id="IataOriginId" @bind-Value="NewFlight.IataoriginId">
+                    @foreach (var iata in Iatas)
+                    {
+                        <option value="@iata">From: @iata.Iata (@iata.City)</option>
+                    }
+                </InputSelect>
             </div>
-
             <div class="mb-3">
-                <label for="IataDestination" class="form-label">IATA Destination:</label>
-                <InputText id="IataDestination" @bind-Value="NewFlight.IataDestination" class="form-control" />
-                <ValidationMessage For="() => NewFlight.IataDestination" class="text-danger" />
-            </div>
-
-            <div class="mb-3">
-                <label for="IataOrigin" class="form-label">IATA Origin:</label>
-                <InputText id="IataOrigin" @bind-Value="NewFlight.IataOrigin" class="form-control" />
-                <ValidationMessage For="() => NewFlight.IataOrigin" class="text-danger" />
+                <h4>Select Destination:</h4>
+                <InputSelect id="IataDestinationId" @bind-Value="NewFlight.IatadestinationId">
+                    @foreach (var iata in Iatas)
+                    {
+                        <option value="@iata">To: @iata.Iata (@iata.City)</option>
+                    }
+                </InputSelect>
             </div>
 
             <button type="submit" class="btn btn-primary">Create Flight</button>
@@ -59,34 +63,72 @@
 
 @code {
     [SupplyParameterFromForm(FormName = "CreateFlight")]
-    public Flight NewFlight { get; set; } = new();
+    public Flight NewFlight { get; set; } = new()
+    {
+        DepartureTime = DateTime.Now,
+        ArrivalTime = DateTime.Now
+    };
+ 
 
+    protected override async Task OnInitializedAsync()
+    {
 
+        Iatas = GetDummyIatas();
+    }
+
+    public List<IataLocation> Iatas;
+    public List<IataLocation> GetDummyIatas()
+    {
+        return new List<IataLocation>
+    {
+
+        new IataLocation { Id = 1, Iata = "JFK", City = "New York" },
+
+        new IataLocation { Id = 2, Iata = "LAX", City = "Los Angeles" },
+
+        new IataLocation { Id = 3, Iata = "LHR", City = "London" },
+
+        new IataLocation { Id = 4, Iata = "CDG", City = "Paris" },
+
+        new IataLocation { Id = 5, Iata = "DXB", City = "Dubai" },
+
+        new IataLocation { Id = 6, Iata = "HKG", City = "Hong Kong" },
+
+        new IataLocation { Id = 7, Iata = "SYD", City = "Sydney" },
+
+        new IataLocation { Id = 8, Iata = "FRA", City = "Frankfurt" },
+
+        new IataLocation { Id = 9, Iata = "SIN", City = "Singapore" },
+
+        new IataLocation { Id = 10, Iata = "NRT", City = "Tokyo" }
+
+    };
+    }
     public async Task AddFlight()
     {
-        IataLocation iataLocationOri = new IataLocation()
-        {
-            Iata = NewFlight.IataOrigin,
-            City = NewFlight.Origin,
+    //     IataLocation iataLocationOri = new IataLocation()
+    //     {
+    //         Iata = NewFlight.IataOrigin,
+    //         City = NewFlight.Origin,
 
-        };
+    //     };
 
-        IataLocation iataLocationDest = new IataLocation()
-            {
-                Iata = NewFlight.IataDestination,
-                City = NewFlight.Destination,
+    //     IataLocation iataLocationDest = new IataLocation()
+    //         {
+    //             Iata = NewFlight.IataDestination,
+    //             City = NewFlight.Destination,
 
-            };
+    //         };
 
-        Flight flight;
-     flight = new Flight()
-            {
-                ArrivalTime = NewFlight.ArrivalTime,
-                DepartureTime = NewFlight.DepartureTime,
-                Iatadestination = iataLocationDest,
-                Iataorigin = iataLocationOri,
+    //     Flight flight;
+    //  flight = new Flight()
+    //         {
+    //             ArrivalTime = NewFlight.ArrivalTime,
+    //             DepartureTime = NewFlight.DepartureTime,
+    //             Iatadestination = iataLocationDest,
+    //             Iataorigin = iataLocationOri,
 
-        };
-        await FlightService.Create(flight);
+    //     };
+    //     await FlightService.Create(flight);
     }
-} *@
+}
