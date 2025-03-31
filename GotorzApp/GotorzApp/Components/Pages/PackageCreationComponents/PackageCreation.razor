@@ -2,7 +2,7 @@
 
 <PageTitle>Put together a package!</PageTitle>
 
-@*
+
 
 <div class="row">
     <div class="col-md-8">
@@ -21,30 +21,29 @@
                 <ValidationMessage For="() => TravelPackage.Description" class="text-danger" />
             </div>
 
-            <div class="mb-3">
-                <label for="imagePath" class="form-label">ImagePath:</label>
-                <InputText id="imagePath" @bind-Value="TravelPackage.ImagePath" class="form-control" />
-                <ValidationMessage For="() => TravelPackage.ImagePath" class="text-danger" />
-            </div>
-
             <h2>Flight Paths</h2>
             <h3>Outbound Flight</h3>
-            <div class="mb-3">
-                <label for="departureTime" class="form-label">Departure Time:</label>
-                <InputDate id="departureTime" @bind-Value="TravelPackage.Flightpaths[0].Outbound.DepartureTime" class="form-control" />
-                <ValidationMessage For="() => TravelPackage.Flightpaths[0].Outbound.DepartureTime" class="text-danger" />
-            </div>
+           
 
             <!-- Add the rest of the form here -->
 
             <h3>Home Flight</h3>
 
-            <h2>Hotel</h2>
-
+            <div class="mb-3">
+                <h4>Hotel</h4>
+                <InputSelect id="hotelId" @bind-Value="TravelPackage.HotelId">
+                    @foreach (var hotel in Hotels)
+                    {
+                        <option value="@hotel">@hotel.Name (@hotel.Name)</option>
+                    }
+                </InputSelect>
+            </div>
+            @*
             <h2>Transfer</h2>
             <h3>To hotel</h3>
 
             <h3>To Airport</h3>
+            *@
 
             <button type="submit" class="btn btn-primary">Create Package</button>
         </EditForm>
@@ -62,10 +61,11 @@
     {
     };
 
+    public List<Hotel> Hotels;
+
 
     public async Task AddTravelPackage()
     {
         //do something
     }
 }
- *@
