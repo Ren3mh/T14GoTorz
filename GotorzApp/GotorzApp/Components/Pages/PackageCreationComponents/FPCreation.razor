@@ -31,7 +31,7 @@ else
                     <InputSelect id="outboundDestination" @bind-Value="NewFlightpath.OutboundFlightId">
                         @foreach (var flight in Flights)
                         {
-                            <option value="@flight.Id">From: @flight.Iataorigin.Iata To: @flight.Iatadestination.Iata To</option>
+                            <option value="@flight.Id">From: @flight.Iataorigin.Iata To: @flight.Iatadestination.Iata</option>
                         }
                     </InputSelect>
                 </div>

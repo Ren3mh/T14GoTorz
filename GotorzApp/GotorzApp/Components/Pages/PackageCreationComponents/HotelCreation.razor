@@ -1,5 +1,7 @@
 ﻿@page "/hc"
 @using Shared
+@inject IService<Hotel> HotelService
+
 <h1>Hotel Creation</h1>
 <div class="row">
     <div class="col-md-8">
@@ -9,13 +11,17 @@
 
             <div class="mb-3">
                 <label for="CheckIn" class="form-label">Check-In:</label>
-                <InputDate id="CheckIn" @bind-Value="NewHotel.CheckIn" class="form-control" />
+                <InputDate Type="InputDateType.DateTimeLocal"
+                min="@DateTime.Now.ToString("yyyy-MM-dd HH:mm")"
+                id="CheckIn" @bind-Value="NewHotel.CheckIn" class="form-control" />
                 <ValidationMessage For="() => NewHotel.CheckIn" class="text-danger" />
             </div>
 
             <div class="mb-3">
                 <label for="CheckOut" class="form-label">Check-Out:</label>
-                <InputDate id="CheckOut" @bind-Value="NewHotel.CheckOut" class="form-control" />
+                <InputDate Type="InputDateType.DateTimeLocal"
+                min="@DateTime.Now.ToString("yyyy-MM-dd HH:mm")"
+                id="CheckOut" @bind-Value="NewHotel.CheckOut" class="form-control" />
                 <ValidationMessage For="() => NewHotel.CheckOut" class="text-danger" />
             </div>
 
@@ -70,6 +76,6 @@
 
     public async Task AddHotel()
     {
-        //Do something
+        await HotelService.Add(NewHotel);
     }
 }
