@@ -1,5 +1,6 @@
 ﻿@page "/pc"
-
+@inject IService<Hotel> HotelService
+@inject IService<TravelPackage> TravelPackageService
 <PageTitle>Put together a package!</PageTitle>
 
 
@@ -20,35 +21,28 @@
                 <InputText id="description" @bind-Value="TravelPackage.Description" class="form-control" />
                 <ValidationMessage For="() => TravelPackage.Description" class="text-danger" />
             </div>
-
-            <h2>Flight Paths</h2>
-            <h3>Outbound Flight</h3>
-           
-
-            <!-- Add the rest of the form here -->
-
-            <h3>Home Flight</h3>
-
             <div class="mb-3">
                 <h4>Hotel</h4>
                 <InputSelect id="hotelId" @bind-Value="TravelPackage.HotelId">
                     @foreach (var hotel in Hotels)
                     {
-                        <option value="@hotel">@hotel.Name (@hotel.Name)</option>
+                        <option value="@hotel.Id">@hotel.Name (@hotel.Address)</option>
                     }
                 </InputSelect>
             </div>
-            @*
-            <h2>Transfer</h2>
-            <h3>To hotel</h3>
 
-            <h3>To Airport</h3>
-            *@
-
-            <button type="submit" class="btn btn-primary">Create Package</button>
+            <button type="submit" class="btn btn-primary">Tilknyt flightpath</button>
         </EditForm>
     </div>
 
+    @if (TravelPackage.Id == 0)
+    {
+        <span>Waiting for Id</span>
+    }
+    else
+    {
+        <FPCreation newId="@TravelPackage.Id" />
+    }
     @if (TravelPackage.Title != null)
     {
         <h2>@TravelPackage.Title</h2>
@@ -61,11 +55,16 @@
     {
     };
 
-    public List<Hotel> Hotels;
+    protected override async Task OnInitializedAsync()
+    {
+
+        Hotels = await HotelService.GetAll() ?? new List<Hotel>();
+    }
+    public List<Hotel>? Hotels = new List<Hotel>();
 
 
     public async Task AddTravelPackage()
     {
-        //do something
+        await TravelPackageService.Add(TravelPackage);
     }
 }

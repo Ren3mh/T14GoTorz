@@ -2,6 +2,7 @@
 @using Shared
 @inject IService<Flight> FlightService
 @inject IService<Flightpath> FlightpathService
+@inject IService<TravelPackage> TravelPackageService
 
 
 <h3>Flightpath Creation</h3>
@@ -27,7 +28,7 @@ else
                     <ValidationMessage For="() => NewFlightpath.Luggage" class="text-danger" />
                 </div>
                 <div class="mb-3">
-                    <h4>Outbound</h4>
+                    <h4>Outbound:</h4>
                     <InputSelect id="outboundDestination" @bind-Value="NewFlightpath.OutboundFlightId">
                         @foreach (var flight in Flights)
                         {
@@ -36,11 +37,21 @@ else
                     </InputSelect>
                 </div>
                 <div class="mb-3">
-                    <h4>Homebound</h4>
+                    <h4>Homebound:</h4>
                     <InputSelect id="homeboundDestination" @bind-Value="NewFlightpath.HomeboundFlightId">
                         @foreach (var flight in Flights)
                         {
                             <option value="@flight.Id">From: @flight.Iataorigin.Iata To: @flight.Iatadestination.Iata</option>
+                        }
+                    </InputSelect>
+                </div>
+
+                <div class="mb-3">
+                    <h4>Travelpackage:</h4>
+                    <InputSelect id="travelPackageId" @bind-Value="NewFlightpath.TravelPackageId">
+                        @foreach (var tp in TravelPackages)
+                        {
+                            <option value="@tp.Id">@tp.Title</option>
                         }
                     </InputSelect>
                 </div>
@@ -61,7 +72,7 @@ else
     bool created = false;
     public async Task AddFlightPath()
     {
-        NewFlightpath.TravelPackageId = 1;
+        NewFlightpath.TravelPackageId = newId;
         await FlightpathService.Add(NewFlightpath);
         created = true;
     }
@@ -71,12 +82,12 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        
+        TravelPackages = await TravelPackageService.GetAll() ?? new List<TravelPackage>(); 
         Flights = await FlightService.GetAll() ?? new List<Flight>();
     }
-
+    public List<TravelPackage> TravelPackages;
     public List<Flight> Flights;
-
-    
+    [Parameter]
+    public int newId { get; set; }
 
 }
