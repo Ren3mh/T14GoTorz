@@ -10,5 +10,7 @@ namespace Shared.Service
     public interface IService<T> where T : class
     {
         Task<List<T>> GetAll();
+
+        Task Add(T x);
     }
 }
