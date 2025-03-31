@@ -33,9 +33,9 @@ namespace Shared.Service
         //    _context = context;
         //}
 
-        public async Task Create(Gotorz14.Models1.Flight x)
+        public async Task Add(Flightpath x)
         {
-            _context.Flights.Add(x);
+            _context.Flightpaths.Add(x);
             await _context.SaveChangesAsync();
         }
 

@@ -1,43 +1,55 @@
 ﻿@page "/fpc"
 @using Shared
+@inject IService<Flight> FlightService
+@inject IService<Flightpath> FlightpathService
+
+
 <h3>Flightpath Creation</h3>
-<div class="row">
-    <div class="col-md-8">
-        <EditForm method="post" Model="NewFlightpath" OnValidSubmit="AddFlightPath" FormName="CreateFlightPath" Enhance>
-            <DataAnnotationsValidator />
-            <ValidationSummary class="text-danger" />
-            <div class="mb-3">
-                <label for="fare" class="form-label">Price:</label>
-                <InputNumber id="fare" @bind-Value="NewFlightpath.Fare" class="form-control" />
-                <ValidationMessage For="() => NewFlightpath.Fare" class="text-danger" />
-            </div>
-            <div class="mb-3">
-                <label for="luggage" class="form-label">Luggage:</label>
-                <InputCheckbox id="luggage" @bind-Value="NewFlightpath.Luggage" class="form-check-inline"/>
-                <ValidationMessage For="() => NewFlightpath.Luggage" class="text-danger" />
-            </div>
-            <div class="mb-3">
-                <h4>Outbound</h4>
-                <InputSelect id="outboundDestination" @bind-Value="NewFlightpath.OutboundFlight">
-                    @foreach (var flight in Flights)
-                    {
-                        <option value="@flight">From: @flight.Iataorigin.Iata To: @flight.Iatadestination.Iata To</option>
-                    }
-                </InputSelect>
-            </div>
-            <div class="mb-3">
-                <h4>Homebound</h4>
-                <InputSelect id="homeboundDestination" @bind-Value="NewFlightpath.HomeboundFlight">
-                    @foreach (var flight in Flights)
-                    {
-                        <option value="@flight">From: @flight.Iataorigin.Iata To: @flight.Iatadestination.Iata</option>
-                    }
-                </InputSelect>
-            </div>
-            <button type="submit" class="btn btn-primary">Submit</button>
-        </EditForm>
+@if (Flights == null)
+{
+    <span>Loading...</span>
+}
+else
+{
+    <div class="row">
+        <div class="col-md-8">
+            <EditForm method="post" Model="NewFlightpath" OnValidSubmit="AddFlightPath" FormName="CreateFlightPath" Enhance>
+                <DataAnnotationsValidator />
+                <ValidationSummary class="text-danger" />
+                <div class="mb-3">
+                    <label for="fare" class="form-label">Price:</label>
+                    <InputNumber id="fare" @bind-Value="NewFlightpath.Fare" class="form-control" />
+                    <ValidationMessage For="() => NewFlightpath.Fare" class="text-danger" />
+                </div>
+                <div class="mb-3">
+                    <label for="luggage" class="form-label">Luggage:</label>
+                    <InputCheckbox id="luggage" @bind-Value="NewFlightpath.Luggage" class="form-check-inline"/>
+                    <ValidationMessage For="() => NewFlightpath.Luggage" class="text-danger" />
+                </div>
+                <div class="mb-3">
+                    <h4>Outbound</h4>
+                    <InputSelect id="outboundDestination" @bind-Value="NewFlightpath.OutboundFlightId">
+                        @foreach (var flight in Flights)
+                        {
+                            <option value="@flight.Id">From: @flight.Iataorigin.Iata To: @flight.Iatadestination.Iata To</option>
+                        }
+                    </InputSelect>
+                </div>
+                <div class="mb-3">
+                    <h4>Homebound</h4>
+                    <InputSelect id="homeboundDestination" @bind-Value="NewFlightpath.HomeboundFlightId">
+                        @foreach (var flight in Flights)
+                        {
+                            <option value="@flight.Id">From: @flight.Iataorigin.Iata To: @flight.Iatadestination.Iata</option>
+                        }
+                    </InputSelect>
+                </div>
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </EditForm>
+        </div>
     </div>
-</div>
+}
+
 
 @if (created)
 {
@@ -49,6 +61,8 @@
     bool created = false;
     public async Task AddFlightPath()
     {
+        NewFlightpath.TravelPackageId = 1;
+        await FlightpathService.Add(NewFlightpath);
         created = true;
     }
 
@@ -58,7 +72,7 @@
     protected override async Task OnInitializedAsync()
     {
 
-        Flights = GetDummyFlights();
+        Flights = await FlightService.GetAll() ?? new List<Flight>();
     }
 
     public List<Flight> Flights;

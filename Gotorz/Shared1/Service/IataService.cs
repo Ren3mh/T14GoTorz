@@ -24,6 +24,12 @@ namespace Shared.Service
             return iatas;
         }
 
+        public async Task Add(IataLocation x)
+        {
+            _context.IataLocations.Add(x);
+            await _context.SaveChangesAsync();
+        }
+
 
     }
 

@@ -42,11 +42,11 @@ namespace Shared.Service
         //    _context = context;
         //}
 
-        //public async Task Create(Gotorz14.Models1.Flight x)
-        //{
-        //    _context.Flights.Add(x);
-        //    await _context.SaveChangesAsync();
-        //}
+        public async Task Add(TravelPackage x)
+        {
+            _context.TravelPackages.Add(x);
+            await _context.SaveChangesAsync();
+        }
 
         //public async Task<List<Gotorz14.Models1.Flight>> GetAll()
         //{
