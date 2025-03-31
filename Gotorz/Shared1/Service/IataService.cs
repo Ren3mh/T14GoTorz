@@ -17,6 +17,7 @@ namespace Shared.Service
         {
             _context = context;
         }
+
         public async Task<List<IataLocation>> GetAll()
         {
             var iatas = await _context.IataLocations

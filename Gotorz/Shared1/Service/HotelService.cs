@@ -17,6 +17,7 @@ namespace Shared.Service
         {
             _context = context;
         }
+
         public async Task<List<Hotel>> GetAll()
         {
             var hotels = await _context.Hotels

@@ -1,5 +1,6 @@
 ﻿@page "/fc"
 @inject IService<IataLocation> IataLocationService
+@inject IService<Flight> FlightService
 
 <h3>Flight Creation</h3>
 <div class="row">
@@ -11,16 +12,16 @@
             <div class="mb-3">
                 <label for="DepartureTime" class="form-label">Departure Time:</label>
                 <InputDate Type="InputDateType.DateTimeLocal"
-                           min="@DateTime.Now.ToString("yyyy-MM-dd HH:mm")" 
-                           id="DepartureTime" @bind-Value="NewFlight.DepartureTime" class="form-control" />
+                min="@DateTime.Now.ToString("yyyy-MM-dd HH:mm")" 
+                id="DepartureTime" @bind-Value="NewFlight.DepartureTime" class="form-control" />
                 <ValidationMessage For="() => NewFlight.DepartureTime" class="text-danger" />
             </div>
 
             <div class="mb-3">
                 <label for="ArrivalTime" class="form-label">Arrival Time:</label>
                 <InputDate Type="InputDateType.DateTimeLocal"
-                           min="@DateTime.Now.ToString("yyyy-MM-dd HH:mm")" 
-                           id="ArrivalTime" @bind-Value="NewFlight.ArrivalTime" class="form-control" />
+                min="@DateTime.Now.ToString("yyyy-MM-dd HH:mm")" 
+                id="ArrivalTime" @bind-Value="NewFlight.ArrivalTime" class="form-control" />
                 <ValidationMessage For="() => NewFlight.ArrivalTime" class="text-danger" />
             </div>
 
@@ -31,10 +32,10 @@
                     {
                         <span>Loading...</span>
                     }
-                                        else
+                    else
                     {@foreach (var iata in Iatas)
                         {
-                            <option value="@iata">From: @iata.Iata (@iata.City)</option>
+                            <option value="@iata.Id">From: @iata.Iata (@iata.City)</option>
                         }
                     }
                 </InputSelect>
@@ -46,10 +47,10 @@
                     {
                         <span>Loading...</span>
                     }
-                                        else
+                    else
                     {@foreach (var iata in Iatas)
                         {
-                            <option value="@iata">To: @iata.Iata (@iata.City)</option>
+                            <option value="@iata.Id">To: @iata.Iata (@iata.City)</option>
                         }
                     }
                 </InputSelect>
@@ -69,7 +70,7 @@
         DepartureTime = DateTime.Now,
         ArrivalTime = DateTime.Now
     };
- 
+
 
     protected override async Task OnInitializedAsync()
     {
@@ -81,6 +82,6 @@
 
     public async Task AddFlight()
     {
-
+        await FlightService.Add(NewFlight);
     }
 }

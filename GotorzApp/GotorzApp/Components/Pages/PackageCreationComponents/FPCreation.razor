@@ -71,7 +71,7 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-
+        
         Flights = await FlightService.GetAll() ?? new List<Flight>();
     }
 

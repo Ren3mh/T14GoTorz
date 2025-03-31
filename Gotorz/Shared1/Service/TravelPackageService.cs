@@ -17,6 +17,7 @@ namespace Shared.Service
         {
             _context = context;
         }
+
         public async Task<List<TravelPackage>> GetAll()
         {
             var travelpackages = await _context.TravelPackages
