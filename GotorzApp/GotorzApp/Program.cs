@@ -23,6 +23,8 @@ namespace GotorzApp
             builder.Services.AddDbContext<GotorzContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("LocalString")));
 
+            builder.Services.AddHttpClient<FlightService>();//API TEST
+            
             builder.Services.AddScoped<IService<Flight>, FlightService>();
             builder.Services.AddScoped<IService<Hotel>, HotelService>();
             builder.Services.AddScoped<IService<TravelPackage>, TravelPackageService>();

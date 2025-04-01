@@ -1,0 +1,56 @@
+﻿@page "/flightsapi"
+@inject FlightService FlightService
+@inject NavigationManager NavigationManager
+
+<h3>Flight List</h3>
+
+@if (flights == null)
+{
+    <span>Loading...</span>
+}
+else if (flights.Count == 0)
+{
+    <span>No flights found.</span>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Origin</th>
+                <th>Destination</th>
+                <th>Departure Date</th>
+                <th>Return Date</th>
+                <th>Price</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in flights)
+            {
+                <tr>
+                    <td>@item.Origin</td>
+                    <td>@item.Destination</td>
+                    <td>@item.DepartureDate</td>
+                    <td>@item.ReturnDate</td>
+                    <td>@item.Price.TotalAsDecimal</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+<button @onclick="AddFlight" class="btn btn-primary">Add Flight</button>
+
+@code {
+    List<FlightDestination>? flights;
+
+    protected override async Task OnInitializedAsync()
+    {
+        flights = await FlightService.GetFlightDestinations("PAR", 200m) ?? new List<FlightDestination>();
+    }
+
+    void AddFlight()
+    {
+        NavigationManager.NavigateTo("/flightCreation");
+    }
+}
