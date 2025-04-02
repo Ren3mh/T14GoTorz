@@ -7,7 +7,7 @@ USE Gotorz;
 GO
 CREATE TABLE IATA_locations (
     Id   INT            IDENTITY (1, 1),
-    IATA NVARCHAR (3)   NOT NULL,
+    IATA NVARCHAR (3)   NOT NULL UNIQUE,
     City NVARCHAR (MAX) NOT NULL,
     CONSTRaint PK_IATA_locations PRIMARY KEY (Id)
 );
