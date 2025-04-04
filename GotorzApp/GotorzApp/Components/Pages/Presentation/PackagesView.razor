@@ -1,7 +1,28 @@
 ﻿@page "/packages"
 @inject IService<TravelPackage> TravelPackageService
+@using System.Linq
+@inject IJSRuntime JSRuntime
+@using System.Diagnostics
+@rendermode InteractiveServer
 
-<h2>Travel Packages</h2>
+
+<h2>@Header</h2>
+
+<input type="datetime" @bind-value="EarliestDeparture"/>
+<label for="leavingFrom" class="form-label">Rejser fra:</label>
+<InputSelect id="leavingFrom" @bind-Value="LeavingFrom">
+    @if (iataLocations.Count() == 0)
+    {
+        <span>Loading...</span>
+    }
+    else
+    {@foreach (var iata in iataLocations)
+        {
+            <option value="@iata">@iata.Iata (@iata.City)</option>
+        }
+    }
+</InputSelect>
+<button @onclick="FilterByDate">OPDATER</button>
 
 @if (travelPackages == null)
 {
@@ -15,6 +36,23 @@ else
 {
     <div class="container">
         <div class="row">
+            <div class="col">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var travelPackage in filteredTravelPackages)
+                        {
+                            <tr>
+                                <td>@travelPackage.Title</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
             <div class="col">
                 <table class="table">
                     <thead>
@@ -87,15 +125,45 @@ else
 
 }
 @code {
-    public TravelPackage? SelectedPackage => travelPackages.FirstOrDefault();
+    public TravelPackage? SelectedPackage => filteredTravelPackages.FirstOrDefault();
+
+    public DateTime EarliestDeparture;
+
+    private List<TravelPackage> filteredTravelPackages = new List<TravelPackage>();
 
     private List<TravelPackage> travelPackages;
+
+    public string Header = "Fly pakker";
+
+    public IataLocation LeavingFrom = new IataLocation();
+
+    public List<IataLocation> iataLocations = new List<IataLocation>();
+
+
+    private async Task FilterByDate()
+    {
+        filteredTravelPackages = travelPackages
+            .Where(tp => tp.Flightpaths.Any(f => f.OutboundFlight.DepartureTime >= EarliestDeparture))
+            .Where(tp => tp.Flightpaths.Any(f => f.OutboundFlight.Iataorigin == LeavingFrom))
+            .ToList();
+
+    }
 
     protected override async Task OnInitializedAsync()
     {
         travelPackages = await TravelPackageService.GetAll() ?? new List<TravelPackage>();
-        
+        filteredTravelPackages = travelPackages;
+        foreach (TravelPackage tp in travelPackages)
+        {
+            foreach (Flightpath fp in tp.Flightpaths)
+            {
+                iataLocations.Add(fp.OutboundFlight.Iataorigin);
+
+            }
+        }       
     }
 
     
 }
+
+

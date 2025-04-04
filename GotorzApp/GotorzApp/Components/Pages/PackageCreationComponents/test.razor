@@ -1,0 +1,16 @@
+﻿@page "/test"
+@rendermode InteractiveServer
+
+<h3>@header</h3>
+<button @onclick="Metode">Knap</button>
+
+
+@code {
+	public string header = "Virker det?";
+
+	public void Metode()
+	{
+		header = "ja det gør det";
+		Console.WriteLine("teeststsststststtst");
+	}
+}
