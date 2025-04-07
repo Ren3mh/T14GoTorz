@@ -1,5 +1,7 @@
 ﻿@page "/packages"
 @inject IService<TravelPackage> TravelPackageService
+@inject IService<IataLocation> IataLocationService
+@rendermode InteractiveServer
 
 <h2>Travel Packages</h2>
 
@@ -7,7 +9,7 @@
 {
     <span>Loading...</span>
 }
-else if(travelPackages.Count == 0)
+else if (travelPackages.Count == 0)
 {
     <span>No packages found.</span>
 }
@@ -33,69 +35,132 @@ else
                 </table>
             </div>
             <div class="col-1">
-
             </div>
             <div class="col">
-                <h2>@SelectedPackage.Title</h2>
-                <div class="col">
-                    <h3>Hotel</h3>
-                    <div class="container">
-                        <div class="row">
-                            <div class="col">
-                                <h5>Name</h5>
-                                <p>@SelectedPackage.Hotel.Name</p>
-                            </div>
-                            <div class="col">
-                                <h5>Check In</h5>
-                                <p>@SelectedPackage.Hotel.CheckIn</p>
-                            </div>
-                            <div class="col">
-                                <h5>Check Out</h5>
-                                <p>@SelectedPackage.Hotel.CheckOut</p>
-                            </div>
-                            <div class="col">
-                                <h5>Address</h5>
-                                <p>@SelectedPackage.Hotel.Address</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col">
-                    <h3>Flightpaths</h3>
-                    <div class="container">
-                        <div class="row">
-                            <div class="col">
-                                <h5>From</h5>
-                                @foreach (var flightpath in SelectedPackage.Flightpaths)
-                                {
-                                    <p>@flightpath.OutboundFlight.Iataorigin.City - @flightpath.OutboundFlight.Iataorigin.Iata</p>
-                                }
-                            </div>
-                            <div class="col">
-                                <h5>To</h5>
-                                @foreach (var flightpath in SelectedPackage.Flightpaths)
-                                {
-                                    <p>@flightpath.OutboundFlight.Iatadestination.City - @flightpath.OutboundFlight.Iatadestination.Iata</p>
-                                }
+                @if (SelectedPackage != null)
+                {
+                    <h2>@SelectedPackage.Title</h2>
+                    <div class="col">
+                        <h3>Hotel</h3>
+                        <div class="container">
+                            <div class="row">
+                                <div class="col">
+                                    <h5>Name</h5>
+                                    <p>@SelectedPackage.Hotel?.Name</p>
+                                </div>
+                                <div class="col">
+                                    <h5>Check In</h5>
+                                    <p>@SelectedPackage.Hotel?.CheckIn</p>
+                                </div>
+                                <div class="col">
+                                    <h5>Check Out</h5>
+                                    <p>@SelectedPackage.Hotel?.CheckOut</p>
+                                </div>
+                                <div class="col">
+                                    <h5>Address</h5>
+                                    <p>@SelectedPackage.Hotel?.Address</p>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
+                    <div class="col">
+                        <h3>Flightpaths</h3>
+                        <div class="container">
+                            <div class="row">
+                                <div class="col">
+                                    <h5>From</h5>
+                                    @foreach (var flightpath in SelectedPackage.Flightpaths)
+                                    {
+                                        <p>@flightpath.OutboundFlight.Iataorigin?.City - @flightpath.OutboundFlight.Iataorigin?.Iata</p>
+                                    }
+                                </div>
+                                <div class="col">
+                                    <h5>To</h5>
+                                    @foreach (var flightpath in SelectedPackage.Flightpaths)
+                                    {
+                                        <p>@flightpath.OutboundFlight.Iatadestination?.City - @flightpath.OutboundFlight.Iatadestination?.Iata</p>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
             </div>
         </div>
     </div>
+    <div class="col">
+        <label for="leavingFrom" class="form-label">Rejser fra:</label>
+        <InputSelect id="leavingFrom" @bind-Value="LeavingFrom">
+            @if (Iatas.Count() == 0)
+            {
+                <span>Loading...</span>
+            }
+            else
+            {@foreach (var iata in Iatas)
+                {
+                    <option value="@iata">@iata.Iata (@iata.City)</option>
+                }
+            }
+        </InputSelect>
+        <button @onclick="FilterTravelPackages">OPDATER</button>
 
+        <table class="table">
+            <thead>
+                <tr>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var travelPackage in filteredTravelPackages)
+                {
+                    <tr>
+                        <td>@travelPackage.Title</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <button id="smallB" @onclick="DoSomethingInConsole">Hej knap</button>
 }
 @code {
     public TravelPackage? SelectedPackage => travelPackages.FirstOrDefault();
 
     private List<TravelPackage> travelPackages;
-
+    private List<TravelPackage> filteredTravelPackages;
+    //private string LeavingFrom => travelPackages.FirstOrDefault()?.Flightpaths.FirstOrDefault()?.OutboundFlight.Iataorigin.City ?? "Unknown";
+    public List<IataLocation>? Iatas = new List<IataLocation>();
+	private IataLocation? leavingFrom;
+    public IataLocation LeavingFrom {get { return leavingFrom; } 
+    set { leavingFrom = value; }}
+    //public IataLocation LeavingFrom { get; set; }
     protected override async Task OnInitializedAsync()
     {
-        travelPackages = await TravelPackageService.GetAll() ?? new List<TravelPackage>();
-        
+        try
+        {
+            travelPackages = await TravelPackageService.GetAll() ?? new List<TravelPackage>();
+            filteredTravelPackages = new List<TravelPackage>(travelPackages);
+            Iatas = await IataLocationService.GetAll() ?? new List<IataLocation>();
+            LeavingFrom = null;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"An error occurred: {ex.Message}");
+            // Handle the error appropriately, e.g., show a user-friendly message
+        }
     }
+    private void FilterTravelPackages()
+    {
+        if (leavingFrom != null)
+        {
+            filteredTravelPackages = travelPackages
+                .Where(tp => tp.Flightpaths.Any(fp => fp.OutboundFlight.IataoriginId == leavingFrom.Id))
+                .ToList();
+        }
+    }
+	private void DoSomethingInConsole()
+	{
+		Console.WriteLine("Hello from the console!");
+	}
 
     
 }
