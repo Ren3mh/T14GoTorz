@@ -1,40 +1,38 @@
 ﻿@page "/packages"
 @inject IService<TravelPackage> TravelPackageService
-@using System.Linq
-@inject IJSRuntime JSRuntime
-@using System.Diagnostics
+@inject IService<IataLocation> IataLocationService
 @rendermode InteractiveServer
-
-
-<h2>@Header</h2>
-
-<input type="datetime" @bind-value="EarliestDeparture"/>
-<label for="leavingFrom" class="form-label">Rejser fra:</label>
-<InputSelect id="leavingFrom" @bind-Value="LeavingFrom">
-    @if (iataLocations.Count() == 0)
-    {
-        <span>Loading...</span>
-    }
-    else
-    {@foreach (var iata in iataLocations)
-        {
-            <option value="@iata.Iata">@iata.Iata (@iata.City)</option>
-        }
-    }
-</InputSelect>
-<button @onclick="FilterByDate">OPDATER for dato</button>
-
 
 @if (travelPackages == null)
 {
     <span>Loading...</span>
 }
-else if(travelPackages.Count == 0)
+else if (travelPackages.Count == 0)
 {
     <span>No packages found.</span>
 }
-else
+else 
 {
+    <h2>Rejsepakker</h2>
+    <label for="leavingFrom" class="form-label">Rejser fra:</label>
+    <input type="datetime" @bind-value="EarliestDeparture"/>
+    <button @onclick="FilterByDate">OPDATER for dato</button>
+    <div class="col">
+        <label for="leavingFrom" class="form-label">Rejser fra:</label>
+        <InputSelect id="leavingFrom" @bind-Value="selectedIataCode">
+            @if (iataLocations.Count() == 0)
+            {
+                <span>Loading...</span>
+            }
+            else
+            {@foreach (var iata in iataLocations)
+                {
+                    <option value="@iata.Iata">@iata.Iata (@iata.City)</option>
+                }
+            }
+        </InputSelect>
+        <button @onclick="FilterByOrigin">OPDATER for origin</button>
+    </div>
     <div class="container">
         <div class="row">
             <div class="col">
@@ -72,7 +70,6 @@ else
                 </table>
             </div>
             <div class="col-1">
-
             </div>
             <div class="col">
                 <h2>@SelectedPackage.Title</h2>
@@ -184,40 +181,9 @@ else
         </div>
         <!-- Repeat more cards here -->
     </div>
-    <div class="card-group">
-        <div class="card mb-4" style="width: 18rem;">
-            <img src="/images/hotel.jpg" class="card-img-top" alt="placeholder">
-            <div class="card-body">
-                <h5 class="card-title">@SelectedPackage.Title</h5>
-                <p class="CardSubTitle mb-2 text-muted">@SelectedPackage.Hotel.Name</p>
-                <p class="card-text">@SelectedPackage.Description</p>
-                <Button Color="ButtonColor.Primary" To="#" type="buttontype.link">Rejs!</Button> 
-            </div>
-        </div>
-        <div class="card mb-4" style="width: 18rem;">
-            <img src="/images/hotel.jpg" class="card-img-top" alt="placeholder">
-            <div class="card-body">
-                <h5 class="card-title">@SelectedPackage.Title</h5>
-                <p class="CardSubTitle mb-2 text-muted">@SelectedPackage.Hotel.Name</p>
-                <p class="card-text">@SelectedPackage.Description</p>
-                <Button Color="ButtonColor.Primary" To="#" type="buttontype.link">Rejs!</Button> 
-            </div>
-        </div>
-        <div class="card mb-4" style="width: 18rem;">
-            <img src="/images/hotel.jpg" class="card-img-top" alt="placeholder">
-            <div class="card-body">
-                <h5 class="card-title">@SelectedPackage.Title</h5>
-                <p class="CardSubTitle mb-2 text-muted">@SelectedPackage.Hotel.Name</p>
-                <p class="card-text">@SelectedPackage.Description</p>
-                <Button Color="ButtonColor.Primary" To="#" type="buttontype.link">Rejs!</Button> 
-            </div>
-        </div>
-        <!-- Repeat more cards here -->
-    </div>
-
-
-
+    
 }
+
 @code {
     public TravelPackage? SelectedPackage => filteredTravelPackages.FirstOrDefault();
 
@@ -232,13 +198,13 @@ else
     public IataLocation LeavingFrom  = new IataLocation();
 
     public List<IataLocation> iataLocations = new List<IataLocation>();
+    public string selectedIataCode;
 
 
     private async Task FilterByDate()
     {
         filteredTravelPackages = travelPackages
             .Where(tp => tp.Flightpaths.Any(f => f.OutboundFlight.DepartureTime >= EarliestDeparture))
-            // .Where(tp => tp.Flightpaths.Any(f => f.OutboundFlight.Iataorigin == LeavingFrom))
             .ToList();
 
     }
@@ -246,22 +212,38 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        travelPackages = await TravelPackageService.GetAll() ?? new List<TravelPackage>();
-        filteredTravelPackages = travelPackages;
-        foreach (TravelPackage tp in travelPackages)
+        try
         {
-            foreach (Flightpath fp in tp.Flightpaths)
+            travelPackages = await TravelPackageService.GetAll() ?? new List<TravelPackage>();
+            filteredTravelPackages = new List<TravelPackage>(travelPackages);
+            foreach (TravelPackage tp in travelPackages)
             {
-                iataLocations.Add(fp.OutboundFlight.Iataorigin);
-
+                foreach (Flightpath fp in tp.Flightpaths)
+                {
+                    iataLocations.Add(fp.OutboundFlight.Iataorigin);
+                }
             }
-        }       
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"An error occurred: {ex.Message}");
+            // Handle the error appropriately, e.g., show a user-friendly message
+        }
+    }
+    private void FilterByOrigin()
+    {
+        if (LeavingFrom != null)
+        {
+            LeavingFrom = iataLocations.FirstOrDefault(iata => iata.Iata == selectedIataCode);
+            // filteredTravelPackages = travelPackages
+            //     .Where(tp => tp.Flightpaths.Any(fp => fp.OutboundFlight.IataoriginId == LeavingFrom.Id))
+            //     .ToList();
+                filteredTravelPackages = travelPackages
+                    .Where(tp => tp.Flightpaths.Any(f => f.OutboundFlight.Iataorigin == LeavingFrom))
+                    .ToList();
+        }
     }
 
     
 }
-
-
-
-
 
