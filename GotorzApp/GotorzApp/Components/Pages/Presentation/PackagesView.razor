@@ -90,7 +90,7 @@ else
     </div>
     <div class="col">
         <label for="leavingFrom" class="form-label">Rejser fra:</label>
-        <InputSelect id="leavingFrom" @bind-Value="LeavingFrom">
+        <InputSelect id="leavingFrom" @bind-Value="selectedIataCode">
             @if (Iatas.Count() == 0)
             {
                 <span>Loading...</span>
@@ -98,7 +98,7 @@ else
             else
             {@foreach (var iata in Iatas)
                 {
-                    <option value="@iata">@iata.Iata (@iata.City)</option>
+                    <option value="@iata.Iata">@iata.Iata (@iata.City)</option>
                 }
             }
         </InputSelect>
@@ -129,9 +129,11 @@ else
     private List<TravelPackage> filteredTravelPackages;
     //private string LeavingFrom => travelPackages.FirstOrDefault()?.Flightpaths.FirstOrDefault()?.OutboundFlight.Iataorigin.City ?? "Unknown";
     public List<IataLocation>? Iatas = new List<IataLocation>();
-	private IataLocation? leavingFrom;
-    public IataLocation LeavingFrom {get { return leavingFrom; } 
-    set { leavingFrom = value; }}
+    //private IataLocation? leavingFrom;
+    public IataLocation LeavingFrom = new IataLocation();
+    private string selectedIataCode;
+    // {get { return leavingFrom; } 
+    // set { leavingFrom = value; }}
     //public IataLocation LeavingFrom { get; set; }
     protected override async Task OnInitializedAsync()
     {
@@ -140,7 +142,6 @@ else
             travelPackages = await TravelPackageService.GetAll() ?? new List<TravelPackage>();
             filteredTravelPackages = new List<TravelPackage>(travelPackages);
             Iatas = await IataLocationService.GetAll() ?? new List<IataLocation>();
-            LeavingFrom = null;
         }
         catch (Exception ex)
         {
@@ -150,11 +151,15 @@ else
     }
     private void FilterTravelPackages()
     {
-        if (leavingFrom != null)
+        if (LeavingFrom != null)
         {
-            filteredTravelPackages = travelPackages
-                .Where(tp => tp.Flightpaths.Any(fp => fp.OutboundFlight.IataoriginId == leavingFrom.Id))
-                .ToList();
+            LeavingFrom = Iatas.FirstOrDefault(iata => iata.Iata == selectedIataCode);
+            // filteredTravelPackages = travelPackages
+            //     .Where(tp => tp.Flightpaths.Any(fp => fp.OutboundFlight.IataoriginId == LeavingFrom.Id))
+            //     .ToList();
+                filteredTravelPackages = travelPackages
+                    .Where(tp => tp.Flightpaths.Any(f => f.OutboundFlight.Iataorigin == LeavingFrom))
+                    .ToList();
         }
     }
 	private void DoSomethingInConsole()
