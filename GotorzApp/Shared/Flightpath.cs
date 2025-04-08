@@ -3,7 +3,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Shared1;
+namespace Shared;
 
 public partial class Flightpath
 {

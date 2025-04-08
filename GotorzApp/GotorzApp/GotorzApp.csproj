@@ -11,8 +11,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Gotorz\Shared1\Shared.csproj" />
     <ProjectReference Include="..\GotorzApp.Client\GotorzApp.Client.csproj" />
+    <ProjectReference Include="..\Shared\Shared.csproj" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="8.0.14" />
   </ItemGroup>
 
