@@ -2,7 +2,6 @@
 @inject IService<TravelPackage> TravelPackageService
 @inject IService<IataLocation> IataLocationService
 @rendermode InteractiveServer
-
 @if (travelPackages == null)
 {
     <span>Loading...</span>
@@ -27,7 +26,7 @@ else
             else
             {@foreach (var iata in iataLocations)
                 {
-                    <option value="@iata.Iata">@iata.Iata (@iata.City)</option>
+                    <option value="@iata.Id">@iata.Iata (@iata.City)</option>
                 }
             }
         </InputSelect>
@@ -39,6 +38,9 @@ else
                 <table class="table">
                     <thead>
                         <tr>
+                            <th>
+                                <button @onclick="SwapSorting">Sorted by lowest price: @SortLowestPrice</button>
+                            </th>
                             <th></th>
                         </tr>
                     </thead>
@@ -46,7 +48,8 @@ else
                         @foreach (var travelPackage in filteredTravelPackages)
                         {
                             <tr>
-                                <td>@travelPackage.Title</td>
+                                <p><a class="link-offset-2 link-underline link-underline-opacity-0" @onclick="(() => SelectPackage(travelPackage.Id))">@travelPackage.Title</a></p>
+                                <td>@(travelPackage.Hotel.Rate + travelPackage.Flightpaths.FirstOrDefault().Fare)</td>
                             </tr>
                         }
                     </tbody>
@@ -64,6 +67,7 @@ else
                         {
                             <tr>
                                 <td>@travelPackage.Title</td>
+                                <td>@(travelPackage.Hotel.Rate + travelPackage.Flightpaths.FirstOrDefault().Fare)</td>
                             </tr>
                         }
                     </tbody>
@@ -181,11 +185,16 @@ else
         </div>
         <!-- Repeat more cards here -->
     </div>
-    
+
 }
 
 @code {
-    public TravelPackage? SelectedPackage => filteredTravelPackages.FirstOrDefault();
+
+    private void SelectPackage(int packageId)
+    {
+        SelectedPackage = travelPackages.Find(tp => tp.Id == packageId);
+    }
+    public TravelPackage? SelectedPackage { get; set; }
 
     public DateTime EarliestDeparture;
 
@@ -198,7 +207,18 @@ else
     public IataLocation LeavingFrom  = new IataLocation();
 
     public List<IataLocation> iataLocations = new List<IataLocation>();
-    public string selectedIataCode;
+    public int selectedIataCode;
+
+    public void SwapSorting()
+    {
+        SortLowestPrice = !SortLowestPrice;
+        if (SortLowestPrice)
+            travelPackages = travelPackages.OrderByDescending(tp => tp.Hotel.Rate + tp.Flightpaths.FirstOrDefault().Fare).ToList();
+        else
+            travelPackages = travelPackages.OrderBy(tp => tp.Hotel.Rate + tp.Flightpaths.FirstOrDefault().Fare).ToList();
+    }
+    public bool SortLowestPrice { get; private set; }
+
 
 
     private async Task FilterByDate()
@@ -220,30 +240,41 @@ else
             {
                 foreach (Flightpath fp in tp.Flightpaths)
                 {
-                    iataLocations.Add(fp.OutboundFlight.Iataorigin);
+                    if (!iataLocations.Exists(iata => iata.Id == fp.OutboundFlight.Iataorigin.Id))
+                        iataLocations.Add(fp.OutboundFlight.Iataorigin);
                 }
             }
+            SelectedPackage = travelPackages.First();
+            EarliestDeparture = DateTime.Today;
         }
         catch (Exception ex)
         {
             Console.WriteLine($"An error occurred: {ex.Message}");
             // Handle the error appropriately, e.g., show a user-friendly message
         }
+
+        SortLowestPrice = true;
     }
     private void FilterByOrigin()
     {
-        if (LeavingFrom != null)
+        // var filteredPackages = new List<TravelPackage>();
+
+        // foreach (var travelPackage in travelPackages)
+        // {
+        //     foreach (var flightpath in travelPackage.Flightpaths)
+        //     {
+        //         if (flightpath.OutboundFlight.Iataorigin.Id == selectedIataCode)
+        //             filteredPackages.Add(travelPackage); break;
+        //     }
+        // }
+
+        //filteredTravelPackages = filteredPackages;
+
+        if (selectedIataCode != null)
         {
-            LeavingFrom = iataLocations.FirstOrDefault(iata => iata.Iata == selectedIataCode);
-            // filteredTravelPackages = travelPackages
-            //     .Where(tp => tp.Flightpaths.Any(fp => fp.OutboundFlight.IataoriginId == LeavingFrom.Id))
-            //     .ToList();
-                filteredTravelPackages = travelPackages
-                    .Where(tp => tp.Flightpaths.Any(f => f.OutboundFlight.Iataorigin == LeavingFrom))
-                    .ToList();
+            filteredTravelPackages = travelPackages
+                .Where(tp => tp.Flightpaths.Any(f => f.OutboundFlight.Iataorigin.Id == selectedIataCode))
+                .ToList();
         }
     }
-
-    
 }
-
