@@ -2,11 +2,11 @@
 @inject IService<TravelPackage> TravelPackageService
 @inject IService<IataLocation> IataLocationService
 @rendermode InteractiveServer
-@if (travelPackages == null)
+@if (unsortedTravelPackages == null)
 {
     <span>Loading...</span>
 }
-else if (travelPackages.Count == 0)
+else if (unsortedTravelPackages.Count == 0)
 {
     <span>No packages found.</span>
 }
@@ -15,7 +15,7 @@ else
     <h2>Rejsepakker</h2>
     <label for="leavingFrom" class="form-label">Rejser fra:</label>
     <input type="datetime" @bind-value="EarliestDeparture"/>
-    <button @onclick="FilterByDate">OPDATER for dato</button>
+    <button @onclick="FilterPackages">OPDATER for dato</button>
     <div class="col">
         <label for="leavingFrom" class="form-label">Rejser fra:</label>
         <InputSelect id="leavingFrom" @bind-Value="selectedIataCode">
@@ -30,7 +30,7 @@ else
                 }
             }
         </InputSelect>
-        <button @onclick="FilterByOrigin">OPDATER for origin</button>
+        @*utton @onclick="FilterByOrigin">OPDATER for origin</button>*@
     </div>
     <div class="container">
         <div class="row">
@@ -63,7 +63,7 @@ else
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (var travelPackage in travelPackages)
+                        @foreach (var travelPackage in unsortedTravelPackages)
                         {
                             <tr>
                                 <td>@travelPackage.Title</td>
@@ -192,7 +192,7 @@ else
 
     private void SelectPackage(int packageId)
     {
-        SelectedPackage = travelPackages.Find(tp => tp.Id == packageId);
+        SelectedPackage = unsortedTravelPackages.Find(tp => tp.Id == packageId);
     }
     public TravelPackage? SelectedPackage { get; set; }
 
@@ -200,7 +200,7 @@ else
 
     private List<TravelPackage> filteredTravelPackages = new List<TravelPackage>();
 
-    private List<TravelPackage> travelPackages;
+    private List<TravelPackage> unsortedTravelPackages;
 
     public string Header = "Fly pakker";
 
@@ -209,24 +209,38 @@ else
     public List<IataLocation> iataLocations = new List<IataLocation>();
     public int selectedIataCode;
 
+    public void SortByPrice()
+    {
+        if (!SortLowestPrice)
+            filteredTravelPackages = filteredTravelPackages.OrderByDescending(tp => tp.Hotel.Rate + tp.Flightpaths.FirstOrDefault().Fare).ToList();
+        else
+            filteredTravelPackages = filteredTravelPackages.OrderBy(tp => tp.Hotel.Rate + tp.Flightpaths.FirstOrDefault().Fare).ToList();
+    }
+
     public void SwapSorting()
     {
         SortLowestPrice = !SortLowestPrice;
-        if (SortLowestPrice)
-            travelPackages = travelPackages.OrderByDescending(tp => tp.Hotel.Rate + tp.Flightpaths.FirstOrDefault().Fare).ToList();
-        else
-            travelPackages = travelPackages.OrderBy(tp => tp.Hotel.Rate + tp.Flightpaths.FirstOrDefault().Fare).ToList();
+        SortByPrice();
     }
     public bool SortLowestPrice { get; private set; }
 
-
-
-    private async Task FilterByDate()
+    public void FilterPackages()
     {
-        filteredTravelPackages = travelPackages
+        var travelPackages = unsortedTravelPackages;
+
+        travelPackages = FilterByDate(travelPackages);
+        travelPackages = FilterByOrigin(travelPackages);
+
+        filteredTravelPackages = travelPackages;
+        
+        SortByPrice();
+    }
+
+    private List<TravelPackage> FilterByDate(List<TravelPackage> travelPackages)
+    {
+        return travelPackages
             .Where(tp => tp.Flightpaths.Any(f => f.OutboundFlight.DepartureTime >= EarliestDeparture))
             .ToList();
-
     }
 
 
@@ -234,9 +248,9 @@ else
     {
         try
         {
-            travelPackages = await TravelPackageService.GetAll() ?? new List<TravelPackage>();
-            filteredTravelPackages = new List<TravelPackage>(travelPackages);
-            foreach (TravelPackage tp in travelPackages)
+            unsortedTravelPackages = await TravelPackageService.GetAll() ?? new List<TravelPackage>();
+            filteredTravelPackages = new List<TravelPackage>(unsortedTravelPackages);
+            foreach (TravelPackage tp in unsortedTravelPackages)
             {
                 foreach (Flightpath fp in tp.Flightpaths)
                 {
@@ -244,7 +258,7 @@ else
                         iataLocations.Add(fp.OutboundFlight.Iataorigin);
                 }
             }
-            SelectedPackage = travelPackages.First();
+            SelectedPackage = unsortedTravelPackages.First();
             EarliestDeparture = DateTime.Today;
         }
         catch (Exception ex)
@@ -253,28 +267,19 @@ else
             // Handle the error appropriately, e.g., show a user-friendly message
         }
 
-        SortLowestPrice = true;
+        SortLowestPrice = false;
     }
-    private void FilterByOrigin()
+
+    private List<TravelPackage> FilterByOrigin(List<TravelPackage> travelPackages)
     {
-        // var filteredPackages = new List<TravelPackage>();
-
-        // foreach (var travelPackage in travelPackages)
-        // {
-        //     foreach (var flightpath in travelPackage.Flightpaths)
-        //     {
-        //         if (flightpath.OutboundFlight.Iataorigin.Id == selectedIataCode)
-        //             filteredPackages.Add(travelPackage); break;
-        //     }
-        // }
-
-        //filteredTravelPackages = filteredPackages;
 
         if (selectedIataCode != null)
-        {
-            filteredTravelPackages = travelPackages
+        {  
+            travelPackages = travelPackages
                 .Where(tp => tp.Flightpaths.Any(f => f.OutboundFlight.Iataorigin.Id == selectedIataCode))
                 .ToList();
         }
+
+        return travelPackages;
     }
 }
