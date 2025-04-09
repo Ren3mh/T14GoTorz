@@ -2,14 +2,7 @@
 @inject IService<TravelPackage> TravelPackageService
 @inject IService<IataLocation> IataLocationService
 @inject CurrentWeatherService CurrentWeatherService
-
 @rendermode InteractiveServer
-
-@if (currentWeather != null)
-{
-    <h1>@currentWeather.Main.TempMax</h1>
-}
-
 
 @if (unsortedTravelPackages == null)
 {
@@ -23,11 +16,10 @@ else
 {
     <h2>Rejsepakker</h2>
     <label for="leavingFrom" class="form-label">Rejser fra:</label>
-    <input type="datetime" @bind-value="EarliestDeparture"/>
-    <button @onclick="FilterPackages">OPDATER for dato</button>
+    <input style="width:290px; height:25px" type="datetime" @bind-value="EarliestDeparture" />
     <div class="col">
         <label for="leavingFrom" class="form-label">Rejser fra:</label>
-        <InputSelect id="leavingFrom" @bind-Value="selectedIataCode">
+        <InputSelect style="width:290px; height:25px" id="leavingFrom" @bind-Value="selectedIataCode">
             @if (iataLocations.Count() == 0)
             {
                 <span>Loading...</span>
@@ -39,25 +31,25 @@ else
                 }
             }
         </InputSelect>
-        @*utton @onclick="FilterByOrigin">OPDATER for origin</button>*@
+        <button @onclick="FilterPackages" style="margin-left:50px">OPDATER</button>
+        @* <button @onclick="FilterByOrigin">OPDATER for origin</button> *@
     </div>
     <div class="container">
         <div class="row">
-            <div class="col">
+            <div class="col-md-6">
                 <table class="table">
                     <thead>
                         <tr>
                             <th>
                                 <button @onclick="SwapSorting">Sorted by lowest price: @SortLowestPrice</button>
                             </th>
-                            <th></th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach (var travelPackage in filteredTravelPackages)
                         {
                             <tr>
-                                <p><a class="link-offset-2 link-underline link-underline-opacity-0" @onclick="(() => SelectPackage(travelPackage.Id))">@travelPackage.Title</a></p>
+                                <td><a class="link-offset-2 link-underline link-underline-opacity-0" @onclick="(() => SelectPackage(travelPackage.Id))">@travelPackage.Title</a></td>
                                 <td>@(travelPackage.Hotel.Rate + travelPackage.Flightpaths.FirstOrDefault().Fare)</td>
                             </tr>
                         }
@@ -65,81 +57,88 @@ else
                 </table>
             </div>
             <div class="col">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var travelPackage in unsortedTravelPackages)
-                        {
-                            <tr>
-                                <td>@travelPackage.Title</td>
-                                <td>@(travelPackage.Hotel.Rate + travelPackage.Flightpaths.FirstOrDefault().Fare)</td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
-            <div class="col-1">
-            </div>
-            <div class="col">
-                <h2>@SelectedPackage.Title</h2>
+                <h1 style="font-weight:bold">@SelectedPackage.Title</h1>
                 <div class="col">
-                    <h3>Hotel</h3>
+                    <h2 style="text-shadow: 2px 2px 5px red;">Hotel:</h2>
                     <div class="container">
                         <div class="row">
                             <div class="col">
-                                <h5>Name</h5>
+                                <h5 style="text-decoration-line: underline;">Name</h5>
                                 <p>@SelectedPackage.Hotel.Name</p>
+                                <h5 style="text-decoration-line: underline;">Address</h5>
+                                <p>@SelectedPackage.Hotel.Address</p>
                             </div>
                             <div class="col">
-                                <h5>Temperature</h5>
+                                <h5 style="text-decoration-line: underline;">Temp.</h5>
                                 <p>@currentWeather.Main.TempMax</p>
                             </div>
                             <div class="col">
-                                <h5>Check In</h5>
+                                <h5 style="text-decoration-line: underline;">Check In</h5>
                                 <p>@SelectedPackage.Hotel.CheckIn</p>
                             </div>
                             <div class="col">
-                                <h5>Check Out</h5>
+                                <h5 style="text-decoration-line: underline;">Check Out</h5>
                                 <p>@SelectedPackage.Hotel.CheckOut</p>
                             </div>
-                            <div class="col">
-                                <h5>Address</h5>
-                                <p>@SelectedPackage.Hotel.Address</p>
-                            </div>
+                            @* <div class="col"> *@
+                            @*     <h5 style="text-decoration-line: underline;">Address</h5> *@
+                            @*     <p>@SelectedPackage.Hotel.Address</p> *@
+                            @* </div> *@
                         </div>
                     </div>
                 </div>
                 <div class="col">
-                    <h3>Flightpaths</h3>
+                    <h2 style="text-shadow: 2px 2px 5px red;">Flightpaths:</h2>
                     <div class="container">
                         <div class="row">
                             <div class="col">
-                                <h5>From</h5>
+                                <h5 style="text-decoration-line: underline;">From</h5>
                                 @foreach (var flightpath in SelectedPackage.Flightpaths)
                                 {
                                     <p>@flightpath.OutboundFlight.Iataorigin.City - @flightpath.OutboundFlight.Iataorigin.Iata</p>
                                 }
                             </div>
                             <div class="col">
-                                <h5>To</h5>
+                                <h5 style="text-decoration-line: underline;">To</h5>
                                 @foreach (var flightpath in SelectedPackage.Flightpaths)
                                 {
                                     <p>@flightpath.OutboundFlight.Iatadestination.City - @flightpath.OutboundFlight.Iatadestination.Iata</p>
                                 }
                             </div>
                         </div>
+                        <div class="row">
+                            <div class="col">
+                                <button style="height: 50px; width: 110px; margin-left: 5px; font-weight:bold">Slet</button>
+                                <button style="height: 50px; width: 110px; margin-left: 50px; font-weight:bold">Redigér</button>
+                             </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
+        <div class="col-md-6">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Base list<button disabled style="opacity:0">i</button></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var travelPackage in unsortedTravelPackages)
+                    {
+                        <tr>
+                            <td>@travelPackage.Title</td>
+                            <td>@(travelPackage.Hotel.Rate + travelPackage.Flightpaths.FirstOrDefault().Fare)</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
     </div>
-
-
-
+    @if (currentWeather != null)
+    {
+        <h1>@currentWeather.Main.TempMax</h1>
+    }
 }
 
 @code {
@@ -159,12 +158,12 @@ else
 
     private List<TravelPackage> unsortedTravelPackages;
 
-    public string Header = "Fly pakker";
-
-    public IataLocation LeavingFrom  = new IataLocation();
+    //public string Header = "Fly pakker";
+    // udkommenteret kan egentlig bare fjernes?
+    //public IataLocation LeavingFrom  = new IataLocation();
 
     public List<IataLocation> iataLocations = new List<IataLocation>();
-    public int selectedIataCode;
+    public int selectedIataCode; // how is this an Int? ô_Ô
 
     public void SortByPrice()
     {
