@@ -1,7 +1,16 @@
 ﻿@page "/packages"
 @inject IService<TravelPackage> TravelPackageService
 @inject IService<IataLocation> IataLocationService
+@inject CurrentWeatherService CurrentWeatherService
+
 @rendermode InteractiveServer
+
+@if (currentWeather != null)
+{
+    <h1>@currentWeather.Main.TempMax</h1>
+}
+
+
 @if (unsortedTravelPackages == null)
 {
     <span>Loading...</span>
@@ -84,6 +93,10 @@ else
                             <div class="col">
                                 <h5>Name</h5>
                                 <p>@SelectedPackage.Hotel.Name</p>
+                            </div>
+                            <div class="col">
+                                <h5>Temperature</h5>
+                                <p>@currentWeather.Main.TempMax</p>
                             </div>
                             <div class="col">
                                 <h5>Check In</h5>
@@ -190,13 +203,16 @@ else
 
 @code {
 
-    private void SelectPackage(int packageId)
+    private async Task SelectPackage(int packageId)
     {
         SelectedPackage = unsortedTravelPackages.Find(tp => tp.Id == packageId);
+        currentWeather = await CurrentWeatherService.GetCurrentWeather(SelectedPackage.Flightpaths.First().OutboundFlight.Iatadestination.City, "fr");
     }
     public TravelPackage? SelectedPackage { get; set; }
 
     public DateTime EarliestDeparture;
+
+    public CurrentWeather currentWeather;
 
     private List<TravelPackage> filteredTravelPackages = new List<TravelPackage>();
 
@@ -232,7 +248,7 @@ else
         travelPackages = FilterByOrigin(travelPackages);
 
         filteredTravelPackages = travelPackages;
-        
+
         SortByPrice();
     }
 
@@ -248,6 +264,7 @@ else
     {
         try
         {
+
             unsortedTravelPackages = await TravelPackageService.GetAll() ?? new List<TravelPackage>();
             filteredTravelPackages = new List<TravelPackage>(unsortedTravelPackages);
             foreach (TravelPackage tp in unsortedTravelPackages)
@@ -259,6 +276,8 @@ else
                 }
             }
             SelectedPackage = unsortedTravelPackages.First();
+            currentWeather = await CurrentWeatherService.GetCurrentWeather(SelectedPackage.Flightpaths.First().OutboundFlight.Iatadestination.City, "fr");
+            
             EarliestDeparture = DateTime.Today;
         }
         catch (Exception ex)
