@@ -62,28 +62,28 @@ else
                     <h2 style="text-shadow: 2px 2px 5px red;">Hotel:</h2>
                     <div class="container">
                         <div class="row">
-                            <div class="col">
+                            <div class="row">
+                            <div class="col-md-5">
                                 <h5 style="text-decoration-line: underline;">Name</h5>
                                 <p>@SelectedPackage.Hotel.Name</p>
-                                <h5 style="text-decoration-line: underline;">Address</h5>
-                                <p>@SelectedPackage.Hotel.Address</p>
+                                    <h5 style="text-decoration-line: underline;">Address</h5>
+                                    <p>@SelectedPackage.Hotel.Address</p>
+                                @* <h5 style="text-decoration-line: underline;">Address</h5> *@
+                                @* <p>@SelectedPackage.Hotel.Address</p> *@
                             </div>
+                                <div class="col-md-5">
+                                    <h5 style="text-decoration-line: underline;">Check In</h5>
+                                    <p>@SelectedPackage.Hotel.CheckIn</p>
+                                    <h5 style="text-decoration-line: underline;">Check Out</h5>
+                                    <p>@SelectedPackage.Hotel.CheckOut</p>
+                                </div>
                             <div class="col">
                                 <h5 style="text-decoration-line: underline;">Temp.</h5>
                                 <p>@currentWeather.Main.TempMax</p>
+                                    <h5 style="text-decoration-line: underline;">Price</h5>
+                                    <p>@SelectedPackage.Hotel.Rate</p>
                             </div>
-                            <div class="col">
-                                <h5 style="text-decoration-line: underline;">Check In</h5>
-                                <p>@SelectedPackage.Hotel.CheckIn</p>
                             </div>
-                            <div class="col">
-                                <h5 style="text-decoration-line: underline;">Check Out</h5>
-                                <p>@SelectedPackage.Hotel.CheckOut</p>
-                            </div>
-                            @* <div class="col"> *@
-                            @*     <h5 style="text-decoration-line: underline;">Address</h5> *@
-                            @*     <p>@SelectedPackage.Hotel.Address</p> *@
-                            @* </div> *@
                         </div>
                     </div>
                 </div>
@@ -105,7 +105,15 @@ else
                                     <p>@flightpath.OutboundFlight.Iatadestination.City - @flightpath.OutboundFlight.Iatadestination.Iata</p>
                                 }
                             </div>
-                        </div>
+                            </div>
+                            <div class="col">
+                                @*Kun én samlet pris pr Flightpath, correct? Flightpath objektets fare er prisen for tur/retur?*@
+                                <h5 style="text-decoration-line: underline;">Price (tur/retur)</h5>
+                                @foreach (var flightpath in SelectedPackage.Flightpaths)
+                                {
+                                    <p>@flightpath.Fare</p>
+                                }
+                            </div>
                         <div class="row">
                             <div class="col">
                                 <button style="height: 50px; width: 110px; margin-left: 5px; font-weight:bold">Slet</button>
