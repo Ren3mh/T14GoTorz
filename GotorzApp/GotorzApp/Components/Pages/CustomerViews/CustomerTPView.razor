@@ -1,67 +1,63 @@
-﻿@* <h3>CustomerTPView</h3>
+﻿@page "/customertp"
+@inject IService<TravelPackage> TravelPackageService
+@inject IService<IataLocation> IataLocationService
+@inject CurrentWeatherService CurrentWeatherService
+@rendermode InteractiveServer
 
-    <div class="card-group">
-        <div class="card mb-4" style="width: 18rem;">
-            <img src="/images/hotel.jpg" class="card-img-top" alt="placeholder">
-            <div class="card-body">
-                <h5 class="card-title">@SelectedPackage.Title</h5>
-                <p class="CardSubTitle mb-2 text-muted">@SelectedPackage.Hotel.Name</p>
-                <p class="card-text">@SelectedPackage.Description</p>
-                <Button Color="ButtonColor.Primary" To="#" type="buttontype.link">Rejs!</Button> 
-            </div>
-        </div>
-        <div class="card mb-4" style="width: 18rem;">
-            <img src="/images/hotel.jpg" class="card-img-top" alt="placeholder">
-            <div class="card-body">
-                <h5 class="card-title">@SelectedPackage.Title</h5>
-                <p class="CardSubTitle mb-2 text-muted">@SelectedPackage.Hotel.Name</p>
-                <p class="card-text">@SelectedPackage.Description</p>
-                <Button Color="ButtonColor.Primary" To="#" type="buttontype.link">Rejs!</Button> 
-            </div>
-        </div>
-        <div class="card mb-4" style="width: 18rem;">
-            <img src="/images/hotel.jpg" class="card-img-top" alt="placeholder">
-            <div class="card-body">
-                <h5 class="card-title">@SelectedPackage.Title</h5>
-                <p class="CardSubTitle mb-2 text-muted">@SelectedPackage.Hotel.Name</p>
-                <p class="card-text">@SelectedPackage.Description</p>
-                <Button Color="ButtonColor.Primary" To="#" type="buttontype.link">Rejs!</Button> 
-            </div>
-        </div>
-        <!-- Repeat more cards here -->
+<h3>Rejsepakker</h3>
+
+@if (unsortedTravelPackages == null)
+{
+    <span>Loading...</span>
+}
+else if (unsortedTravelPackages.Count == 0)
+{
+    <span>No packages found.</span>
+}
+else 
+{
+    <label for="leavingFrom" class="form-label">Rejser fra:</label>
+    <input style="width:290px; height:25px" type="datetime" @bind-value="EarliestDeparture" />
+    <div class="col">
+        <label for="leavingFrom" class="form-label">Rejser fra:</label>
+        <InputSelect style="width:290px; height:25px" id="leavingFrom" @bind-Value="selectedIataCode">
+            @if (iataLocations.Count() == 0)
+            {
+                <span>Loading...</span>
+            }
+            else
+            {@foreach (var iata in iataLocations)
+                {
+                    <option value="@iata.Id">@iata.Iata (@iata.City)</option>
+                }
+            }
+        </InputSelect>
+        <button @onclick="FilterPackages" style="margin-left:50px">OPDATER</button>
+        <button @onclick="SwapSorting">Sorted by lowest price: @SortLowestPrice</button>
+
     </div>
-    <div class="card-group">
-        <div class="card mb-4" style="width: 18rem;">
-            <img src="/images/hotel.jpg" class="card-img-top" alt="placeholder">
+    <div class="card-group container"> @* lav en ny cardgroup til de næste 3 cards *@
+        <div class="row">
+        @foreach (var travelPackage in filteredTravelPackages) //Lav 3 cards i gruppen
+        {
+            <div class="card mb-4" style="width: 40rem;">
+                <img src="/images/hotel.jpg" class="card-img-top" alt="placeholder">
             <div class="card-body">
-                <h5 class="card-title">@SelectedPackage.Title</h5>
-                <p class="CardSubTitle mb-2 text-muted">@SelectedPackage.Hotel.Name</p>
-                <p class="card-text">@SelectedPackage.Description</p>
+                <h5 class="card-title">@travelPackage.Title</h5>
+                    <p class="CardSubTitle mb-2 text-muted">@travelPackage.Hotel.Name</p>
+                    <p class="card-text">@travelPackage.Description</p>
                 <Button Color="ButtonColor.Primary" To="#" type="buttontype.link">Rejs!</Button> 
             </div>
         </div>
-        <div class="card mb-4" style="width: 18rem;">
-            <img src="/images/hotel.jpg" class="card-img-top" alt="placeholder">
-            <div class="card-body">
-                <h5 class="card-title">@SelectedPackage.Title</h5>
-                <p class="CardSubTitle mb-2 text-muted">@SelectedPackage.Hotel.Name</p>
-                <p class="card-text">@SelectedPackage.Description</p>
-                <Button Color="ButtonColor.Primary" To="#" type="buttontype.link">Rejs!</Button> 
-            </div>
+        }
         </div>
-        <div class="card mb-4" style="width: 18rem;">
-            <img src="/images/hotel.jpg" class="card-img-top" alt="placeholder">
-            <div class="card-body">
-                <h5 class="card-title">@SelectedPackage.Title</h5>
-                <p class="CardSubTitle mb-2 text-muted">@SelectedPackage.Hotel.Name</p>
-                <p class="card-text">@SelectedPackage.Description</p>
-                <Button Color="ButtonColor.Primary" To="#" type="buttontype.link">Rejs!</Button> 
-            </div>
-        </div>
-        <!-- Repeat more cards here -->
     </div>
+}
 
 @code {
+
+
+    public int displayedTPs; //Displayed TravelPackages int til at stoppe nye cardgroups og til at vise nye cards i loops
 
     private async Task SelectPackage(int packageId)
     {
@@ -69,17 +65,12 @@
         currentWeather = await CurrentWeatherService.GetCurrentWeather(SelectedPackage.Flightpaths.First().OutboundFlight.Iatadestination.City, "fr");
     }
     public TravelPackage? SelectedPackage { get; set; }
-
-    public DateTime EarliestDeparture;
+    private List<TravelPackage> filteredTravelPackages = new List<TravelPackage>();
+    private List<TravelPackage> unsortedTravelPackages;
 
     public CurrentWeather currentWeather;
 
-    private List<TravelPackage> filteredTravelPackages = new List<TravelPackage>();
-
-    private List<TravelPackage> unsortedTravelPackages;
-
-    public string Header = "Fly pakker";
-
+    public DateTime EarliestDeparture;
     public IataLocation LeavingFrom = new IataLocation();
 
     public List<IataLocation> iataLocations = new List<IataLocation>();
@@ -97,6 +88,7 @@
     {
         SortLowestPrice = !SortLowestPrice;
         SortByPrice();
+         
     }
     public bool SortLowestPrice { get; private set; }
 
@@ -107,6 +99,7 @@
         travelPackages = FilterByDate(travelPackages);
         travelPackages = FilterByOrigin(travelPackages);
 
+        displayedTPs = 0; //Reset for den nye visning
         filteredTravelPackages = travelPackages;
 
         SortByPrice();
@@ -162,4 +155,3 @@
         return travelPackages;
     }
 }
- *@
