@@ -1,6 +1,8 @@
 ﻿@page "/pc"
 @inject IService<Hotel> HotelService
 @inject IService<TravelPackage> TravelPackageService
+@rendermode InteractiveServer
+
 <PageTitle>Put together a package!</PageTitle>
 
 
@@ -31,7 +33,7 @@
                 </InputSelect>
             </div>
 
-            <button type="submit" class="btn btn-primary">Tilknyt flightpath</button>
+            <button type="submit" class="btn btn-primary" disabled="@(!CanCreate())">Tilknyt flightpath</button>
         </EditForm>
     </div>
 
@@ -41,26 +43,46 @@
     }
     else
     {
-        <FPCreation newId="@TravelPackage.Id" />
+        <FPCreation newId="@TravelPackage.Id" @rendermode="InteractiveServer"/>
     }
     @if (TravelPackage.Title != null)
     {
         <h2>@TravelPackage.Title</h2>
     }
+
 </div>
 
 @code {
-    [SupplyParameterFromForm(FormName = "CreateTravelPackage")]
-    public TravelPackage TravelPackage { get; set; } = new()
+    bool CanCreate()
     {
-    };
+        if (TravelPackage.HotelId > 0 &&
+            !string.IsNullOrWhiteSpace(TravelPackage.Title) &&
+            !string.IsNullOrWhiteSpace(TravelPackage.Description)
+            )
+        {
+            return true;
+        }
+
+        return false;
+    }
+    
+
+    [SupplyParameterFromForm(FormName = "CreateTravelPackage")]
+    public TravelPackage TravelPackage { get; set; } = new TravelPackage();
 
     protected override async Task OnInitializedAsync()
     {
 
         Hotels = await HotelService.GetAll() ?? new List<Hotel>();
+        TravelPackage = new TravelPackage()
+        {
+            Title = null,
+            Description = null,
+            HotelId = Hotels.Any() ? Hotels.First().Id : -1
+        };
+
     }
-    public List<Hotel>? Hotels = new List<Hotel>();
+    public List<Hotel> Hotels = new List<Hotel>();
 
 
     public async Task AddTravelPackage()

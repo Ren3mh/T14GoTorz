@@ -1,9 +1,7 @@
 ﻿@page "/fpc"
-@using Shared
 @inject IService<Flight> FlightService
 @inject IService<Flightpath> FlightpathService
 @inject IService<TravelPackage> TravelPackageService
-
 
 <h3>Flightpath Creation</h3>
 @if (Flights == null)
