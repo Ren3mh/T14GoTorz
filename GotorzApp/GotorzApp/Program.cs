@@ -2,6 +2,7 @@
 using System;
 using GotorzApp.Components;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Shared;
 using Shared.Data;
 using Shared.Service;
@@ -19,8 +20,10 @@ namespace GotorzApp
                 .AddInteractiveServerComponents()
                 .AddInteractiveWebAssemblyComponents();
 
+            builder.Services.AddBlazorBootstrap();
+
             //Add database context
-            builder.Services.AddDbContext<GotorzContext>(options =>
+            builder.Services.AddDbContextFactory<GotorzContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("LocalString")));
             builder.Services.AddHttpClient<CurrentWeatherService>();
 

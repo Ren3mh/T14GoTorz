@@ -5,9 +5,41 @@
 
 <PageTitle>Put together a package!</PageTitle>
 
+<h1>Package Createion</h1>
+
+<Accordion>
+    <AccordionItem>
+        <TitleTemplate>
+            <Icon Name="IconName.AirplaneFill" Class="me-1" /> Create Flights
+        </TitleTemplate>
+        <Content>
+            @*<FlightCreation />*@
+            <b>This is the second item's accordion body.</b> It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the .accordion-body, though the transition does limit overflow.
+
+        </Content>
+    </AccordionItem>
+    <AccordionItem>
+        <TitleTemplate>
+            <Icon Name="IconName.PersonFill" Class="me-1" /> Accordion Item #2
+        </TitleTemplate>
+        <Content>
+            <b>This is the second item's accordion body.</b> It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the .accordion-body, though the transition does limit overflow.
+        </Content>
+    </AccordionItem>
+    <AccordionItem>
+        <TitleTemplate>
+            <Icon Name="IconName.PhoneFill" Class="me-1" /> Accordion Item #3
+        </TitleTemplate>
+        <Content>
+            <b>This is the third item's accordion body.</b> It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the .accordion-body, though the transition does limit overflow.
+        </Content>
+    </AccordionItem>
+</Accordion>
 
 
-<div class="row">
+
+
+@* <div class="row">
     <div class="col-md-8">
         <EditForm method="post" Model="TravelPackage" OnValidSubmit="AddTravelPackage" FormName="CreateTravelPackage" Enhance>
             <DataAnnotationsValidator />
@@ -50,43 +82,43 @@
         <h2>@TravelPackage.Title</h2>
     }
 
-</div>
+</div> *@
 
 @code {
-    bool CanCreate()
-    {
-        if (TravelPackage.HotelId > 0 &&
-            !string.IsNullOrWhiteSpace(TravelPackage.Title) &&
-            !string.IsNullOrWhiteSpace(TravelPackage.Description)
-            )
-        {
-            return true;
-        }
+    // bool CanCreate()
+    // {
+    //     if (TravelPackage.HotelId > 0 &&
+    //         !string.IsNullOrWhiteSpace(TravelPackage.Title) &&
+    //         !string.IsNullOrWhiteSpace(TravelPackage.Description)
+    //         )
+    //     {
+    //         return true;
+    //     }
 
-        return false;
-    }
+    //     return false;
+    // }
     
 
-    [SupplyParameterFromForm(FormName = "CreateTravelPackage")]
-    public TravelPackage TravelPackage { get; set; } = new TravelPackage();
+    // [SupplyParameterFromForm(FormName = "CreateTravelPackage")]
+    // public TravelPackage TravelPackage { get; set; } = new TravelPackage();
 
-    protected override async Task OnInitializedAsync()
-    {
+    // protected override async Task OnInitializedAsync()
+    // {
 
-        Hotels = await HotelService.GetAll() ?? new List<Hotel>();
-        TravelPackage = new TravelPackage()
-        {
-            Title = null,
-            Description = null,
-            HotelId = Hotels.Any() ? Hotels.First().Id : -1
-        };
+    //     Hotels = await HotelService.GetAll() ?? new List<Hotel>();
+    //     TravelPackage = new TravelPackage()
+    //     {
+    //         Title = null,
+    //         Description = null,
+    //         HotelId = Hotels.Any() ? Hotels.First().Id : -1
+    //     };
 
-    }
-    public List<Hotel> Hotels = new List<Hotel>();
+    // }
+    // public List<Hotel> Hotels = new List<Hotel>();
 
 
-    public async Task AddTravelPackage()
-    {
-        await TravelPackageService.Add(TravelPackage);
-    }
+    // public async Task AddTravelPackage()
+    // {
+    //     await TravelPackageService.Add(TravelPackage);
+    // }
 }

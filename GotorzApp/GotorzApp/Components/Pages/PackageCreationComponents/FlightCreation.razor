@@ -1,8 +1,5 @@
-﻿@page "/fc"
-@inject IService<IataLocation> IataLocationService
-@inject IService<Flight> FlightService
+﻿@inject IService<IataLocation> IataLocationService
 
-<h3>Flight Creation</h3>
 <div class="row">
     <div class="col-md-8">
         <EditForm method="post" Model="NewFlight" OnValidSubmit="AddFlight" FormName="CreateFlight" Enhance>
@@ -28,7 +25,7 @@
             <div class="mb-3">
                 <h4>Select Origin:</h4>
                 <InputSelect id="IataOriginId" @bind-Value="NewFlight.IataoriginId">
-                    @if (Iatas.Count() == 0)
+                    @if (Iatas == null)
                     {
                         <span>Loading...</span>
                     }
@@ -43,7 +40,7 @@
             <div class="mb-3">
                 <h4>Select Destination:</h4>
                 <InputSelect id="IataDestinationId" @bind-Value="NewFlight.IatadestinationId">
-                    @if (Iatas.Count() == 0)
+                    @if (Iatas == null)
                     {
                         <span>Loading...</span>
                     }
@@ -64,6 +61,8 @@
 <h1>Test @NewFlight.ArrivalTime</h1>
 
 @code {
+
+
     [SupplyParameterFromForm(FormName = "CreateFlight")]
     public Flight NewFlight { get; set; } = new()
     {
@@ -74,14 +73,14 @@
 
     protected override async Task OnInitializedAsync()
     {
-
         Iatas = await IataLocationService.GetAll() ?? new List<IataLocation>();
     }
 
-    public List<IataLocation>? Iatas = new List<IataLocation>();
+    public List<IataLocation> Iatas = new List<IataLocation>();
 
-    public async Task AddFlight()
+    public void AddFlight()
     {
-        await FlightService.Add(NewFlight);
+        
     }
+
 }

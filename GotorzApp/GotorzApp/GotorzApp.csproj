@@ -7,13 +7,17 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="wwwroot\images\hotel.jpg" />
-  </ItemGroup>
-
-  <ItemGroup>
+	<PackageReference Include="Blazor.Bootstrap" Version="3.2.0" />
     <ProjectReference Include="..\GotorzApp.Client\GotorzApp.Client.csproj" />
     <ProjectReference Include="..\Shared\Shared.csproj" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="8.0.14" />
   </ItemGroup>
+
+	<ItemGroup>
+		<Content Update="wwwroot\favicon.png">
+			<ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+			<CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+		</Content>
+	</ItemGroup>
 
 </Project>
