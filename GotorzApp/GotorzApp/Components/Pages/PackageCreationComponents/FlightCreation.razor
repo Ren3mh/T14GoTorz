@@ -1,39 +1,37 @@
-﻿@page "/fc"
-@inject IService<IataLocation> IataLocationService
-@inject IService<Flight> FlightService
+﻿@inject IService<IataLocation> IataLocationService
 
-<h3>Flight Creation</h3>
 <div class="row">
     <div class="col-md-8">
-        <EditForm method="post" Model="NewFlight" OnValidSubmit="AddFlight" FormName="CreateFlight" Enhance>
+        <EditForm Model="NewFlight" OnValidSubmit="AddFlight" FormName="CreateFlight" Enhance>
             <DataAnnotationsValidator />
             <ValidationSummary class="text-danger" />
 
             <div class="mb-3">
                 <label for="DepartureTime" class="form-label">Departure Time:</label>
                 <InputDate Type="InputDateType.DateTimeLocal"
-                min="@DateTime.Now.ToString("yyyy-MM-dd HH:mm")" 
-                id="DepartureTime" @bind-Value="NewFlight.DepartureTime" class="form-control" />
+                           min="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm")"
+                           id="DepartureTime" @bind-Value="NewFlight.DepartureTime" class="form-control" />
                 <ValidationMessage For="() => NewFlight.DepartureTime" class="text-danger" />
             </div>
 
             <div class="mb-3">
                 <label for="ArrivalTime" class="form-label">Arrival Time:</label>
                 <InputDate Type="InputDateType.DateTimeLocal"
-                min="@DateTime.Now.ToString("yyyy-MM-dd HH:mm")" 
-                id="ArrivalTime" @bind-Value="NewFlight.ArrivalTime" class="form-control" />
+                           min="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm")"
+                           id="ArrivalTime" @bind-Value="NewFlight.ArrivalTime" class="form-control" />
                 <ValidationMessage For="() => NewFlight.ArrivalTime" class="text-danger" />
             </div>
 
             <div class="mb-3">
                 <h4>Select Origin:</h4>
                 <InputSelect id="IataOriginId" @bind-Value="NewFlight.IataoriginId">
-                    @if (Iatas.Count() == 0)
+                    @if (Iatas == null)
                     {
                         <span>Loading...</span>
                     }
                     else
-                    {@foreach (var iata in Iatas)
+                    {
+                        @foreach (var iata in Iatas)
                         {
                             <option value="@iata.Id">From: @iata.Iata (@iata.City)</option>
                         }
@@ -43,12 +41,13 @@
             <div class="mb-3">
                 <h4>Select Destination:</h4>
                 <InputSelect id="IataDestinationId" @bind-Value="NewFlight.IatadestinationId">
-                    @if (Iatas.Count() == 0)
+                    @if (Iatas == null)
                     {
                         <span>Loading...</span>
                     }
                     else
-                    {@foreach (var iata in Iatas)
+                    {
+                        @foreach (var iata in Iatas)
                         {
                             <option value="@iata.Id">To: @iata.Iata (@iata.City)</option>
                         }
@@ -61,27 +60,22 @@
     </div>
 </div>
 
-<h1>Test @NewFlight.ArrivalTime</h1>
-
 @code {
-    [SupplyParameterFromForm(FormName = "CreateFlight")]
-    public Flight NewFlight { get; set; } = new()
-    {
-        DepartureTime = DateTime.Now,
-        ArrivalTime = DateTime.Now
-    };
-
+    [Parameter] public Flight NewFlight { get; set; } = new();
+    [Parameter] public EventCallback<Flight> OnValidSubmit { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-
         Iatas = await IataLocationService.GetAll() ?? new List<IataLocation>();
     }
 
-    public List<IataLocation>? Iatas = new List<IataLocation>();
+    public List<IataLocation> Iatas = new List<IataLocation>();
 
-    public async Task AddFlight()
+    private async Task AddFlight()
     {
-        await FlightService.Add(NewFlight);
+        if (OnValidSubmit.HasDelegate)
+        {
+            await OnValidSubmit.InvokeAsync(NewFlight);
+        }
     }
 }

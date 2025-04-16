@@ -2,7 +2,6 @@
 @inject IService<TravelPackage> TravelPackageService
 @inject IService<IataLocation> IataLocationService
 @inject CurrentWeatherService CurrentWeatherService
-@rendermode InteractiveServer
 
 <h3>Rejsepakker</h3>
 
@@ -46,7 +45,7 @@ else
                 <h5 class="card-title">@travelPackage.Title</h5>
                     <p class="CardSubTitle mb-2 text-muted">@travelPackage.Hotel.Name</p>
                     <p class="card-text">@travelPackage.Description</p>
-                <Button Color="ButtonColor.Primary" To="#" type="buttontype.link">Rejs!</Button> 
+                <Button Color="ButtonColor.Primary" To="#" type="ButtonType.Link">Rejs!</Button> 
             </div>
         </div>
         }

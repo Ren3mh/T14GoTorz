@@ -6,34 +6,34 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Shared.Data;
 
-namespace Shared.Service
+namespace Shared.Service;
+
+public class FlightpathService : IService<Flightpath>
 {
-    public class FlightpathService : IService<Flightpath>
+
+    private readonly IDbContextFactory<GotorzContext> _dbContextFactory;
+
+    public FlightpathService(IDbContextFactory<GotorzContext> dbContextFactory)
     {
-
-        private readonly GotorzContext _context;
-
-        public FlightpathService(GotorzContext context)
-        {
-            _context = context;
-        }
-        public async Task<List<Flightpath>> GetAll()
-        {
-            var flightpaths = await _context.Flightpaths
-                .Include(e => e.HomeboundFlight)
-                .Include(e => e.OutboundFlight)
-                .ToListAsync();
-            return flightpaths;
-        }
+        _dbContextFactory = dbContextFactory;
+    }
+    public async Task<List<Flightpath>> GetAll()
+    {
+        using var context = _dbContextFactory.CreateDbContext();
+        var flightpaths = await context.Flightpaths
+            .Include(e => e.HomeboundFlight)
+            .Include(e => e.OutboundFlight)
+            .ToListAsync();
+        return flightpaths;
+    }
 
 
 
-        public async Task Add(Flightpath x)
-        {
-            _context.Flightpaths.Add(x);
-            await _context.SaveChangesAsync();
-        }
-
+    public async Task Add(Flightpath x)
+    {
+        using var context = _dbContextFactory.CreateDbContext();
+        context.Flightpaths.Add(x);
+        await context.SaveChangesAsync();
     }
 
 }

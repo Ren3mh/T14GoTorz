@@ -6,32 +6,30 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Shared.Data;
 
-namespace Shared.Service
+namespace Shared.Service;
+
+public class IataLocationService: IService<IataLocation>
 {
-    public class IataLocationService: IService<IataLocation>
+
+    private readonly IDbContextFactory<GotorzContext> _dbContextFactory;
+
+    public IataLocationService(IDbContextFactory<GotorzContext> dbContextFactory)
     {
-
-        private readonly GotorzContext _context;
-
-        public IataLocationService(GotorzContext context)
-        {
-            _context = context;
-        }
-
-        public async Task<List<IataLocation>> GetAll()
-        {
-            var iatas = await _context.IataLocations
-                .ToListAsync();
-            return iatas;
-        }
-
-        public async Task Add(IataLocation x)
-        {
-            _context.IataLocations.Add(x);
-            await _context.SaveChangesAsync();
-        }
-
-
+        _dbContextFactory = dbContextFactory;
     }
 
+    public async Task<List<IataLocation>> GetAll()
+    {
+        using var context = _dbContextFactory.CreateDbContext();
+        var iatas = await context.IataLocations
+            .ToListAsync();
+        return iatas;
+    }
+
+    public async Task Add(IataLocation x)
+    {
+        using var context = _dbContextFactory.CreateDbContext();
+        context.IataLocations.Add(x);
+        await context.SaveChangesAsync();
+    }
 }

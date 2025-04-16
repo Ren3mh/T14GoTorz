@@ -6,45 +6,30 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Shared.Data;
 
-namespace Shared.Service
+namespace Shared.Service;
+
+public class HotelService : IService<Hotel>
 {
-    public class HotelService : IService<Hotel>
+
+    private readonly IDbContextFactory<GotorzContext> _dbContextFactory;
+
+    public HotelService(IDbContextFactory<GotorzContext> dbContextFactory)
     {
-
-        private readonly GotorzContext _context;
-
-        public HotelService(GotorzContext context)
-        {
-            _context = context;
-        }
-
-        public async Task<List<Hotel>> GetAll()
-        {
-            var hotels = await _context.Hotels
-                .ToListAsync();
-            return hotels;
-        }
-
-        //private readonly GotorzContext _context;
-
-        //public FlightService(GotorzContext context)
-        //{
-        //    _context = context;
-        //}
-
-        public async Task Add(Hotel x)
-        {
-            _context.Hotels.Add(x);
-            await _context.SaveChangesAsync();
-        }
-
-        //public async Task<List<Gotorz14.Models1.Flight>> GetAll()
-        //{
-        //    var flights = await _context.Flights
-        //        .ToListAsync();
-        //    return flights;
-        //}
-
+        _dbContextFactory = dbContextFactory;
     }
 
+    public async Task<List<Hotel>> GetAll()
+    {
+        using var context = _dbContextFactory.CreateDbContext();
+        var hotels = await context.Hotels
+            .ToListAsync();
+        return hotels;
+    }
+
+    public async Task Add(Hotel x)
+    {
+        using var context = _dbContextFactory.CreateDbContext();
+        context.Hotels.Add(x);
+        await context.SaveChangesAsync();
+    }
 }
