@@ -38,10 +38,32 @@ public class TravelPackageService : IService<TravelPackage>
         return travelpackages;
     }
 
-    public async Task Add(TravelPackage x)
+    public async Task Add(TravelPackage newTravelPackage)
     {
         using var context = _dbContextFactory.CreateDbContext();
-        context.TravelPackages.Add(x);
-        await context.SaveChangesAsync();
+        using (var transaction = await context.Database.BeginTransactionAsync())
+        try
+        {
+            // Add OutboundFlight
+            context.Flights.Add(newTravelPackage.Flightpaths.First().OutboundFlight);
+            context.SaveChanges();
+
+            // Add HomeboundFlight
+            context.Flights.Add(newTravelPackage.Flightpaths.First().HomeboundFlight);
+            context.SaveChanges();
+
+            // Add Flightpath
+            context.Flightpaths.Add(newTravelPackage.Flightpaths.First());
+            context.SaveChanges();
+
+            // Commit the transaction if all operations are successful
+            transaction.Commit();
+        }
+        catch (Exception)
+        {
+            // Rollback the transaction if any operation fails
+            transaction.Rollback();
+            throw;
+        }
     }
 }

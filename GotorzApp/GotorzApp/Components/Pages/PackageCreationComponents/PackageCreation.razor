@@ -1,7 +1,9 @@
 ﻿@page "/pc"
 @inject IService<Hotel> HotelService
 @inject IService<TravelPackage> TravelPackageService
+
 @rendermode InteractiveServer
+@attribute [StreamRendering]
 
 <PageTitle>Put together a package!</PageTitle>
 
@@ -12,10 +14,8 @@
         <TitleTemplate>
             <Icon Name="IconName.AirplaneFill" Class="me-1" /> Create Flights
         </TitleTemplate>
-        <Content>
-            @*<FlightCreation />*@
-            <b>This is the second item's accordion body.</b> It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the .accordion-body, though the transition does limit overflow.
-
+        <Content> 
+            <FlightCreation NewFlight="newFlight" OnValidSubmit="HandleValidSubmit"/>
         </Content>
     </AccordionItem>
     <AccordionItem>
@@ -36,8 +36,13 @@
     </AccordionItem>
 </Accordion>
 
-
-
+@if(Flightx != null)
+{
+    <p>@Flightx.DepartureTime</p>
+    <p>@Flightx.ArrivalTime</p>
+    <span>@Flightx.Iataorigin</span>
+    <span>@Flightx.Iatadestination</span>
+}
 
 @* <div class="row">
     <div class="col-md-8">
@@ -85,40 +90,54 @@
 </div> *@
 
 @code {
-    // bool CanCreate()
-    // {
-    //     if (TravelPackage.HotelId > 0 &&
-    //         !string.IsNullOrWhiteSpace(TravelPackage.Title) &&
-    //         !string.IsNullOrWhiteSpace(TravelPackage.Description)
-    //         )
-    //     {
-    //         return true;
-    //     }
+    bool CanCreate()
+    {
+        if (TravelPackage.HotelId > 0 &&
+            !string.IsNullOrWhiteSpace(TravelPackage.Title) &&
+            !string.IsNullOrWhiteSpace(TravelPackage.Description)
+            )
+        {
+            return true;
+        }
 
-    //     return false;
-    // }
-    
+        return false;
+    }
 
-    // [SupplyParameterFromForm(FormName = "CreateTravelPackage")]
-    // public TravelPackage TravelPackage { get; set; } = new TravelPackage();
+    private Flight newFlight = new Flight
+    {
+        DepartureTime = DateTime.Now,
+        ArrivalTime = DateTime.Now
+    };
 
-    // protected override async Task OnInitializedAsync()
-    // {
+    public Flight? Flightx { get; set; } = null;
+    private void HandleValidSubmit(Flight flight)
+    {
+        // Handle the form submission
+        Flightx = flight;
+    }
 
-    //     Hotels = await HotelService.GetAll() ?? new List<Hotel>();
-    //     TravelPackage = new TravelPackage()
-    //     {
-    //         Title = null,
-    //         Description = null,
-    //         HotelId = Hotels.Any() ? Hotels.First().Id : -1
-    //     };
+    [SupplyParameterFromForm(FormName = "CreateTravelPackage")]
+    public TravelPackage TravelPackage { get; set; } = new TravelPackage();
 
-    // }
-    // public List<Hotel> Hotels = new List<Hotel>();
+    protected override async Task OnInitializedAsync()
+    {
+
+        Hotels = await HotelService.GetAll() ?? new List<Hotel>();
+
+        TravelPackage = new TravelPackage()
+        {
+            Title = null,
+            Description = null,
+            HotelId = Hotels.Any() ? Hotels.First().Id : -1
+        };
+
+    }
+
+    public List<Hotel> Hotels = new List<Hotel>();
 
 
-    // public async Task AddTravelPackage()
-    // {
-    //     await TravelPackageService.Add(TravelPackage);
-    // }
+    public async Task AddTravelPackage()
+    {
+        await TravelPackageService.Add(TravelPackage);
+    }
 }
