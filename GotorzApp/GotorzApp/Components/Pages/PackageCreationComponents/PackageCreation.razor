@@ -15,9 +15,7 @@
             <Icon Name="IconName.AirplaneFill" Class="me-1" /> Create Flights
         </TitleTemplate>
         <Content> 
-            <FlightCreation @ref="outboundFlight" OnValidSubmit="HandleValidSubmitOutbound" />
-            <FlightCreation @ref="homeboundFlight" OnValidSubmit="HandleValidSubmitHomebound" />
-            <button class="btn btn-primary" @onclick="CheckValidSubmit">Submit Flights</button>
+            <FPCreation @ref="flightpathForm" OnValidSubmit="HandleValidSubmit" />
         </Content>
     </AccordionItem>
     <AccordionItem>
@@ -38,38 +36,28 @@
     </AccordionItem>
 </Accordion>
 
-@if(newFlightpath.OutboundFlight != null && newFlightpath.HomeboundFlight != null)
+@if (TravelPackage.Flightpaths.Any())
 {
-    <p>@newFlightpath.OutboundFlight.IataoriginId</p>
-    <p>@newFlightpath.HomeboundFlight.IataoriginId</p>
-    <p>@newFlightpath.OutboundFlight.IatadestinationId</p>
-    <p>@newFlightpath.HomeboundFlight.IatadestinationId</p>
-    <p>@newFlightpath.OutboundFlight.DepartureTime</p>
-    <p>@newFlightpath.HomeboundFlight.DepartureTime</p>
-    <p>@newFlightpath.OutboundFlight.ArrivalTime</p>
-    <p>@newFlightpath.HomeboundFlight.ArrivalTime</p>
+    <p>@TravelPackage.Flightpaths.First().OutboundFlight.IataoriginId</p>
+    <p>@TravelPackage.Flightpaths.First().HomeboundFlight.IataoriginId</p>
+    <p>@TravelPackage.Flightpaths.First().OutboundFlight.IatadestinationId</p>
+    <p>@TravelPackage.Flightpaths.First().HomeboundFlight.IatadestinationId</p>
+    <p>@TravelPackage.Flightpaths.First().OutboundFlight.DepartureTime</p>
+    <p>@TravelPackage.Flightpaths.First().HomeboundFlight.DepartureTime</p>
+    <p>@TravelPackage.Flightpaths.First().OutboundFlight.ArrivalTime</p>
+    <p>@TravelPackage.Flightpaths.First().HomeboundFlight.ArrivalTime</p>
 }
 
-
-
 @code {
-    private FlightCreation outboundFlight;
-    private FlightCreation homeboundFlight;
+    FPCreation flightpathForm = new FPCreation();
 
-    private void HandleValidSubmitOutbound(Flight flight) => newFlightpath.OutboundFlight = flight;
-    private void HandleValidSubmitHomebound(Flight flight) => newFlightpath.HomeboundFlight = flight;
-
-    private async Task CheckValidSubmit()
+    private void HandleValidSubmit(Flightpath flightpath)
     {
-        if (outboundFlight != null && homeboundFlight != null)
-        {
-            await outboundFlight.CheckValidSubmitAsync();
-            await homeboundFlight.CheckValidSubmitAsync();
-        }
+        TravelPackage.Flightpaths.Clear();
+        TravelPackage.Flightpaths.Add(flightpath);
     }
 
-    Flightpath newFlightpath = new Flightpath();
-    
+
     bool CanCreate()
     {
         if (TravelPackage.HotelId > 0 &&
