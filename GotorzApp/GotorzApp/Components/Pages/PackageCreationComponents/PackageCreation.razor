@@ -15,7 +15,8 @@
             <Icon Name="IconName.AirplaneFill" Class="me-1" /> Create Flights
         </TitleTemplate>
         <Content> 
-            <FlightCreation NewFlight="newFlight" OnValidSubmit="HandleValidSubmit"/>
+            <FlightCreation @ref="childForm" OnValidSubmit="HandleValidSubmit" />
+            <button class="btn btn-primary" @onclick="CheckValidSubmit">Submit Flight</button>
         </Content>
     </AccordionItem>
     <AccordionItem>
@@ -36,12 +37,12 @@
     </AccordionItem>
 </Accordion>
 
-@if(Flightx != null)
+@if(newFlight != null)
 {
-    <p>@Flightx.DepartureTime</p>
-    <p>@Flightx.ArrivalTime</p>
-    <span>@Flightx.Iataorigin</span>
-    <span>@Flightx.Iatadestination</span>
+    <p>@newFlight.DepartureTime</p>
+    <p>@newFlight.ArrivalTime</p>
+    <span>@newFlight.IataoriginId</span>
+    <span>@newFlight.IatadestinationId</span>
 }
 
 @* <div class="row">
@@ -90,6 +91,20 @@
 </div> *@
 
 @code {
+    private FlightCreation childForm;
+    private void HandleValidSubmit(Flight flight)
+    {
+        newFlight = flight;
+    }
+
+    Flight newFlight = null;
+
+    private async Task CheckValidSubmit()
+    {
+        if (childForm != null)
+            await childForm.CheckValidSubmitAsync();
+    }
+    
     bool CanCreate()
     {
         if (TravelPackage.HotelId > 0 &&
@@ -101,19 +116,6 @@
         }
 
         return false;
-    }
-
-    private Flight newFlight = new Flight
-    {
-        DepartureTime = DateTime.Now,
-        ArrivalTime = DateTime.Now
-    };
-
-    public Flight? Flightx { get; set; } = null;
-    private void HandleValidSubmit(Flight flight)
-    {
-        // Handle the form submission
-        Flightx = flight;
     }
 
     [SupplyParameterFromForm(FormName = "CreateTravelPackage")]
