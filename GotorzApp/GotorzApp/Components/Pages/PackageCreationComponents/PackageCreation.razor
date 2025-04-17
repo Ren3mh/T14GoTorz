@@ -15,8 +15,9 @@
             <Icon Name="IconName.AirplaneFill" Class="me-1" /> Create Flights
         </TitleTemplate>
         <Content> 
-            <FlightCreation @ref="childForm" OnValidSubmit="HandleValidSubmit" />
-            <button class="btn btn-primary" @onclick="CheckValidSubmit">Submit Flight</button>
+            <FlightCreation @ref="outboundFlight" OnValidSubmit="HandleValidSubmitOutbound" />
+            <FlightCreation @ref="homeboundFlight" OnValidSubmit="HandleValidSubmitHomebound" />
+            <button class="btn btn-primary" @onclick="CheckValidSubmit">Submit Flights</button>
         </Content>
     </AccordionItem>
     <AccordionItem>
@@ -37,14 +38,75 @@
     </AccordionItem>
 </Accordion>
 
-@if(newFlight != null)
+@if(newFlightpath.OutboundFlight != null && newFlightpath.HomeboundFlight != null)
 {
-    <p>@newFlight.DepartureTime</p>
-    <p>@newFlight.ArrivalTime</p>
-    <span>@newFlight.IataoriginId</span>
-    <span>@newFlight.IatadestinationId</span>
+    <p>@newFlightpath.OutboundFlight.IataoriginId</p>
+    <p>@newFlightpath.HomeboundFlight.IataoriginId</p>
+    <p>@newFlightpath.OutboundFlight.IatadestinationId</p>
+    <p>@newFlightpath.HomeboundFlight.IatadestinationId</p>
+    <p>@newFlightpath.OutboundFlight.DepartureTime</p>
+    <p>@newFlightpath.HomeboundFlight.DepartureTime</p>
+    <p>@newFlightpath.OutboundFlight.ArrivalTime</p>
+    <p>@newFlightpath.HomeboundFlight.ArrivalTime</p>
 }
 
+
+
+@code {
+    private FlightCreation outboundFlight;
+    private FlightCreation homeboundFlight;
+
+    private void HandleValidSubmitOutbound(Flight flight) => newFlightpath.OutboundFlight = flight;
+    private void HandleValidSubmitHomebound(Flight flight) => newFlightpath.HomeboundFlight = flight;
+
+    private async Task CheckValidSubmit()
+    {
+        if (outboundFlight != null && homeboundFlight != null)
+        {
+            await outboundFlight.CheckValidSubmitAsync();
+            await homeboundFlight.CheckValidSubmitAsync();
+        }
+    }
+
+    Flightpath newFlightpath = new Flightpath();
+    
+    bool CanCreate()
+    {
+        if (TravelPackage.HotelId > 0 &&
+            !string.IsNullOrWhiteSpace(TravelPackage.Title) &&
+            !string.IsNullOrWhiteSpace(TravelPackage.Description)
+            )
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    [SupplyParameterFromForm(FormName = "CreateTravelPackage")]
+    public TravelPackage TravelPackage { get; set; } = new TravelPackage();
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        Hotels = await HotelService.GetAll() ?? new List<Hotel>();
+
+        TravelPackage = new TravelPackage()
+        {
+            Title = null,
+            Description = null,
+            HotelId = Hotels.Any() ? Hotels.First().Id : -1
+        };
+
+    }
+
+    public List<Hotel> Hotels = new List<Hotel>();
+
+    public async Task AddTravelPackage()
+    {
+        //await TravelPackageService.Add(TravelPackage);
+    }
+}
 @* <div class="row">
     <div class="col-md-8">
         <EditForm method="post" Model="TravelPackage" OnValidSubmit="AddTravelPackage" FormName="CreateTravelPackage" Enhance>
@@ -89,57 +151,3 @@
     }
 
 </div> *@
-
-@code {
-    private FlightCreation childForm;
-    private void HandleValidSubmit(Flight flight)
-    {
-        newFlight = flight;
-    }
-
-    Flight newFlight = null;
-
-    private async Task CheckValidSubmit()
-    {
-        if (childForm != null)
-            await childForm.CheckValidSubmitAsync();
-    }
-    
-    bool CanCreate()
-    {
-        if (TravelPackage.HotelId > 0 &&
-            !string.IsNullOrWhiteSpace(TravelPackage.Title) &&
-            !string.IsNullOrWhiteSpace(TravelPackage.Description)
-            )
-        {
-            return true;
-        }
-
-        return false;
-    }
-
-    [SupplyParameterFromForm(FormName = "CreateTravelPackage")]
-    public TravelPackage TravelPackage { get; set; } = new TravelPackage();
-
-    protected override async Task OnInitializedAsync()
-    {
-
-        Hotels = await HotelService.GetAll() ?? new List<Hotel>();
-
-        TravelPackage = new TravelPackage()
-        {
-            Title = null,
-            Description = null,
-            HotelId = Hotels.Any() ? Hotels.First().Id : -1
-        };
-
-    }
-
-    public List<Hotel> Hotels = new List<Hotel>();
-
-
-    public async Task AddTravelPackage()
-    {
-        await TravelPackageService.Add(TravelPackage);
-    }
-}
