@@ -244,7 +244,7 @@ VALUES
 ('Vancouver Retreat', 'Relax and explore the trendy spots in Vancouver.', 29),
 ('Alaskan Adventure', 'Experience the natural beauty and northern lights of Alaska.', 30);
 
--- Insert dummy data into FlightPaths table
+-- Insert dummy data into Flightpaths table
 INSERT INTO FlightPaths (Fare, Luggage, OutboundFlightId, HomeboundFlightId, TravelPackageId)
 VALUES
 (850.00, 1, 2, 1, 1),  -- With luggage
@@ -314,7 +314,7 @@ VALUES
 ('2025-07-02 15:00:00', '2025-07-02 19:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'FCO'), (SELECT Id FROM IATA_locations WHERE IATA = 'DPS')), -- Depart from Rome (FCO)
 ('2025-07-07 11:00:00', '2025-07-07 15:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'DPS'), (SELECT Id FROM IATA_locations WHERE IATA = 'FCO')); -- Return to Rome (FCO)
 
-INSERT INTO FlightPaths (Fare, Luggage, OutboundFlightId, HomeboundFlightId, TravelPackageId)
+INSERT INTO Flightpaths (Fare, Luggage, OutboundFlightId, HomeboundFlightId, TravelPackageId)
 VALUES
 (850.00, 1, 62, 61, 1),  -- With luggage
 (1000.00, 0, 64, 63, 2),  -- No luggage
