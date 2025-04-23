@@ -28,7 +28,7 @@ jobs:
       run: dotnet test GotorzApp/ --no-build --verbosity normal
 
     - name: Test with code coverage
-      run: dotnet test --no-build --verbosity normal /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura
+      run: dotnet test GotorzApp/ --no-build --verbosity normal /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura
 
     - name: Generate coverage report
       uses: danielpalme/ReportGenerator-GitHub-Action@5.1.9
