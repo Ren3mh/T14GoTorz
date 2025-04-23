@@ -1,0 +1,141 @@
+﻿@page "/pc"
+@inject IService<Hotel> HotelService
+@inject IService<TravelPackage> TravelPackageService
+
+@rendermode InteractiveServer
+@attribute [StreamRendering]
+
+<PageTitle>Put together a package!</PageTitle>
+
+<h1>Package Createion</h1>
+
+<Accordion>
+    <AccordionItem>
+        <TitleTemplate>
+            <Icon Name="IconName.AirplaneFill" Class="me-1" /> Create Flights
+        </TitleTemplate>
+        <Content> 
+            <FPCreation @ref="flightpathForm" OnValidSubmit="HandleValidSubmit" />
+        </Content>
+    </AccordionItem>
+    <AccordionItem>
+        <TitleTemplate>
+            <Icon Name="IconName.PersonFill" Class="me-1" /> Accordion Item #2
+        </TitleTemplate>
+        <Content>
+            <b>This is the second item's accordion body.</b> It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the .accordion-body, though the transition does limit overflow.
+        </Content>
+    </AccordionItem>
+    <AccordionItem>
+        <TitleTemplate>
+            <Icon Name="IconName.PhoneFill" Class="me-1" /> Accordion Item #3
+        </TitleTemplate>
+        <Content>
+            <b>This is the third item's accordion body.</b> It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the .accordion-body, though the transition does limit overflow.
+        </Content>
+    </AccordionItem>
+</Accordion>
+
+@if (TravelPackage.Flightpaths.Any())
+{
+    <p>@TravelPackage.Flightpaths.First().OutboundFlight.IataoriginId</p>
+    <p>@TravelPackage.Flightpaths.First().HomeboundFlight.IataoriginId</p>
+    <p>@TravelPackage.Flightpaths.First().OutboundFlight.IatadestinationId</p>
+    <p>@TravelPackage.Flightpaths.First().HomeboundFlight.IatadestinationId</p>
+    <p>@TravelPackage.Flightpaths.First().OutboundFlight.DepartureTime</p>
+    <p>@TravelPackage.Flightpaths.First().HomeboundFlight.DepartureTime</p>
+    <p>@TravelPackage.Flightpaths.First().OutboundFlight.ArrivalTime</p>
+    <p>@TravelPackage.Flightpaths.First().HomeboundFlight.ArrivalTime</p>
+}
+
+@code {
+    FPCreation flightpathForm = new FPCreation();
+
+    private void HandleValidSubmit(Flightpath flightpath)
+    {
+        TravelPackage.Flightpaths.Clear();
+        TravelPackage.Flightpaths.Add(flightpath);
+    }
+
+
+    bool CanCreate()
+    {
+        if (TravelPackage.HotelId > 0 &&
+            !string.IsNullOrWhiteSpace(TravelPackage.Title) &&
+            !string.IsNullOrWhiteSpace(TravelPackage.Description)
+            )
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    [SupplyParameterFromForm(FormName = "CreateTravelPackage")]
+    public TravelPackage TravelPackage { get; set; } = new TravelPackage();
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        Hotels = await HotelService.GetAll() ?? new List<Hotel>();
+
+        TravelPackage = new TravelPackage()
+        {
+            Title = null,
+            Description = null,
+            HotelId = Hotels.Any() ? Hotels.First().Id : -1
+        };
+
+    }
+
+    public List<Hotel> Hotels = new List<Hotel>();
+
+    public async Task AddTravelPackage()
+    {
+        //await TravelPackageService.Add(TravelPackage);
+    }
+}
+@* <div class="row">
+    <div class="col-md-8">
+        <EditForm method="post" Model="TravelPackage" OnValidSubmit="AddTravelPackage" FormName="CreateTravelPackage" Enhance>
+            <DataAnnotationsValidator />
+            <ValidationSummary class="text-danger"/>
+            <div class="mb-3">
+                <label for="title" class="form-label">Title:</label>
+                <InputText id="title" @bind-Value="TravelPackage.Title" class="form-control"/>
+                <ValidationMessage For="() => TravelPackage.Title" class="text-danger" />
+            </div>
+
+            <div class="mb-3">
+                <label for="description" class="form-label">Description:</label>
+                <InputText id="description" @bind-Value="TravelPackage.Description" class="form-control" />
+                <ValidationMessage For="() => TravelPackage.Description" class="text-danger" />
+            </div>
+            <div class="mb-3">
+                <h4>Hotel</h4>
+                <InputSelect id="hotelId" @bind-Value="TravelPackage.HotelId">
+                    @foreach (var hotel in Hotels)
+                    {
+                        <option value="@hotel.Id">@hotel.Name (@hotel.Address)</option>
+                    }
+                </InputSelect>
+            </div>
+
+            <button type="submit" class="btn btn-primary" disabled="@(!CanCreate())">Tilknyt flightpath</button>
+        </EditForm>
+    </div>
+
+    @if (TravelPackage.Id == 0)
+    {
+        <span>Waiting for Id</span>
+    }
+    else
+    {
+        <FPCreation newId="@TravelPackage.Id" @rendermode="InteractiveServer"/>
+    }
+    @if (TravelPackage.Title != null)
+    {
+        <h2>@TravelPackage.Title</h2>
+    }
+
+</div> *@

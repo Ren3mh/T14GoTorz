@@ -1,0 +1,179 @@
+﻿@using System.ComponentModel.DataAnnotations;
+@inject IService<IataLocation> IataLocationService
+
+
+<div class="row">
+    <div class="col-md-8">
+        <EditForm Model="_newFlightpath" OnValidSubmit="SubmitFlightpath" FormName="CreateFlightpath" Enhance >
+            <DataAnnotationsValidator />
+            <ValidationSummary class="text-danger" />
+
+            <div class="mb-3">
+                <label for="OutboundDepartureTime" class="form-label">Outbound-flight departure:</label>
+                <InputDate Type="InputDateType.DateTimeLocal"
+                min="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm")"
+                id="OutboundDepartureTime" @bind-Value="outbound.DepartureTime" class="form-control" />
+                <ValidationMessage For="() => outbound.DepartureTime" class="text-danger" />
+            </div>
+
+            <div class="mb-3">
+                <label for="OutboundArrivalTime" class="form-label">Outbound-flight arrival:</label>
+                <InputDate Type="InputDateType.DateTimeLocal"
+                min="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm")"
+                id="OutboundArrivalTime" @bind-Value="outbound.ArrivalTime" class="form-control" />
+                <ValidationMessage For="() => outbound.ArrivalTime" class="text-danger" />
+            </div>
+
+            <div class="mb-3">
+                <label for="HomeboundDepartureTime" class="form-label">Homebound-flight departure:</label>
+                <InputDate Type="InputDateType.DateTimeLocal"
+                min="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm")"
+                id="HomeDepartureTime" @bind-Value="homebound.DepartureTime" class="form-control" />
+                <ValidationMessage For="() => homebound.DepartureTime" class="text-danger" />
+            </div>
+
+            <div class="mb-3">
+                <label for="HomeboundArrivalTime" class="form-label">Homebound-flight arrival:</label>
+                <InputDate Type="InputDateType.DateTimeLocal"
+                min="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm")"
+                id="HomeArrivalTime" @bind-Value="homebound.ArrivalTime" class="form-control" />
+                <ValidationMessage For="() => homebound.ArrivalTime" class="text-danger" />
+            </div>
+
+            <div class="mb-3">
+                <h4>Select Origin:</h4>
+                <InputSelect id="iataOriginId" @bind-Value="outbound.IataoriginId">
+                    @if (Iatas == null)
+                    {
+                        <span>Loading...</span>
+                    }
+                    else
+                    {
+                        @foreach (var iata in Iatas)
+                        {
+                            <option value="@iata.Id">From: @iata.Iata (@iata.City)</option>
+                        }
+                    }
+                </InputSelect>
+            </div>
+
+            <div class="mb-3">
+                <h4>Select Destination:</h4>
+                <InputSelect id="iataDestinationId" @bind-Value="outbound.IatadestinationId">
+                    @if (Iatas == null)
+                    {
+                        <span>Loading...</span>
+                    }
+                    else
+                    {
+                        @foreach (var iata in Iatas)
+                        {
+                            <option value="@iata.Id">To: @iata.Iata (@iata.City)</option>
+                        }
+                    }
+                </InputSelect>
+            </div>
+
+            <div class="mb-3">
+                <label for="fare" class="form-label">Price:</label>
+                <InputNumber id="fare" @bind-Value="_newFlightpath.Fare" class="form-control" />
+                <ValidationMessage For="() => _newFlightpath.Fare" class="text-danger" />
+            </div>
+
+            <div class="mb-3">
+                <label for="luggage" class="form-label">Luggage:</label>
+                <InputCheckbox id="luggage" @bind-Value="_newFlightpath.Luggage" class="form-check-inline"/>
+                <ValidationMessage For="() => _newFlightpath.Luggage" class="text-danger" />
+            </div>
+            <button type="submit" class="btn btn-primary" disabled="@(!IsValid())">Tilknyt flightpath</button>
+        </EditForm>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public EventCallback<Flightpath> OnValidSubmit { get; set; }
+
+    Flight outbound = new Flight();
+    Flight homebound = new Flight();
+
+    [SupplyParameterFromForm(FormName = "CreateFlightPath")]
+    Flightpath _newFlightpath { get; set; } = new Flightpath();
+
+    public List<IataLocation> Iatas = new List<IataLocation>();
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        Iatas = await IataLocationService.GetAll() ?? new List<IataLocation>();
+
+        _newFlightpath = new Flightpath();
+        outbound = new Flight()
+        {
+            DepartureTime = DateTime.Today,
+            ArrivalTime = DateTime.Today
+        };
+        homebound = new Flight()
+        {
+            DepartureTime = DateTime.Today,
+            ArrivalTime = DateTime.Today
+        };  
+    }
+
+    private async Task SubmitFlightpath()
+    {
+        if (OnValidSubmit.HasDelegate)
+        {
+            var _homebound = new Flight()
+            {
+                DepartureTime = _newFlightpath.HomeboundFlight.DepartureTime,
+                ArrivalTime = _newFlightpath.HomeboundFlight.ArrivalTime,
+                IataoriginId = _newFlightpath.OutboundFlight.IatadestinationId,
+                IatadestinationId = _newFlightpath.OutboundFlight.IataoriginId
+            };
+
+            var newFlightpath = _newFlightpath;
+            newFlightpath.OutboundFlight = outbound;
+            newFlightpath.HomeboundFlight = _homebound;
+
+            await OnValidSubmit.InvokeAsync(newFlightpath);
+        }
+    }
+
+    private IList<ValidationResult> ValidateModel(object model)
+    {
+        var results = new List<ValidationResult>();
+        var context = new ValidationContext(model, serviceProvider: null, items: null);
+        Validator.TryValidateObject(model, context, results, validateAllProperties: true);
+        return results;
+    }
+
+    public bool IsValid()
+    {   
+        var isValid = false;
+
+        if (outbound == null || homebound == null)
+            return isValid;
+
+        var _homebound = new Flight()
+        {
+            DepartureTime = homebound.DepartureTime,
+            ArrivalTime = homebound.ArrivalTime,
+            IataoriginId = outbound.IatadestinationId,
+            IatadestinationId = outbound.IataoriginId
+        };
+
+        var newFlightpath = _newFlightpath;
+        newFlightpath.OutboundFlight = outbound;
+        newFlightpath.HomeboundFlight = _homebound;
+
+        var outboundResults = ValidateModel(outbound);
+        var homeboundResults = ValidateModel(_homebound);
+        var flightpathResults = ValidateModel(_newFlightpath);
+
+        if (!outboundResults.Any() && !homeboundResults.Any() && !flightpathResults.Any())
+            isValid = true;
+
+        return isValid;
+    }
+}

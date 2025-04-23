@@ -1,0 +1,156 @@
+﻿@page "/customertp"
+@inject IService<TravelPackage> TravelPackageService
+@inject IService<IataLocation> IataLocationService
+@inject CurrentWeatherService CurrentWeatherService
+
+<h3>Rejsepakker</h3>
+
+@if (unsortedTravelPackages == null)
+{
+    <span>Loading...</span>
+}
+else if (unsortedTravelPackages.Count == 0)
+{
+    <span>No packages found.</span>
+}
+else 
+{
+    <label for="leavingFrom" class="form-label">Rejser fra:</label>
+    <input style="width:290px; height:25px" type="datetime" @bind-value="EarliestDeparture" />
+    <div class="col">
+        <label for="leavingFrom" class="form-label">Rejser fra:</label>
+        <InputSelect style="width:290px; height:25px" id="leavingFrom" @bind-Value="selectedIataCode">
+            @if (iataLocations.Count() == 0)
+            {
+                <span>Loading...</span>
+            }
+            else
+            {@foreach (var iata in iataLocations)
+                {
+                    <option value="@iata.Id">@iata.Iata (@iata.City)</option>
+                }
+            }
+        </InputSelect>
+        <button @onclick="FilterPackages" style="margin-left:50px">OPDATER</button>
+        <button @onclick="SwapSorting">Sorted by lowest price: @SortLowestPrice</button>
+
+    </div>
+    <div class="card-group container"> @* lav en ny cardgroup til de næste 3 cards *@
+        <div class="row">
+        @foreach (var travelPackage in filteredTravelPackages) //Lav 3 cards i gruppen
+        {
+            <div class="card mb-4" style="width: 40rem;">
+                <img src="/images/hotel.jpg" class="card-img-top" alt="placeholder">
+            <div class="card-body">
+                <h5 class="card-title">@travelPackage.Title</h5>
+                    <p class="CardSubTitle mb-2 text-muted">@travelPackage.Hotel.Name</p>
+                    <p class="card-text">@travelPackage.Description</p>
+                <Button Color="ButtonColor.Primary" To="#" type="ButtonType.Link">Rejs!</Button> 
+            </div>
+        </div>
+        }
+        </div>
+    </div>
+}
+
+@code {
+
+
+    public int displayedTPs; //Displayed TravelPackages int til at stoppe nye cardgroups og til at vise nye cards i loops
+
+    private async Task SelectPackage(int packageId)
+    {
+        SelectedPackage = unsortedTravelPackages.Find(tp => tp.Id == packageId);
+        currentWeather = await CurrentWeatherService.GetCurrentWeather(SelectedPackage.Flightpaths.First().OutboundFlight.Iatadestination.City, "fr");
+    }
+    public TravelPackage? SelectedPackage { get; set; }
+    private List<TravelPackage> filteredTravelPackages = new List<TravelPackage>();
+    private List<TravelPackage> unsortedTravelPackages;
+
+    public CurrentWeather currentWeather;
+
+    public DateTime EarliestDeparture;
+    public IataLocation LeavingFrom = new IataLocation();
+
+    public List<IataLocation> iataLocations = new List<IataLocation>();
+    public int selectedIataCode;
+
+    public void SortByPrice()
+    {
+        if (!SortLowestPrice)
+            filteredTravelPackages = filteredTravelPackages.OrderByDescending(tp => tp.Hotel.Rate + tp.Flightpaths.FirstOrDefault().Fare).ToList();
+        else
+            filteredTravelPackages = filteredTravelPackages.OrderBy(tp => tp.Hotel.Rate + tp.Flightpaths.FirstOrDefault().Fare).ToList();
+    }
+
+    public void SwapSorting()
+    {
+        SortLowestPrice = !SortLowestPrice;
+        SortByPrice();
+         
+    }
+    public bool SortLowestPrice { get; private set; }
+
+    public void FilterPackages()
+    {
+        var travelPackages = unsortedTravelPackages;
+
+        travelPackages = FilterByDate(travelPackages);
+        travelPackages = FilterByOrigin(travelPackages);
+
+        displayedTPs = 0; //Reset for den nye visning
+        filteredTravelPackages = travelPackages;
+
+        SortByPrice();
+    }
+
+    private List<TravelPackage> FilterByDate(List<TravelPackage> travelPackages)
+    {
+        return travelPackages
+            .Where(tp => tp.Flightpaths.Any(f => f.OutboundFlight.DepartureTime >= EarliestDeparture))
+            .ToList();
+    }
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+
+            unsortedTravelPackages = await TravelPackageService.GetAll() ?? new List<TravelPackage>();
+            filteredTravelPackages = new List<TravelPackage>(unsortedTravelPackages);
+            foreach (TravelPackage tp in unsortedTravelPackages)
+            {
+                foreach (Flightpath fp in tp.Flightpaths)
+                {
+                    if (!iataLocations.Exists(iata => iata.Id == fp.OutboundFlight.Iataorigin.Id))
+                        iataLocations.Add(fp.OutboundFlight.Iataorigin);
+                }
+            }
+            SelectedPackage = unsortedTravelPackages.First();
+            currentWeather = await CurrentWeatherService.GetCurrentWeather(SelectedPackage.Flightpaths.First().OutboundFlight.Iatadestination.City, "fr");
+
+            EarliestDeparture = DateTime.Today;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"An error occurred: {ex.Message}");
+            // Handle the error appropriately, e.g., show a user-friendly message
+        }
+
+        SortLowestPrice = false;
+    }
+
+    private List<TravelPackage> FilterByOrigin(List<TravelPackage> travelPackages)
+    {
+
+        if (selectedIataCode != null)
+        {
+            travelPackages = travelPackages
+                .Where(tp => tp.Flightpaths.Any(f => f.OutboundFlight.Iataorigin.Id == selectedIataCode))
+                .ToList();
+        }
+
+        return travelPackages;
+    }
+}
