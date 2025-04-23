@@ -399,5 +399,11 @@ FodyWeavers.xsd
 # JetBrains Rider
 *.sln.iml
 
-# ignorer appsettings.json
+# appsettings
 appsettings.json
+
+# settings file to present folders in Windows
+desktop.ini
+
+# strange GPUCache folder
+GPUCache/
