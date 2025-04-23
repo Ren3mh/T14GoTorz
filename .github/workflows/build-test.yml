@@ -25,4 +25,4 @@ jobs:
       run: dotnet build GotorzApp/ --no-restore
     
     - name: Test
-      run: dotnet test --no-build --verbosity normal
+      run: dotnet test GotorzApp/ --no-build --verbosity normal
