@@ -3,13 +3,13 @@ using System.ComponentModel.DataAnnotations;
 
 namespace ModelsTesting;
 
-public class FlightpathEdgeCaseTests
+public class FlightpathValidationTests
 {
     private IList<ValidationResult> ValidateModel(object model)
     {
         var results = new List<ValidationResult>();
-        var context = new ValidationContext(model, null, null);
-        Validator.TryValidateObject(model, context, results, true);
+        var context = new ValidationContext(model, serviceProvider: null, items: null);
+        Validator.TryValidateObject(model, context, results, validateAllProperties: true);
         return results;
     }
 
@@ -19,8 +19,8 @@ public class FlightpathEdgeCaseTests
         {
             DepartureTime = dep,
             ArrivalTime = arr,
-            IataoriginId = 1,
-            IatadestinationId = 2
+            IataOriginId = 1,
+            IataDestinationId = 2
         };
     }
 
@@ -61,7 +61,7 @@ public class FlightpathEdgeCaseTests
     // ------------------ EXCEPTION TESTS ------------------
 
     [Fact]
-    public void NegativeFare_ShouldFailValidation()
+    public void NegativeFare_ShouldFail()
     {
         var path = new Flightpath
         {
@@ -76,7 +76,7 @@ public class FlightpathEdgeCaseTests
     }
 
     [Fact]
-    public void HomeboundBeforeOutbound_ShouldFailCustomValidation()
+    public void HomeboundBeforeOutbound_ShouldFail()
     {
         var path = new Flightpath
         {
@@ -91,7 +91,7 @@ public class FlightpathEdgeCaseTests
     }
 
     [Fact]
-    public void MissingFlights_ShouldFailValidation()
+    public void MissingFlights_ShouldFail()
     {
         var path = new Flightpath
         {

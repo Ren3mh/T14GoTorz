@@ -52,6 +52,7 @@ h1:focus {
 a:hover {
     background-color: yellow;
     font-style: italic;
+    cursor: pointer;
 }
 button:hover {
     background-color: black;

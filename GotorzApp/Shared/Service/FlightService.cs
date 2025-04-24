@@ -28,8 +28,8 @@ public class FlightService : IService<Flight>
     {
         using var context = _dbContextFactory.CreateDbContext();
         var flights = await context.Flights
-        .Include(e => e.Iataorigin)
-        .Include(e => e.Iatadestination)
+        .Include(e => e.IataOrigin)
+        .Include(e => e.IataDestination)
         .ToListAsync();
         return flights;
     }

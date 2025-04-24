@@ -5,6 +5,8 @@ using System.Collections.Generic;
 
 namespace Shared;
 
+
+// vores IataLocation model
 public partial class IataLocation
 {
     public int Id { get; set; }
@@ -13,7 +15,10 @@ public partial class IataLocation
 
     public string City { get; set; }
 
-    public virtual ICollection<Flight> FlightIatadestinations { get; set; } = new List<Flight>();
+}
 
+public partial class IataLocation
+{
+    public virtual ICollection<Flight> FlightIatadestinations { get; set; } = new List<Flight>();
     public virtual ICollection<Flight> FlightIataorigins { get; set; } = new List<Flight>();
 }

@@ -61,7 +61,7 @@ else
     private async Task SelectPackage(int packageId)
     {
         SelectedPackage = unsortedTravelPackages.Find(tp => tp.Id == packageId);
-        currentWeather = await CurrentWeatherService.GetCurrentWeather(SelectedPackage.Flightpaths.First().OutboundFlight.Iatadestination.City, "fr");
+        currentWeather = await CurrentWeatherService.GetCurrentWeather(SelectedPackage.Flightpaths.First().OutboundFlight.IataDestination.City, "fr");
     }
     public TravelPackage? SelectedPackage { get; set; }
     private List<TravelPackage> filteredTravelPackages = new List<TravelPackage>();
@@ -123,12 +123,12 @@ else
             {
                 foreach (Flightpath fp in tp.Flightpaths)
                 {
-                    if (!iataLocations.Exists(iata => iata.Id == fp.OutboundFlight.Iataorigin.Id))
-                        iataLocations.Add(fp.OutboundFlight.Iataorigin);
+                    if (!iataLocations.Exists(iata => iata.Id == fp.OutboundFlight.IataOrigin.Id))
+                        iataLocations.Add(fp.OutboundFlight.IataOrigin);
                 }
             }
             SelectedPackage = unsortedTravelPackages.First();
-            currentWeather = await CurrentWeatherService.GetCurrentWeather(SelectedPackage.Flightpaths.First().OutboundFlight.Iatadestination.City, "fr");
+            currentWeather = await CurrentWeatherService.GetCurrentWeather(SelectedPackage.Flightpaths.First().OutboundFlight.IataDestination.City, "fr");
 
             EarliestDeparture = DateTime.Today;
         }
@@ -147,7 +147,7 @@ else
         if (selectedIataCode != null)
         {
             travelPackages = travelPackages
-                .Where(tp => tp.Flightpaths.Any(f => f.OutboundFlight.Iataorigin.Id == selectedIataCode))
+                .Where(tp => tp.Flightpaths.Any(f => f.OutboundFlight.IataOrigin.Id == selectedIataCode))
                 .ToList();
         }
 
