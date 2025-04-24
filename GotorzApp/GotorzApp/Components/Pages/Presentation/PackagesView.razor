@@ -91,14 +91,14 @@ else
                                 <h5 style="text-decoration-line: underline;">From</h5>
                                 @foreach (var flightpath in SelectedPackage.Flightpaths)
                                 {
-                                    <p>@flightpath.OutboundFlight.Iataorigin.City - @flightpath.OutboundFlight.Iataorigin.Iata</p>
+                                    <p>@flightpath.OutboundFlight.IataOrigin.City - @flightpath.OutboundFlight.IataOrigin.Iata</p>
                                 }
                             </div>
                             <div class="col">
                                 <h5 style="text-decoration-line: underline;">To</h5>
                                 @foreach (var flightpath in SelectedPackage.Flightpaths)
                                 {
-                                    <p>@flightpath.OutboundFlight.Iatadestination.City - @flightpath.OutboundFlight.Iatadestination.Iata</p>
+                                    <p>@flightpath.OutboundFlight.IataDestination.City - @flightpath.OutboundFlight.IataDestination.Iata</p>
                                 }
                             </div>
                         </div>
@@ -127,7 +127,7 @@ else
     private async Task SelectPackage(int packageId)
     {
         SelectedPackage = unsortedTravelPackages.Find(tp => tp.Id == packageId);
-        currentWeather = await CurrentWeatherService.GetCurrentWeather(SelectedPackage.Flightpaths.First().OutboundFlight.Iatadestination.City, "fr");
+        currentWeather = await CurrentWeatherService.GetCurrentWeather(SelectedPackage.Flightpaths.First().OutboundFlight.IataDestination.City, "fr");
     }
     public TravelPackage? SelectedPackage { get; set; }
 
@@ -188,12 +188,12 @@ else
             {
                 foreach (Flightpath fp in tp.Flightpaths)
                 {
-                    if (!iataLocations.Exists(iata => iata.Id == fp.OutboundFlight.Iataorigin.Id))
-                        iataLocations.Add(fp.OutboundFlight.Iataorigin);
+                    if (!iataLocations.Exists(iata => iata.Id == fp.OutboundFlight.IataOrigin.Id))
+                        iataLocations.Add(fp.OutboundFlight.IataOrigin);
                 }
             }
             SelectedPackage = unsortedTravelPackages.First();
-            currentWeather = await CurrentWeatherService.GetCurrentWeather(SelectedPackage.Flightpaths.First().OutboundFlight.Iatadestination.City, "fr");
+            currentWeather = await CurrentWeatherService.GetCurrentWeather(SelectedPackage.Flightpaths.First().OutboundFlight.IataDestination.City, "fr");
             
             EarliestDeparture = DateTime.Today;
         }
@@ -212,7 +212,7 @@ else
         if (selectedIataCode != null)
         {  
             travelPackages = travelPackages
-                .Where(tp => tp.Flightpaths.Any(f => f.OutboundFlight.Iataorigin.Id == selectedIataCode))
+                .Where(tp => tp.Flightpaths.Any(f => f.OutboundFlight.IataOrigin.Id == selectedIataCode))
                 .ToList();
         }
 

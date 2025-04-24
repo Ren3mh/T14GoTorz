@@ -2,7 +2,7 @@
 @inject IService<Flight> FlightService
 @inject NavigationManager NavigationManager
 
-<h3>Flight List</h3>
+<h3>Flight List</h3> //Test kommentar til Development branch
 
 @if (flights == null)
 {
@@ -40,16 +40,16 @@ else
             {
                 <tr>
                     <td>
-                        @item.Iataorigin.City
+                        @item.IataOrigin.City
                     </td>
                     <td>
-                        @item.Iatadestination.City
+                        @item.IataDestination.City
                     </td>
                     <td>
-                        @item.Iataorigin.Iata
+                        @item.IataOrigin.Iata
                     </td>
                     <td>
-                        @item.Iatadestination.Iata
+                        @item.IataDestination.Iata
                     </td>
                     <td>
                         @item.ArrivalTime

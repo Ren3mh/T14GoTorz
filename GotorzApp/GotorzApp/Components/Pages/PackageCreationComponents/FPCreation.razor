@@ -42,7 +42,7 @@
 
             <div class="mb-3">
                 <h4>Select Origin:</h4>
-                <InputSelect id="iataOriginId" @bind-Value="outbound.IataoriginId">
+                <InputSelect id="iataOrigin" @bind-Value="_selectedIataOrigin">
                     @if (Iatas == null)
                     {
                         <span>Loading...</span>
@@ -51,7 +51,7 @@
                     {
                         @foreach (var iata in Iatas)
                         {
-                            <option value="@iata.Id">From: @iata.Iata (@iata.City)</option>
+                            <option value="@iata">From: @iata.Iata (@iata.City)</option>
                         }
                     }
                 </InputSelect>
@@ -59,7 +59,7 @@
 
             <div class="mb-3">
                 <h4>Select Destination:</h4>
-                <InputSelect id="iataDestinationId" @bind-Value="outbound.IatadestinationId">
+                <InputSelect id="iataDestination" @bind-Value="_selectedIataDestination">
                     @if (Iatas == null)
                     {
                         <span>Loading...</span>
@@ -68,7 +68,7 @@
                     {
                         @foreach (var iata in Iatas)
                         {
-                            <option value="@iata.Id">To: @iata.Iata (@iata.City)</option>
+                            <option value="@iata">To: @iata.Iata (@iata.City)</option>
                         }
                     }
                 </InputSelect>
@@ -94,6 +94,8 @@
     [Parameter]
     public EventCallback<Flightpath> OnValidSubmit { get; set; }
 
+    IataLocation _selectedIataOrigin = new IataLocation();
+    IataLocation _selectedIataDestination = new IataLocation();
     Flight outbound = new Flight();
     Flight homebound = new Flight();
 
@@ -124,16 +126,24 @@
     {
         if (OnValidSubmit.HasDelegate)
         {
+            var _outbound = new Flight()
+            {
+                DepartureTime = outbound.DepartureTime,
+                ArrivalTime = outbound.ArrivalTime,
+                IataOrigin = _selectedIataOrigin,
+                IataDestination = _selectedIataDestination
+            };
+
             var _homebound = new Flight()
             {
-                DepartureTime = _newFlightpath.HomeboundFlight.DepartureTime,
-                ArrivalTime = _newFlightpath.HomeboundFlight.ArrivalTime,
-                IataoriginId = _newFlightpath.OutboundFlight.IatadestinationId,
-                IatadestinationId = _newFlightpath.OutboundFlight.IataoriginId
+                DepartureTime = homebound.DepartureTime,
+                ArrivalTime = homebound.ArrivalTime,
+                IataOrigin = _selectedIataDestination,
+                IataDestination = _selectedIataOrigin
             };
 
             var newFlightpath = _newFlightpath;
-            newFlightpath.OutboundFlight = outbound;
+            newFlightpath.OutboundFlight = _outbound;
             newFlightpath.HomeboundFlight = _homebound;
 
             await OnValidSubmit.InvokeAsync(newFlightpath);
@@ -148,26 +158,34 @@
         return results;
     }
 
-    public bool IsValid()
+    bool IsValid()
     {   
         var isValid = false;
 
         if (outbound == null || homebound == null)
             return isValid;
 
+        var _outbound = new Flight()
+        {
+            DepartureTime = outbound.DepartureTime,
+            ArrivalTime = outbound.ArrivalTime,
+            IataOrigin = _selectedIataOrigin,
+            IataDestination = _selectedIataDestination
+        };
+
         var _homebound = new Flight()
         {
             DepartureTime = homebound.DepartureTime,
             ArrivalTime = homebound.ArrivalTime,
-            IataoriginId = outbound.IatadestinationId,
-            IatadestinationId = outbound.IataoriginId
+            IataOrigin = _selectedIataDestination,
+            IataDestination = _selectedIataOrigin
         };
 
         var newFlightpath = _newFlightpath;
-        newFlightpath.OutboundFlight = outbound;
+        newFlightpath.OutboundFlight = _outbound;
         newFlightpath.HomeboundFlight = _homebound;
 
-        var outboundResults = ValidateModel(outbound);
+        var outboundResults = ValidateModel(_outbound);
         var homeboundResults = ValidateModel(_homebound);
         var flightpathResults = ValidateModel(_newFlightpath);
 

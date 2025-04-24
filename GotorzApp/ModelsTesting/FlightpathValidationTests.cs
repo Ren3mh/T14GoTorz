@@ -3,13 +3,13 @@ using System.ComponentModel.DataAnnotations;
 
 namespace ModelsTesting;
 
-public class FlightpathEdgeCaseTests
+public class FlightpathValidationTests
 {
     private IList<ValidationResult> ValidateModel(object model)
     {
         var results = new List<ValidationResult>();
-        var context = new ValidationContext(model, null, null);
-        Validator.TryValidateObject(model, context, results, true);
+        var context = new ValidationContext(model, serviceProvider: null, items: null);
+        Validator.TryValidateObject(model, context, results, validateAllProperties: true);
         return results;
     }
 
@@ -19,8 +19,8 @@ public class FlightpathEdgeCaseTests
         {
             DepartureTime = dep,
             ArrivalTime = arr,
-            IataoriginId = 1,
-            IatadestinationId = 2
+            IataOriginId = 1,
+            IataDestinationId = 2
         };
     }
 

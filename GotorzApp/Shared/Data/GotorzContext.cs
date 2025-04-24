@@ -34,16 +34,16 @@ public partial class GotorzContext : DbContext
         {
             entity.Property(e => e.ArrivalTime).HasColumnType("datetime");
             entity.Property(e => e.DepartureTime).HasColumnType("datetime");
-            entity.Property(e => e.IatadestinationId).HasColumnName("IATADestinationId");
-            entity.Property(e => e.IataoriginId).HasColumnName("IATAOriginId");
+            entity.Property(e => e.IataDestinationId).HasColumnName("IATADestinationId");
+            entity.Property(e => e.IataOriginId).HasColumnName("IATAOriginId");
 
-            entity.HasOne(d => d.Iatadestination).WithMany(p => p.FlightIatadestinations)
-                .HasForeignKey(d => d.IatadestinationId)
+            entity.HasOne(d => d.IataDestination).WithMany(p => p.FlightIatadestinations)
+                .HasForeignKey(d => d.IataDestinationId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK1_Flights_IATA_locations");
 
-            entity.HasOne(d => d.Iataorigin).WithMany(p => p.FlightIataorigins)
-                .HasForeignKey(d => d.IataoriginId)
+            entity.HasOne(d => d.IataOrigin).WithMany(p => p.FlightIataorigins)
+                .HasForeignKey(d => d.IataOriginId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK2_Flights_IATA_locations");
         });
