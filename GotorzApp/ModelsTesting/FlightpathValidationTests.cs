@@ -61,7 +61,7 @@ public class FlightpathValidationTests
     // ------------------ EXCEPTION TESTS ------------------
 
     [Fact]
-    public void NegativeFare_ShouldFailValidation()
+    public void NegativeFare_ShouldFail()
     {
         var path = new Flightpath
         {
@@ -76,7 +76,7 @@ public class FlightpathValidationTests
     }
 
     [Fact]
-    public void HomeboundBeforeOutbound_ShouldFailCustomValidation()
+    public void HomeboundBeforeOutbound_ShouldFail()
     {
         var path = new Flightpath
         {
@@ -91,7 +91,7 @@ public class FlightpathValidationTests
     }
 
     [Fact]
-    public void MissingFlights_ShouldFailValidation()
+    public void MissingFlights_ShouldFail()
     {
         var path = new Flightpath
         {
