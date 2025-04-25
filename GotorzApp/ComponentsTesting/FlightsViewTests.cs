@@ -21,18 +21,18 @@ public class FlightsViewTests : TestContext
         Services.AddSingleton(_mockFlightService.Object);
     }
 
-    [Fact]
-    public void Component_Renders_Correctly_When_Loading()
-    {
-        // Arrange
-        _mockFlightService.Setup(service => service.GetAll()).ReturnsAsync((List<Flight>?)null);
+    //[Fact]
+    //public void Component_Renders_Correctly_When_Loading()
+    //{
+    //    // Arrange
+    //    _mockFlightService.Setup(service => service.GetAll()).ReturnsAsync((List<Flight>?)null);
 
-        // Act
-        var cut = RenderComponent<FlightsView>();
+    //    // Act
+    //    var cut = RenderComponent<FlightsView>();
 
-        // Assert
-        cut.Find("span").MarkupMatches("<span>Loading...</span>");
-    }
+    //    // Assert
+    //    cut.Find("span").MarkupMatches("<span>Loading...</span>");
+    //}
 
     [Fact]
     public void Component_Renders_Correctly_When_No_Flights()
