@@ -9,6 +9,8 @@ using System.Collections.Generic;
 using System;
 using Xunit;
 
+namespace ComponentsTesting;
+
 public class FlightsViewTests : TestContext
 {
     private readonly Mock<IService<Flight>> _mockFlightService;
