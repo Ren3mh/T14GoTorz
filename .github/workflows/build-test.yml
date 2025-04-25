@@ -33,7 +33,7 @@ jobs:
     - name: Generate coverage report
       uses: danielpalme/ReportGenerator-GitHub-Action@5.1.9
       with:
-        reports: '$(pwd)/GotorzApp/ModelsTesting/TestResults/coverage/coverage.cobertura.xml'
+        reports: 'GotorzApp/ModelsTesting/TestResults/coverage/coverage.cobertura.xml'
         targetdir: 'coveragereport'
         reporttypes: 'HtmlInline;Cobertura'
 
