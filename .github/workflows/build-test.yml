@@ -27,19 +27,19 @@ jobs:
     - name: Test
       run: dotnet test GotorzApp/ --no-build --verbosity normal
 
-    - name: Test with code coverage
-      run: dotnet test GotorzApp/ --no-build --verbosity normal /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura
+#    - name: Test with code coverage
+#      run: dotnet test GotorzApp/ --no-build --verbosity normal /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura
 
-    - name: Generate coverage report
-      uses: danielpalme/ReportGenerator-GitHub-Action@5.1.9
-      with:
-        reports: '**/coverage.cobertura.xml'
-        targetdir: 'GotorzApp/coveragereport'
-        reporttypes: 'HtmlInline;Cobertura'
+#    - name: Generate coverage report
+#      uses: danielpalme/ReportGenerator-GitHub-Action@5.1.9
+#      with:
+#        reports: '**/coverage.cobertura.xml'
+#        targetdir: 'GotorzApp/coveragereport'
+#        reporttypes: 'HtmlInline;Cobertura'
 
-    - name: Upload coverage report
-      uses: actions/upload-artifact@v4
-      with:
-        name: coverage-report
-        path: GotorzApp/coveragereport
+#    - name: Upload coverage report
+#      uses: actions/upload-artifact@v4
+#      with:
+#        name: coverage-report
+#        path: GotorzApp/coveragereport
 
