@@ -74,5 +74,4 @@ public static class HotelValidator
 public partial class Hotel
 {
     public virtual ICollection<TravelPackage> TravelPackages { get; set; } = new List<TravelPackage>();
-    public virtual int TravelPackageId { get; set; }
 }
