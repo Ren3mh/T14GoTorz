@@ -9,7 +9,7 @@
 
 <h1>Package Createion</h1>
 
-<Accordion>
+<Accordion @ref="accordion1">
     <AccordionItem>
         <TitleTemplate>
             <Icon Name="IconName.AirplaneFill" Class="me-1" /> Create Flights
@@ -81,17 +81,27 @@
 }
 
 @code {
+    private Accordion accordion1 = default!;
+    private async Task ShowHotelCreationAsync() => await accordion1.ShowAccordionItemByIndexAsync(1);
+
+    private async Task HideFlightpathCreationAsync() => await accordion1.HideAccordionItemByIndexAsync(0);
+    private Task HideAllAccordionItemsAsync() => accordion1.HideAllAccordionItemsAsync();
+
     FPCreation flightpathForm = new FPCreation();
     private void HandleValidFlightpathSubmit(Flightpath flightpath)
     {
         newTravelPackage.Flightpaths.Clear();
         newTravelPackage.Flightpaths.Add(flightpath);
+
+        HideFlightpathCreationAsync();
+        ShowHotelCreationAsync();
     }
 
     HotelCreation hotelForm = new HotelCreation();
     private void HandleValidHotelSubmit(Hotel hotel)
     {
         newTravelPackage.Hotel = hotel;
+        HideAllAccordionItemsAsync();
     }
 
     private IList<ValidationResult> ValidateModel(object model)
