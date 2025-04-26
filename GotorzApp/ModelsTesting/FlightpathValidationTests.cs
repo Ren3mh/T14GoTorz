@@ -27,7 +27,7 @@ public class FlightpathValidationTests
     // --------------------- MIN TESTS ---------------------
 
     [Fact]
-    public void MinFare_ShouldPass_WhenZero()
+    public void Should_PassValidation_When_FareIsZero()
     {
         var path = new Flightpath
         {
@@ -44,7 +44,7 @@ public class FlightpathValidationTests
     // --------------------- MAX TESTS ---------------------
 
     [Fact]
-    public void MaxFare_ShouldPass_WhenDecimalMax()
+    public void Should_PassValidation_When_FareIsDecimalMax()
     {
         var path = new Flightpath
         {
@@ -61,7 +61,7 @@ public class FlightpathValidationTests
     // ------------------ EXCEPTION TESTS ------------------
 
     [Fact]
-    public void NegativeFare_ShouldFail()
+    public void Should_FailValidation_When_FareIsNegative()
     {
         var path = new Flightpath
         {
@@ -76,7 +76,7 @@ public class FlightpathValidationTests
     }
 
     [Fact]
-    public void HomeboundBeforeOutbound_ShouldFail()
+    public void Should_FailValidation_When_HomeboundDepartureIsBeforeOutboundArrival()
     {
         var path = new Flightpath
         {
@@ -91,7 +91,7 @@ public class FlightpathValidationTests
     }
 
     [Fact]
-    public void MissingFlights_ShouldFail()
+    public void Should_FailValidation_When_FlightsAreMissing()
     {
         var path = new Flightpath
         {

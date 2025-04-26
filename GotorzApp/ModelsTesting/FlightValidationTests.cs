@@ -14,7 +14,7 @@ public class FlightValidationTests
     }
 
     [Fact]
-    public void ValidFlight_MinTimeDifference_ShouldPassValidation()
+    public void Should_PassValidation_When_MinTimeDifferenceIsValid()
     {
         var flight = new Flight
         {
@@ -32,7 +32,7 @@ public class FlightValidationTests
     }
 
     [Fact]
-    public void ValidFlight_MaxTimeDifference_ShouldPassValidation()
+    public void Should_PassValidation_When_MaxTimeDifferenceIsValid()
     {
         var flight = new Flight
         {
@@ -50,7 +50,7 @@ public class FlightValidationTests
     }
 
     [Fact]
-    public void InvalidFlight_TooMuchTimeDifference_ShouldFailValidation()
+    public void Should_FailValidation_When_TimeDifferenceExceedsLimit()
     {
         var flight = new Flight
         {
@@ -66,7 +66,7 @@ public class FlightValidationTests
     }
 
     [Fact]
-    public void InvalidFlight_ArrivalBeforeDeparture_ShouldFailValidation()
+    public void Should_FailValidation_When_ArrivalIsBeforeDeparture()
     {
         var flight = new Flight
         {
@@ -82,7 +82,7 @@ public class FlightValidationTests
     }
 
     [Fact]
-    public void InvalidFlight_DepartureBeyondOneYear_ShouldFailValidation()
+    public void Should_FailValidation_When_DepartureIsBeyondOneYear()
     {
         var flight = new Flight
         {
@@ -98,7 +98,7 @@ public class FlightValidationTests
     }
 
     [Fact]
-    public void InvalidFlight_SameIataLocations_ShouldFailValidation()
+    public void Should_FailValidation_When_IataLocationsAreTheSame()
     {
         var flight = new Flight
         {
@@ -106,7 +106,7 @@ public class FlightValidationTests
             DepartureTime = DateTime.Today.AddDays(1),
             ArrivalTime = DateTime.Today.AddDays(1).AddHours(1),
             IataOrigin = new IataLocation() { Id = 1, Iata = "LAX", City = "Los Angeles" },
-            IataDestination = new IataLocation() {Id = 1, Iata = "LAX", City = "Los Angeles" }
+            IataDestination = new IataLocation() { Id = 1, Iata = "LAX", City = "Los Angeles" }
         };
 
         var results = ValidateModel(flight);

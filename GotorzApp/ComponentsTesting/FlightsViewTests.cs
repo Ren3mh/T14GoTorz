@@ -85,7 +85,7 @@ public class FlightsViewTests : TestContext
     }
 
     [Fact]
-    public void GoTopc_Navigates_To_FlightCreation()
+    public void GoTopc_Navigates_To_PackageCreation()
     {
         // Arrange
         var mockNavigationManager = Services.GetRequiredService<NavigationManager>();

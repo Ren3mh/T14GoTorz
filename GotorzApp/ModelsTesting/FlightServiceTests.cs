@@ -32,7 +32,7 @@ public class FlightServiceTests
     }
 
     //[Fact]
-    //public async Task Add_Should_Add_Flight_To_Database()
+    //public async Task Should_AddFlight_When_AddIsCalled()
     //{
     //    // Arrange
     //    var flight = new Flight
@@ -56,28 +56,28 @@ public class FlightServiceTests
     //}
 
     //[Fact]
-    //public async Task GetAll_Should_Return_All_Flights()
+    //public async Task Should_ReturnAllFlights_When_GetAllIsCalled()
     //{
     //    // Arrange
     //    var flights = new List<Flight>
-    //{
-    //    new Flight
     //    {
-    //        Id = 1,
-    //        DepartureTime = DateTime.Now,
-    //        ArrivalTime = DateTime.Now.AddHours(2),
-    //        IataOrigin = new IataLocation { Id = 1, Iata = "JFK", City = "New York" },
-    //        IataDestination = new IataLocation { Id = 2, Iata = "LAX", City = "Los Angeles" }
-    //    },
-    //    new Flight
-    //    {
-    //        Id = 2,
-    //        DepartureTime = DateTime.Now,
-    //        ArrivalTime = DateTime.Now.AddHours(3),
-    //        IataOrigin = new IataLocation { Id = 3, Iata = "ORD", City = "Chicago" },
-    //        IataDestination = new IataLocation { Id = 4, Iata = "MIA", City = "Miami" }
-    //    }
-    //}.AsQueryable();
+    //        new Flight
+    //        {
+    //            Id = 1,
+    //            DepartureTime = DateTime.Now,
+    //            ArrivalTime = DateTime.Now.AddHours(2),
+    //            IataOrigin = new IataLocation { Id = 1, Iata = "JFK", City = "New York" },
+    //            IataDestination = new IataLocation { Id = 2, Iata = "LAX", City = "Los Angeles" }
+    //        },
+    //        new Flight
+    //        {
+    //            Id = 2,
+    //            DepartureTime = DateTime.Now,
+    //            ArrivalTime = DateTime.Now.AddHours(3),
+    //            IataOrigin = new IataLocation { Id = 3, Iata = "ORD", City = "Chicago" },
+    //            IataDestination = new IataLocation { Id = 4, Iata = "MIA", City = "Miami" }
+    //        }
+    //    }.AsQueryable();
 
     //    _dbSetMock.As<IQueryable<Flight>>().Setup(m => m.Provider).Returns(flights.Provider);
     //    _dbSetMock.As<IQueryable<Flight>>().Setup(m => m.Expression).Returns(flights.Expression);
