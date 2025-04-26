@@ -66,19 +66,4 @@ else
     {
         hotels = await HotelService.GetAll() ?? new List<Hotel>();
     }
-
-    public static List<Hotel> GetDummy()
-    {
-        var hotels = new List<Hotel>
-        {
-            new Hotel
-            {
-                Id = 1, Name = "Sunshine Hotel", Address = "123 Sunny St", Telephonenumber = "123-456-7890",
-                Email = "sunshine@hotel.com", Description = "A bright and sunny hotel",
-                CheckIn = DateTime.Now, CheckOut = DateTime.Now.AddDays(5), Rate = 150.00m
-            }
-
-        };
-        return hotels;
-    }
 }

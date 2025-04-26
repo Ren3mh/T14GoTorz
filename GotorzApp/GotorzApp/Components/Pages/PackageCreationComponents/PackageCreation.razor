@@ -15,15 +15,15 @@
             <Icon Name="IconName.AirplaneFill" Class="me-1" /> Create Flights
         </TitleTemplate>
         <Content> 
-            <FPCreation @ref="flightpathForm" OnValidSubmit="HandleValidSubmit" />
+            <FPCreation @ref="flightpathForm" OnValidSubmit="HandleValidFlightpathSubmit" />
         </Content>
     </AccordionItem>
     <AccordionItem>
         <TitleTemplate>
-            <Icon Name="IconName.PersonFill" Class="me-1" /> Accordion Item #2
+            <Icon Name="IconName.BuildingFillAdd" Class="me-1" /> Add Hotel
         </TitleTemplate>
         <Content>
-            <b>This is the second item's accordion body.</b> It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the .accordion-body, though the transition does limit overflow.
+            <HotelCreation @ref="hotelForm" OnValidSubmit="HandleValidHotelSubmit" />
         </Content>
     </AccordionItem>
     <AccordionItem>
@@ -36,27 +36,34 @@
     </AccordionItem>
 </Accordion>
 
-@if (TravelPackage.Flightpaths.Any())
+@if (TravelPackage.Hotel != null)
 {
-    <p>@TravelPackage.Flightpaths.First().OutboundFlight.IataOriginId</p>
-    <p>@TravelPackage.Flightpaths.First().HomeboundFlight.IataOriginId</p>
-    <p>@TravelPackage.Flightpaths.First().OutboundFlight.IataDestinationId</p>
-    <p>@TravelPackage.Flightpaths.First().HomeboundFlight.IataDestinationId</p>
-    <p>@TravelPackage.Flightpaths.First().OutboundFlight.DepartureTime</p>
-    <p>@TravelPackage.Flightpaths.First().HomeboundFlight.DepartureTime</p>
-    <p>@TravelPackage.Flightpaths.First().OutboundFlight.ArrivalTime</p>
-    <p>@TravelPackage.Flightpaths.First().HomeboundFlight.ArrivalTime</p>
+    <p>@TravelPackage.Hotel.Name </p>
+    <p>@TravelPackage.Hotel.Rate </p>
+    <p>@TravelPackage.Hotel.CheckIn </p>
+    <p>@TravelPackage.Hotel.CheckOut </p>
+    <p>@TravelPackage.Hotel.Address.ToString()</p>
+    <p>@TravelPackage.Hotel.Email </p>
+    <p>@TravelPackage.Hotel.Telephonenumber </p>
+    @if (!string.IsNullOrEmpty(TravelPackage.Hotel.Description))
+    {
+        <p>@TravelPackage.Hotel.Description </p>
+    }
 }
 
 @code {
     FPCreation flightpathForm = new FPCreation();
-
-    private void HandleValidSubmit(Flightpath flightpath)
+    private void HandleValidFlightpathSubmit(Flightpath flightpath)
     {
         TravelPackage.Flightpaths.Clear();
         TravelPackage.Flightpaths.Add(flightpath);
     }
 
+    HotelCreation hotelForm = new HotelCreation();
+    private void HandleValidHotelSubmit(Hotel hotel)
+    {
+        TravelPackage.Hotel = hotel;
+    }
 
     bool CanCreate()
     {
@@ -76,19 +83,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-
-        Hotels = await HotelService.GetAll() ?? new List<Hotel>();
-
-        TravelPackage = new TravelPackage()
-        {
-            Title = null,
-            Description = null,
-            HotelId = Hotels.Any() ? Hotels.First().Id : -1
-        };
-
     }
-
-    public List<Hotel> Hotels = new List<Hotel>();
 
     public async Task AddTravelPackage()
     {
