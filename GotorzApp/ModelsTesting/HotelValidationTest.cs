@@ -134,14 +134,7 @@ public class HotelTests
             CheckOut = DateTime.Today.AddDays(2),
             Rate = 150.0m,
             Name = "Test Hotel",
-            Address = new Address(
-                streetNumber: "12A",
-                street: "Main Street",
-                city: "Test City",
-                zipCode: "12345",
-                country: "Testland",
-                other: "Suite 5B" // optional, you can pass null if you want
-            ),
+            Address = "12A Main Street, 12345 Test City, Testland",
             Telephonenumber = "123-456-7890",
             Email = "test@example.com",
             Description = "A nice test hotel."
