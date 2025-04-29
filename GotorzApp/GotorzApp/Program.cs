@@ -3,6 +3,7 @@ using System;
 using GotorzApp.Components;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Prometheus;
 using Shared;
 using Shared.Data;
 using Shared.Service;
@@ -51,12 +52,35 @@ namespace GotorzApp
             app.UseHttpsRedirection();
 
             app.UseStaticFiles();
-            app.UseAntiforgery();
+
+
+            // Counter to track homepage visits
+            Counter visitCounter = Metrics.CreateCounter("blazorapp_visits_total", "Total visits to the homepage");
+
+            app.Use(async (context, next) =>
+            {
+                if (context.Request.Path == "/")
+                {
+                    visitCounter.Inc();
+                }
+
+                await next();
+            });
 
             app.MapRazorComponents<App>()
                 .AddInteractiveServerRenderMode()
                 .AddInteractiveWebAssemblyRenderMode()
                 .AddAdditionalAssemblies(typeof(Client._Imports).Assembly);
+
+            app.UseRouting();
+            app.UseAntiforgery();
+            app.UseHttpMetrics(); // optional, gives you request duration metrics
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapMetrics(); // exposes /metrics
+            });
+
+
 
             app.Run();
         }
