@@ -24,14 +24,14 @@ public class TravelPackageService : IService<TravelPackage>
         using var context = _dbContextFactory.CreateDbContext();
         var travelpackages = await context.TravelPackages
             .Include(e => e.Flightpaths)
-            .ThenInclude(o => o.OutboundFlight.Iatadestination)
+            .ThenInclude(o => o.OutboundFlight.IataDestination)
             .Include(e => e.Flightpaths)
-            .ThenInclude(o => o.OutboundFlight.Iataorigin)
+            .ThenInclude(o => o.OutboundFlight.IataOrigin)
 
             .Include(e => e.Flightpaths)
-            .ThenInclude(h => h.HomeboundFlight.Iatadestination)
+            .ThenInclude(h => h.HomeboundFlight.IataDestination)
             .Include(e => e.Flightpaths)
-            .ThenInclude(h => h.HomeboundFlight.Iataorigin)
+            .ThenInclude(h => h.HomeboundFlight.IataOrigin)
 
             .Include(e => e.Hotel)
             .ToListAsync();

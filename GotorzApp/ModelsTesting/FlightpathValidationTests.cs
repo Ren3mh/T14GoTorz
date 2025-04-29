@@ -3,13 +3,13 @@ using System.ComponentModel.DataAnnotations;
 
 namespace ModelsTesting;
 
-public class FlightpathEdgeCaseTests
+public class FlightpathValidationTests
 {
     private IList<ValidationResult> ValidateModel(object model)
     {
         var results = new List<ValidationResult>();
-        var context = new ValidationContext(model, null, null);
-        Validator.TryValidateObject(model, context, results, true);
+        var context = new ValidationContext(model, serviceProvider: null, items: null);
+        Validator.TryValidateObject(model, context, results, validateAllProperties: true);
         return results;
     }
 
@@ -19,15 +19,15 @@ public class FlightpathEdgeCaseTests
         {
             DepartureTime = dep,
             ArrivalTime = arr,
-            IataoriginId = 1,
-            IatadestinationId = 2
+            IataOriginId = 1,
+            IataDestinationId = 2
         };
     }
 
     // --------------------- MIN TESTS ---------------------
 
     [Fact]
-    public void MinFare_ShouldPass_WhenZero()
+    public void Should_PassValidation_When_FareIsZero()
     {
         var path = new Flightpath
         {
@@ -44,7 +44,7 @@ public class FlightpathEdgeCaseTests
     // --------------------- MAX TESTS ---------------------
 
     [Fact]
-    public void MaxFare_ShouldPass_WhenDecimalMax()
+    public void Should_PassValidation_When_FareIsDecimalMax()
     {
         var path = new Flightpath
         {
@@ -61,7 +61,7 @@ public class FlightpathEdgeCaseTests
     // ------------------ EXCEPTION TESTS ------------------
 
     [Fact]
-    public void NegativeFare_ShouldFailValidation()
+    public void Should_FailValidation_When_FareIsNegative()
     {
         var path = new Flightpath
         {
@@ -76,7 +76,7 @@ public class FlightpathEdgeCaseTests
     }
 
     [Fact]
-    public void HomeboundBeforeOutbound_ShouldFailCustomValidation()
+    public void Should_FailValidation_When_HomeboundDepartureIsBeforeOutboundArrival()
     {
         var path = new Flightpath
         {
@@ -91,7 +91,7 @@ public class FlightpathEdgeCaseTests
     }
 
     [Fact]
-    public void MissingFlights_ShouldFailValidation()
+    public void Should_FailValidation_When_FlightsAreMissing()
     {
         var path = new Flightpath
         {

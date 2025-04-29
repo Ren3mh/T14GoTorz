@@ -1,49 +1,31 @@
 ﻿using Shared;
 using System.ComponentModel.DataAnnotations;
 
+namespace Shared;
+
+// vores Flight model
+[CustomValidation(typeof(FlightValidator), "ValidateIataLocations")]
 public partial class Flight
 {
-
     public int Id { get; set; }
 
     [Required]
-    [DataType(DataType.DateTime)]
     [FutureDateWithinYear(ErrorMessage = "Departure time must be within one year from today.")]
     public DateTime DepartureTime { get; set; }
 
     [Required]
-    [DataType(DataType.DateTime)]
     [FutureDateWithinYear(ErrorMessage = "Arrival time must be within one year from today.")]
     [ArrivalAfterDepartureWithinLimit("DepartureTime", ErrorMessage = "Arrival must be after departure and within 48 hours.")]
     public DateTime ArrivalTime { get; set; }
 
     [Required]
-    [Range(1, int.MaxValue, ErrorMessage = "IATA Destination ID cannot be negative.")]
-    public int IatadestinationId { get; set; }
+    public IataLocation IataDestination { get; set; }
 
     [Required]
-    [Range(1, int.MaxValue, ErrorMessage = "IATA Origin ID cannot be negative.")]
-    public int IataoriginId { get; set; }
+    public IataLocation IataOrigin { get; set; }
 
-    public virtual ICollection<Flightpath> FlightpathHomeboundFlights { get; set; }
-
-    public virtual ICollection<Flightpath> FlightpathOutboundFlights { get; set; }
-
-    public virtual IataLocation? Iatadestination { get; set; }
-
-    public virtual IataLocation? Iataorigin { get; set; }
-
-    public Flight()
-    {
-        Id = -1;
-        FlightpathHomeboundFlights = new List<Flightpath>();
-        FlightpathOutboundFlights = new List<Flightpath>();
-        Iataorigin = null;
-        Iatadestination = null;
-    }
 }
 
-// Custom validation attribute to ensure the date is within one year from today
 public class FutureDateWithinYearAttribute : ValidationAttribute
 {
     public override bool IsValid(object value)
@@ -53,6 +35,26 @@ public class FutureDateWithinYearAttribute : ValidationAttribute
             return date > DateTime.Today && date < DateTime.Today.AddYears(1);
         }
         return false;
+    }
+}
+
+public static class FlightValidator
+{
+    public static ValidationResult ValidateIataLocations(object value, ValidationContext context)
+    {
+        var flight = value as Flight;
+
+        if (flight == null || flight.IataOrigin == null || flight.IataDestination == null)
+        {
+            return ValidationResult.Success;
+        }
+
+        if (flight.IataOrigin.Id == flight.IataDestination.Id)
+        {
+            return new ValidationResult("IataOrigin and IataDestination cannot be the same.");
+        }
+
+        return ValidationResult.Success;
     }
 }
 
@@ -96,4 +98,16 @@ public class ArrivalAfterDepartureWithinLimitAttribute : ValidationAttribute
 
         return ValidationResult.Success;
     }
+}
+
+// dataContext Flight model
+public partial class Flight
+{
+    public virtual ICollection<Flightpath> FlightpathHomeboundFlights { get; set; }
+
+    public virtual ICollection<Flightpath> FlightpathOutboundFlights { get; set; }
+
+    public int IataDestinationId { get; set; }
+
+    public int IataOriginId { get; set; }
 }
