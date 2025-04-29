@@ -1,6 +1,7 @@
 //using GotorzApp.Client.Pages;
 using System;
 using GotorzApp.Components;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Shared;
@@ -24,7 +25,7 @@ namespace GotorzApp
 
             //Add database context
             builder.Services.AddDbContextFactory<GotorzContext>(options =>
-                options.UseSqlServer(builder.Configuration.GetConnectionString("LocalString")));
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DbConnectionString")));
             builder.Services.AddHttpClient<CurrentWeatherService>();
 
             builder.Services.AddScoped<IService<Flight>, FlightService>();
@@ -33,6 +34,9 @@ namespace GotorzApp
             builder.Services.AddScoped<IService<Flightpath>, FlightpathService>();
             builder.Services.AddScoped<IService<IataLocation>, IataLocationService>();
             builder.Services.AddScoped<CurrentWeatherService>();
+
+            builder.Services.AddDataProtection()
+                .PersistKeysToFileSystem(new DirectoryInfo("/var/aspnetcore/DataProtection-Keys"));
 
             builder.Services.AddCors(options =>
             {
