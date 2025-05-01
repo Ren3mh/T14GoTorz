@@ -245,7 +245,7 @@ VALUES
 ('Alaskan Adventure', 'Experience the natural beauty and northern lights of Alaska.', 30);
 
 -- Insert dummy data into Flightpaths table
-INSERT INTO FlightPaths (Fare, Luggage, OutboundFlightId, HomeboundFlightId, TravelPackageId)
+INSERT INTO Flightpaths (Fare, Luggage, OutboundFlightId, HomeboundFlightId, TravelPackageId)
 VALUES
 (850.00, 1, 2, 1, 1),  -- With luggage
 (1000.00, 0, 4, 3, 2),  -- No luggage
