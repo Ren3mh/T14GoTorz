@@ -1,24 +1,41 @@
 ﻿using Bunit;
 using GotorzApp.Components.Pages.Presentation;
 using Microsoft.AspNetCore.Components;
-using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using Shared;
 using Shared.Service;
 using System.Collections.Generic;
 using System;
-using Xunit;
 
 namespace ComponentsTesting;
 
 public class FlightsViewTests : TestContext
 {
-    private readonly Mock<IService<Flight>> _mockFlightService;
+    private readonly Mock<IFlightService> flightServiceMock;
 
     public FlightsViewTests()
     {
-        _mockFlightService = new Mock<IService<Flight>>();
-        Services.AddSingleton(_mockFlightService.Object);
+        flightServiceMock = new Mock<IFlightService>();
+        flightServiceMock.Setup(m => m.GetAll())
+            .ReturnsAsync(new List<Flight>
+            {
+                new Flight
+                {
+                    Id = 1,
+                    IataOrigin = new IataLocation { City = "New York", Iata = "JFK" },
+                    IataDestination = new IataLocation { City = "Los Angeles", Iata = "LAX" },
+                    ArrivalTime = DateTime.Now
+                },
+
+                new Flight
+                {
+                    Id = 2,
+                    IataOrigin = new IataLocation { City = "Copenhagen", Iata = "CPH" },
+                    IataDestination = new IataLocation { City = "Paris", Iata = "CDG" },
+                    ArrivalTime = DateTime.Now.AddDays(1)
+                }
+            });
+        Services.AddSingleton(flightServiceMock.Object);
     }
 
     //[Fact]
@@ -38,7 +55,11 @@ public class FlightsViewTests : TestContext
     public void Component_Renders_Correctly_When_No_Flights()
     {
         // Arrange
-        _mockFlightService.Setup(service => service.GetAll()).ReturnsAsync(new List<Flight>());
+        var flightServiceMock1 = new Mock<IFlightService>();
+        flightServiceMock1.Setup(m => m.GetAll())
+            .ReturnsAsync(new List<Flight>());
+
+        Services.AddSingleton(flightServiceMock1.Object);
 
         // Act
         var cut = RenderComponent<FlightsView>();
@@ -51,26 +72,8 @@ public class FlightsViewTests : TestContext
     [Fact]
     public void Component_Renders_Flight_List()
     {
-        // Arrange
-        var flights = new List<Flight>
-        {
-            new Flight
-            {
-                Id = 1,
-                IataOrigin = new IataLocation { City = "New York", Iata = "JFK" },
-                IataDestination = new IataLocation { City = "Los Angeles", Iata = "LAX" },
-                ArrivalTime = DateTime.Now
-            },
-            new Flight
-            {
-                Id = 2,
-                IataOrigin = new IataLocation { City = "Chicago", Iata = "ORD" },
-                IataDestination = new IataLocation { City = "Miami", Iata = "MIA" },
-                ArrivalTime = DateTime.Now
-            }
-        };
-
-        _mockFlightService.Setup(service => service.GetAll()).ReturnsAsync(flights);
+        //Arrange
+        // arranged in constructor
 
         // Act
         var cut = RenderComponent<FlightsView>();
@@ -80,8 +83,8 @@ public class FlightsViewTests : TestContext
         Assert.Equal(2, rows.Count);
         Assert.Contains("New York", rows[0].InnerHtml);
         Assert.Contains("Los Angeles", rows[0].InnerHtml);
-        Assert.Contains("Chicago", rows[1].InnerHtml);
-        Assert.Contains("Miami", rows[1].InnerHtml);
+        Assert.Contains("Copenhagen", rows[1].InnerHtml);
+        Assert.Contains("Paris", rows[1].InnerHtml);
     }
 
     [Fact]
@@ -95,6 +98,8 @@ public class FlightsViewTests : TestContext
         cut.Find("button").Click();
 
         // Assert
-        Assert.Equal(mockNavigationManager.BaseUri.Substring(0, mockNavigationManager.BaseUri.Length - 1) + "/pc", mockNavigationManager.Uri);
+        var expectedUri = mockNavigationManager.BaseUri.Substring(0, mockNavigationManager.BaseUri.Length - 1) + "/pc";
+        var actualUri = mockNavigationManager.Uri;
+        Assert.Equal(expectedUri, actualUri);
     }
 }
