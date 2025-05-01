@@ -1,6 +1,6 @@
 ﻿@page "/packages"
-@inject IService<TravelPackage> TravelPackageService
-@inject CurrentWeatherService CurrentWeatherService
+@inject ITravelPackageService TravelPackageService
+@inject ICurrentWeatherService CurrentWeatherService
 
 @if (unsortedTravelPackages == null)
 {
@@ -8,7 +8,7 @@
 }
 else if (unsortedTravelPackages.Count == 0)
 {
-    <span>No packages found.</span>
+    <span>No packages available.</span>
 }
 else 
 {

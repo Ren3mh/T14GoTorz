@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Shared.Data;
 
 namespace Shared.Service;
 
-public class TravelPackageService : IService<TravelPackage>
+public class TravelPackageService : ITravelPackageService
 {
 
     private readonly IDbContextFactory<GotorzContext> _dbContextFactory;
@@ -38,7 +33,12 @@ public class TravelPackageService : IService<TravelPackage>
         return travelpackages;
     }
 
-    public async Task Add(TravelPackage newTravelPackage)
+    public Task<TravelPackage> GetById(int id)
+    {
+        throw new NotImplementedException();
+    }
+
+    public async Task<bool> Add(TravelPackage newTravelPackage)
     {
         using var context = _dbContextFactory.CreateDbContext();
         using (var transaction = await context.Database.BeginTransactionAsync())
@@ -58,6 +58,7 @@ public class TravelPackageService : IService<TravelPackage>
 
             // Commit the transaction if all operations are successful
             transaction.Commit();
+            return true;
         }
         catch (Exception)
         {
@@ -65,5 +66,15 @@ public class TravelPackageService : IService<TravelPackage>
             transaction.Rollback();
             throw;
         }
+    }
+
+    public Task<bool> Update(TravelPackage TravelPackage)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<bool> Delete(int id)
+    {
+        throw new NotImplementedException();
     }
 }

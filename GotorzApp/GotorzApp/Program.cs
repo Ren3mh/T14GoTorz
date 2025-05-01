@@ -1,5 +1,3 @@
-//using GotorzApp.Client.Pages;
-using System;
 using GotorzApp.Components;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -29,10 +27,10 @@ namespace GotorzApp
 
             builder.Services.AddScoped<IFlightService, FlightService>();
             builder.Services.AddScoped<IService<Hotel>, HotelService>();
-            builder.Services.AddScoped<IService<TravelPackage>, TravelPackageService>();
+            builder.Services.AddScoped<ITravelPackageService, TravelPackageService>();
             builder.Services.AddScoped<IService<Flightpath>, FlightpathService>();
             builder.Services.AddScoped<IService<IataLocation>, IataLocationService>();
-            builder.Services.AddScoped<CurrentWeatherService>();
+            builder.Services.AddScoped<ICurrentWeatherService, CurrentWeatherService>();
 
             var app = builder.Build();
 
