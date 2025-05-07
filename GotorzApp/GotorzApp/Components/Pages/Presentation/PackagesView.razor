@@ -1,7 +1,6 @@
 ﻿@page "/packages"
-@inject IService<TravelPackage> TravelPackageService
-@inject IService<IataLocation> IataLocationService
-@inject CurrentWeatherService CurrentWeatherService
+@inject ITravelPackageService TravelPackageService
+@inject ICurrentWeatherService CurrentWeatherService
 
 @if (unsortedTravelPackages == null)
 {
@@ -9,11 +8,13 @@
 }
 else if (unsortedTravelPackages.Count == 0)
 {
-    <span>No packages found.</span>
+    <span>No packages available.</span>
 }
 else 
 {
     <h2>Rejsepakker</h2>
+
+    @* Filtering *@
     <label for="leavingFrom" class="form-label">Rejser fra:</label>
     <input style="width:290px; height:25px" type="datetime" @bind-value="EarliestDeparture" />
     <div class="col">
@@ -32,6 +33,8 @@ else
         </InputSelect>
         <button @onclick="FilterPackages" style="margin-left:50px">OPDATER</button>
     </div>
+
+    @* Travelpackages *@
     <div class="container">
         <div class="row">
             <div class="col-md-6">
@@ -54,95 +57,71 @@ else
                     </tbody>
                 </table>
             </div>
+
+            @* Selected package *@
             <div class="col">
-                <h1 style="font-weight:bold">@SelectedPackage.Title</h1>
-                <div class="col">
-                    <h2 style="text-shadow: 2px 2px 5px red;">Hotel:</h2>
-                    <div class="container">
-                        <div class="row">
-                            <div class="row">
-                                <div class="col-md-5">
-                                    <h5 style="text-decoration-line: underline;">Name</h5>
-                                    <p>@SelectedPackage.Hotel.Name</p>
-                                    <h5 style="text-decoration-line: underline;">Address</h5>
-                                    <p>@SelectedPackage.Hotel.Address</p>
-                                </div>
-                                <div class="col-md-5">
-                                    <h5 style="text-decoration-line: underline;">Check In</h5>
-                                    <p>@SelectedPackage.Hotel.CheckIn</p>
-                                    <h5 style="text-decoration-line: underline;">Check Out</h5>
-                                    <p>@SelectedPackage.Hotel.CheckOut</p>
-                                </div>
-                                <div class="col">
-                                    <h5 style="text-decoration-line: underline;">Temp.</h5>
-                                    <p>@currentWeather.Main.TempMax</p>
-                                    <h5 style="text-decoration-line: underline;">Price</h5>
-                                    <p>@SelectedPackage.Hotel.Rate</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col">
-                    <h2 style="text-shadow: 2px 2px 5px red;">Flightpaths:</h2>
-                    <div class="container">
-                        <div class="row">
-                            <div class="col">
-                                <h5 style="text-decoration-line: underline;">From</h5>
-                                @foreach (var flightpath in SelectedPackage.Flightpaths)
-                                {
-                                    <p>@flightpath.OutboundFlight.IataOrigin.City - @flightpath.OutboundFlight.IataOrigin.Iata</p>
-                                }
-                            </div>
-                            <div class="col">
-                                <h5 style="text-decoration-line: underline;">To</h5>
-                                @foreach (var flightpath in SelectedPackage.Flightpaths)
-                                {
-                                    <p>@flightpath.OutboundFlight.IataDestination.City - @flightpath.OutboundFlight.IataDestination.Iata</p>
-                                }
-                            </div>
-                        </div>
-                        <div class="col">
-                            <h5 style="text-decoration-line: underline;">Price (tur/retur)</h5>
-                            @foreach (var flightpath in SelectedPackage.Flightpaths)
-                            {
-                                <p>@flightpath.Fare</p>
-                            }
-                        </div>
-                        <div class="row">
-                            <div class="col">
-                                <button style="height: 50px; width: 110px; margin-left: 5px; font-weight:bold">Slet</button>
-                                <button style="height: 50px; width: 110px; margin-left: 50px; font-weight:bold">Redigér</button>
-                             </div>
-                        </div>
-                    </div>
-                </div>
+                <TravelPackageEditor SelectedPackage="SelectedPackage" CurrentWeather="currentWeather" />
             </div>
         </div>
     </div>
 }
 
 @code {
+    
 
-    private async Task SelectPackage(int packageId)
+    async Task SelectPackage(int packageId)
     {
         SelectedPackage = unsortedTravelPackages.Find(tp => tp.Id == packageId);
-        currentWeather = await CurrentWeatherService.GetCurrentWeather(SelectedPackage.Flightpaths.First().OutboundFlight.IataDestination.City, "fr");
+        //currentWeather = await CurrentWeatherService.GetCurrentWeather(SelectedPackage.Flightpaths.First().OutboundFlight.IataDestination.City, "fr");
     }
     public TravelPackage? SelectedPackage { get; set; }
 
-    public DateTime EarliestDeparture;
+    DateTime EarliestDeparture;
 
-    public CurrentWeather currentWeather;
+    CurrentWeather currentWeather;
 
-    private List<TravelPackage> filteredTravelPackages = new List<TravelPackage>();
+    List<TravelPackage> filteredTravelPackages = new List<TravelPackage>();
+    List<TravelPackage> unsortedTravelPackages;
 
-    private List<TravelPackage> unsortedTravelPackages;
+    List<IataLocation> iataLocations = new List<IataLocation>();
+    int selectedIataCode;
 
-    public List<IataLocation> iataLocations = new List<IataLocation>();
-    public int selectedIataCode;
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            unsortedTravelPackages = await TravelPackageService.GetAll() ?? new List<TravelPackage>();
+            filteredTravelPackages = new List<TravelPackage>(unsortedTravelPackages);
+            foreach (TravelPackage tp in unsortedTravelPackages)
+            {
+                foreach (Flightpath fp in tp.Flightpaths)
+                {
+                    if (!iataLocations.Exists(iata => iata.Id == fp.OutboundFlight.IataOrigin.Id))
+                        iataLocations.Add(fp.OutboundFlight.IataOrigin);
+                }
+            }
+            SelectedPackage = unsortedTravelPackages.First();
+            //currentWeather = await CurrentWeatherService.GetCurrentWeather(SelectedPackage.Flightpaths.First().OutboundFlight.IataDestination.City, "fr");
+            currentWeather = new CurrentWeather
+                {
+                    Main = new Main
+                    {
+                        TempMax = 25,
+                        TempMin = 15
+                    }
+                };
 
-    public void SortByPrice()
+            EarliestDeparture = DateTime.Today;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"An error occurred: {ex.Message}");
+        }
+
+        SortLowestPrice = false;
+    }
+
+    void SortByPrice()
     {
         if (!SortLowestPrice)
             filteredTravelPackages = filteredTravelPackages.OrderByDescending(tp => tp.Hotel.Rate + tp.Flightpaths.FirstOrDefault().Fare).ToList();
@@ -150,14 +129,14 @@ else
             filteredTravelPackages = filteredTravelPackages.OrderBy(tp => tp.Hotel.Rate + tp.Flightpaths.FirstOrDefault().Fare).ToList();
     }
 
-    public void SwapSorting()
+    void SwapSorting()
     {
         SortLowestPrice = !SortLowestPrice;
         SortByPrice();
     }
-    public bool SortLowestPrice { get; private set; }
+    bool SortLowestPrice;
 
-    public void FilterPackages()
+    void FilterPackages()
     {
         var travelPackages = unsortedTravelPackages;
 
@@ -174,36 +153,6 @@ else
         return travelPackages
             .Where(tp => tp.Flightpaths.Any(f => f.OutboundFlight.DepartureTime >= EarliestDeparture))
             .ToList();
-    }
-
-
-    protected override async Task OnInitializedAsync()
-    {
-        try
-        {
-
-            unsortedTravelPackages = await TravelPackageService.GetAll() ?? new List<TravelPackage>();
-            filteredTravelPackages = new List<TravelPackage>(unsortedTravelPackages);
-            foreach (TravelPackage tp in unsortedTravelPackages)
-            {
-                foreach (Flightpath fp in tp.Flightpaths)
-                {
-                    if (!iataLocations.Exists(iata => iata.Id == fp.OutboundFlight.IataOrigin.Id))
-                        iataLocations.Add(fp.OutboundFlight.IataOrigin);
-                }
-            }
-            SelectedPackage = unsortedTravelPackages.First();
-            currentWeather = await CurrentWeatherService.GetCurrentWeather(SelectedPackage.Flightpaths.First().OutboundFlight.IataDestination.City, "fr");
-            
-            EarliestDeparture = DateTime.Today;
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"An error occurred: {ex.Message}");
-            // Handle the error appropriately, e.g., show a user-friendly message
-        }
-
-        SortLowestPrice = false;
     }
 
     private List<TravelPackage> FilterByOrigin(List<TravelPackage> travelPackages)

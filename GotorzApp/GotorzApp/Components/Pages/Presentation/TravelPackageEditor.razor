@@ -1,0 +1,178 @@
+﻿<h1 style="font-weight:bold">@SelectedPackage.Title</h1>
+<div class="col">
+    <h2 style="text-shadow: 2px 2px 5px red;">Hotel:</h2>
+    <div class="container">
+        <div class="row">
+            <div class="row">
+                <div class="col-md-5">
+                    <h5 style="text-decoration-line: underline;">Name</h5>
+                    @if (isEditing)
+                    {
+                        <input id="HotelNameInput" type="text" class="form-control mb-2" @bind="editedTravelPackage.Hotel.Name" />
+                    }
+                    else
+                    {
+                        <p>@SelectedPackage.Hotel.Name</p>
+                    }
+
+                    <h5 style="text-decoration-line: underline;">Address</h5>
+                    @if (isEditing)
+                    {
+                        <input type="text" class="form-control mb-2" @bind="editedTravelPackage.Hotel.Address" />
+                    }
+                    else
+                    {
+                        <p>@SelectedPackage.Hotel.Address</p>
+                    }
+                </div>
+
+                <h5 style="text-decoration-line: underline;">Check In</h5>
+                @if (isEditing)
+                {
+                    <input type="datetime-local" step="60" class="form-control mb-2" @bind="editedTravelPackage.Hotel.CheckIn" />
+                }
+                else
+                {
+                    <p>@SelectedPackage.Hotel.CheckIn.ToString("yyyy-MM-dd HH:mm")</p>
+                }
+
+                <h5 style="text-decoration-line: underline;">Check Out</h5>
+                @if (isEditing)
+                {
+                    <input type="datetime-local" step="60" class="form-control mb-2" @bind="editedTravelPackage.Hotel.CheckOut" />
+                }
+                else
+                {
+                    <p>@SelectedPackage.Hotel.CheckOut.ToString("yyyy-MM-dd HH:mm")</p>
+                }
+
+                <div class="col">
+                    <h5 style="text-decoration-line: underline;">Temp.</h5>
+                    <p>@CurrentWeather.Main.TempMax</p>
+
+                    <h5 style="text-decoration-line: underline;">Price</h5>
+                    @if (isEditing)
+                    {
+                        <input type="text" class="form-control mb-2" @bind="editedTravelPackage.Hotel.Rate" />
+                    }
+                    else
+                    {
+                        <p>@SelectedPackage.Hotel.Rate</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="col">
+    <h2 style="text-shadow: 2px 2px 5px red;">Flightpaths:</h2>
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <h5 style="text-decoration-line: underline;">From</h5>
+                @foreach (var flightpath in SelectedPackage.Flightpaths)
+                {
+                    <p>@flightpath.OutboundFlight.IataOrigin.City - @flightpath.OutboundFlight.IataOrigin.Iata</p>
+                }
+            </div>
+            <div class="col">
+                <h5 style="text-decoration-line: underline;">To</h5>
+                @foreach (var flightpath in SelectedPackage.Flightpaths)
+                {
+                    <p>@flightpath.OutboundFlight.IataDestination.City - @flightpath.OutboundFlight.IataDestination.Iata</p>
+                }
+            </div>
+        </div>
+        <div class="col">
+            <h5 style="text-decoration-line: underline;">Price (tur/retur)</h5>
+            @foreach (var flightpath in SelectedPackage.Flightpaths)
+            {
+                <p>@flightpath.Fare</p>
+            }
+        </div>
+        <div class="row">
+            <div class="col">
+                <button style="height: 50px; width: 110px; margin-left: 5px; font-weight:bold">Slet</button>
+                <button id="edit" style="height: 50px; width: 110px; margin-left: 50px; font-weight:bold" hidden="@isEditing" @onclick="@edit" >Redigér</button>
+                <button id="save" style="height: 50px; width: 110px; margin-left: 50px; font-weight:bold" hidden="@(!isEditing)" @onclick="@save">Gem</button>
+                <button style="height: 50px; width: 110px; margin-left: 50px; font-weight:bold" hidden="@(!isEditing)" @onclick="@cancel">Afbryd</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public TravelPackage SelectedPackage { get; set; }
+    TravelPackage editedTravelPackage;
+
+    [Parameter]
+    public CurrentWeather CurrentWeather { get; set; }
+
+    protected override void OnInitialized()
+    {
+        editedTravelPackage = new TravelPackage()
+            {
+                Id = SelectedPackage.Id,
+                Title = SelectedPackage.Title,
+                Description = SelectedPackage.Description,
+                Flightpaths = SelectedPackage.Flightpaths,
+                Hotel = new Hotel()
+                {
+                    Id = SelectedPackage.Hotel.Id,
+                    CheckIn = SelectedPackage.Hotel.CheckIn,
+                    CheckOut = SelectedPackage.Hotel.CheckOut,
+                    Rate = SelectedPackage.Hotel.Rate,
+                    Name = SelectedPackage.Hotel.Name,
+                    Address = SelectedPackage.Hotel.Address,
+                    Telephonenumber = SelectedPackage.Hotel.Telephonenumber,
+                    Email = SelectedPackage.Hotel.Email,
+                    Description = SelectedPackage.Hotel.Description,
+                    TravelPackages = SelectedPackage.Hotel.TravelPackages
+                },
+                HotelId = SelectedPackage.HotelId,
+            };
+    }
+
+    void edit()
+    {
+        swapEditing();
+    }
+    void cancel()
+    {
+        editedTravelPackage = new TravelPackage()
+            {
+                Id = SelectedPackage.Id,
+                Title = SelectedPackage.Title,
+                Description = SelectedPackage.Description,
+                Flightpaths = SelectedPackage.Flightpaths,
+                Hotel = new Hotel()
+                {
+                    Id = SelectedPackage.Hotel.Id,
+                    CheckIn = SelectedPackage.Hotel.CheckIn,
+                    CheckOut = SelectedPackage.Hotel.CheckOut,
+                    Rate = SelectedPackage.Hotel.Rate,
+                    Name = SelectedPackage.Hotel.Name,
+                    Address = SelectedPackage.Hotel.Address,
+                    Telephonenumber = SelectedPackage.Hotel.Telephonenumber,
+                    Email = SelectedPackage.Hotel.Email,
+                    Description = SelectedPackage.Hotel.Description,
+                    TravelPackages = SelectedPackage.Hotel.TravelPackages
+                },
+                HotelId = SelectedPackage.HotelId,
+            };
+        swapEditing();
+    }
+
+    void save()
+    {
+        SelectedPackage.Hotel = editedTravelPackage.Hotel;
+        swapEditing();
+    }
+
+    bool isEditing = false;
+    void swapEditing()
+    {
+        isEditing = !isEditing;
+    }
+}
