@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Reflection.Metadata;
 using Shared;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore;//Entity framework relational
 
 namespace Shared.Data;
 
