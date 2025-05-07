@@ -4,18 +4,34 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Shared;
 using Shared.Data;
 using Shared.Service;
+using Microsoft.EntityFrameworkCore.InMemory;
+using Microsoft.EntityFrameworkCore.Internal;
+using Moq;
 
 
 namespace ModelsTesting
 {
     public class InMemoryTest
     {
+        private readonly Mock<ITravelPackageService> travelPackageServiceMock;
+
+        public InMemoryTest()
+        {
+            mockDbFactory = new Mock<IDbContextFactory<GotorzContext>>();
+        }
+
         [Fact]
         public void CanAddPackage()
         {
+            mockDbFactory.Setup(f => f.CreateDbContext())
+            .Returns(new SomeDbContext(new DbContextOptionsBuilder<SomeDbContext>()
+            .UseInMemoryDatabase("InMemoryTest")
+            .Options));
+
             var tp = new TravelPackage()
             {
                 Id = 1,
@@ -41,8 +57,10 @@ namespace ModelsTesting
 
             var db = GotorzInMemoryContext.GetMemoryContext();
 
-            var contextFactory = IDbContextFactory<GotorzContext, db>;
-            var service = new TravelPackageService(db);
+            var service = new TravelPackageService(new DbContextFactory<GotorzContext>());
+
+            //new TravelPackageService(DbContextFactory<GotorzContext>(options =>
+            //options.UseInMemoryDatabase(databaseName: "InMemoryDatabase")));
             service.Add(tp);
         }
     }
