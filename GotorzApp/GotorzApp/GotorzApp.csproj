@@ -10,7 +10,7 @@
 	<PackageReference Include="Blazor.Bootstrap" Version="3.2.0" />
     <ProjectReference Include="..\GotorzApp.Client\GotorzApp.Client.csproj" />
     <ProjectReference Include="..\Shared\Shared.csproj" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="8.0.14" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="9.0.4" />
   </ItemGroup>
 
 	<ItemGroup>

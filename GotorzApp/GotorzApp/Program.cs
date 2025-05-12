@@ -4,6 +4,8 @@ using Microsoft.Extensions.Configuration;
 using Shared;
 using Shared.Data;
 using Shared.Service;
+using Microsoft.AspNetCore.ResponseCompression;
+using GotorzApp.Hubs;
 
 namespace GotorzApp
 {
@@ -17,6 +19,14 @@ namespace GotorzApp
             builder.Services.AddRazorComponents()
                 .AddInteractiveServerComponents()
                 .AddInteractiveWebAssemblyComponents();
+
+            builder.Services.AddSignalR();
+            builder.Services.AddResponseCompression(options =>
+            {
+                options.EnableForHttps = true;
+                options.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(
+                    new[] { "application/octet-stream" });
+            });
 
             builder.Services.AddBlazorBootstrap();
 
@@ -33,6 +43,8 @@ namespace GotorzApp
             builder.Services.AddScoped<ICurrentWeatherService, CurrentWeatherService>();
 
             var app = builder.Build();
+
+            app.UseResponseCompression();
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
@@ -55,6 +67,8 @@ namespace GotorzApp
                 .AddInteractiveServerRenderMode()
                 .AddInteractiveWebAssemblyRenderMode()
                 .AddAdditionalAssemblies(typeof(Client._Imports).Assembly);
+
+            app.MapHub<ChatHub>("/chathub");
 
             app.Run();
         }
