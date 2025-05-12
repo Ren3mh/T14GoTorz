@@ -1,4 +1,4 @@
-using GotorzApp.Components;
+﻿using GotorzApp.Components;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Shared;
@@ -6,6 +6,10 @@ using Shared.Data;
 using Shared.Service;
 using Microsoft.AspNetCore.ResponseCompression;
 using GotorzApp.Hubs;
+using GotorzApp.Components.Account;
+using GotorzApp.Data;
+using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Identity;
 
 namespace GotorzApp
 {
@@ -35,12 +39,38 @@ namespace GotorzApp
                 options.UseSqlServer(builder.Configuration.GetConnectionString("LocalString")));
             builder.Services.AddHttpClient<CurrentWeatherService>();
 
+            builder.Services.AddDefaultIdentity<IdentityUser>()
+            .AddEntityFrameworkStores<GotorzContext>(); // ← din DbContext
+
+
             builder.Services.AddScoped<IFlightService, FlightService>();
             builder.Services.AddScoped<IService<Hotel>, HotelService>();
             builder.Services.AddScoped<ITravelPackageService, TravelPackageService>();
             builder.Services.AddScoped<IService<Flightpath>, FlightpathService>();
             builder.Services.AddScoped<IService<IataLocation>, IataLocationService>();
             builder.Services.AddScoped<ICurrentWeatherService, CurrentWeatherService>();
+
+            builder.Services.AddCascadingAuthenticationState();
+
+            builder.Services.AddScoped<IdentityUserAccessor>();
+
+            builder.Services.AddScoped<IdentityRedirectManager>();
+
+            builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
+
+            builder.Services.AddAuthentication(options =>
+            {
+                options.DefaultScheme = IdentityConstants.ApplicationScheme;
+                options.DefaultSignInScheme = IdentityConstants.ExternalScheme;
+            })
+            .AddIdentityCookies();
+
+            builder.Services.AddIdentityCore<GotorzAppUser>(options => options.SignIn.RequireConfirmedAccount = true)
+            .AddEntityFrameworkStores<GotorzContext>()
+            .AddSignInManager()
+            .AddDefaultTokenProviders();
+
+            builder.Services.AddSingleton<IEmailSender<GotorzAppUser>, IdentityNoOpEmailSender>();
 
             var app = builder.Build();
 
@@ -69,6 +99,8 @@ namespace GotorzApp
                 .AddAdditionalAssemblies(typeof(Client._Imports).Assembly);
 
             app.MapHub<ChatHub>("/chathub");
+
+            app.MapAdditionalIdentityEndpoints();;
 
             app.Run();
         }
