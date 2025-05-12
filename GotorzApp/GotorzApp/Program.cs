@@ -7,7 +7,7 @@ using Shared.Service;
 using Microsoft.AspNetCore.ResponseCompression;
 using GotorzApp.Hubs;
 using GotorzApp.Components.Account;
-using GotorzApp.Data;
+
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 

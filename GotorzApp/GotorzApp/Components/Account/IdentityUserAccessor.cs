@@ -1,4 +1,4 @@
-﻿using GotorzApp.Data;
+﻿using Shared.Data;
 using Microsoft.AspNetCore.Identity;
 
 namespace GotorzApp.Components.Account

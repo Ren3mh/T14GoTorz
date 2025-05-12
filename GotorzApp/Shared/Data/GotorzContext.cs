@@ -4,12 +4,15 @@ using System;
 using System.Collections.Generic;
 using System.Reflection.Metadata;
 using Shared;
+using Shared.Data;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore;//Entity framework relational
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore; // ✅
+
+
 
 namespace Shared.Data;
 
-public partial class GotorzContext : DbContext
+public partial class GotorzContext : IdentityDbContext<GotorzAppUser>
 {
     public GotorzContext(DbContextOptions<GotorzContext> options)
         : base(options)
@@ -30,8 +33,11 @@ public partial class GotorzContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        base.OnModelCreating(modelBuilder);
+        
         modelBuilder.Entity<Flight>(entity =>
         {
+
             entity.Property(e => e.ArrivalTime).HasColumnType("datetime");
             entity.Property(e => e.DepartureTime).HasColumnType("datetime");
             entity.Property(e => e.IataDestinationId).HasColumnName("IATADestinationId");

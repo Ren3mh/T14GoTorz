@@ -2,7 +2,7 @@
 using System.Text.Json;
 using GotorzApp.Components.Account.Pages;
 using GotorzApp.Components.Account.Pages.Manage;
-using GotorzApp.Data;
+using Shared.Data;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Http.Extensions;
