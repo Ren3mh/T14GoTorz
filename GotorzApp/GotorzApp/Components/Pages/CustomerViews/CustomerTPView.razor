@@ -1,7 +1,7 @@
 ﻿@page "/customertp"
-@inject IService<TravelPackage> TravelPackageService
+@inject ITravelPackageService TravelPackageService
 @inject IService<IataLocation> IataLocationService
-@inject CurrentWeatherService CurrentWeatherService
+@inject ICurrentWeatherService CurrentWeatherService
 
 <h3>Rejsepakker</h3>
 
@@ -16,7 +16,10 @@ else if (unsortedTravelPackages.Count == 0)
 else 
 {
     <label for="leavingFrom" class="form-label">Rejser fra:</label>
-    <input style="width:290px; height:25px" type="datetime" @bind-value="EarliestDeparture" />
+    @* <input style="width:290px; height:25px" type="datetime" @bind-value="EarliestDeparture" /> *@
+    <InputDate Type="InputDateType.Date"
+               min="@DateTime.Now.ToString("yyyy-MM-dd")"
+               style="width:290px; height:25px" @bind-Value="EarliestDeparture" />
     <div class="col">
         <label for="leavingFrom" class="form-label">Rejser fra:</label>
         <InputSelect style="width:290px; height:25px" id="leavingFrom" @bind-Value="selectedIataCode">
