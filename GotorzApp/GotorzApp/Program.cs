@@ -36,7 +36,7 @@ namespace GotorzApp
 
             //Add database context
             builder.Services.AddDbContextFactory<GotorzContext>(options =>
-                options.UseSqlServer(builder.Configuration.GetConnectionString("LocalString")));
+                options.UseSqlServer(builder.Configuration.GetConnectionString("GotorzAppContext")));
             builder.Services.AddHttpClient<CurrentWeatherService>();
 
             builder.Services.AddDefaultIdentity<IdentityUser>()
