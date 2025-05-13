@@ -3,6 +3,8 @@
 @using Microsoft.AspNetCore.SignalR.Client
 @inject NavigationManager Navigation
 @implements IAsyncDisposable
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize]
 
 <PageTitle>Chat</PageTitle>
 
