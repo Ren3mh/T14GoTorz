@@ -31,10 +31,24 @@ public partial class GotorzContext : IdentityDbContext<GotorzAppUser>
 
     public virtual DbSet<VwFlight> VwFlights { get; set; }
 
+    public virtual DbSet<Chat> Chats { get; set; }
+
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-        
+
+        modelBuilder.Entity<Chat>(entity =>
+        {
+            entity.Property(e => e.Message).IsRequired();
+            entity.Property(e => e.SentAt).HasColumnType("datetime");
+            entity.HasOne(e => e.Sender)
+                .WithMany()
+                .HasForeignKey(e => e.SenderId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+
         modelBuilder.Entity<Flight>(entity =>
         {
 
