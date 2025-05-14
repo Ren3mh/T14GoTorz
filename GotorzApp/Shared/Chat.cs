@@ -7,7 +7,7 @@ namespace Shared
     {
         public int Id { get; set; }
         public string SenderId { get; set; } = string.Empty; // FK to AspNetUsers
-        public string? ReceiverId { get; set; } // Optional: for private chats
+        public string ReceiverId { get; set; } // 
         public string Message { get; set; } = string.Empty;
         public DateTime SentAt { get; set; } = DateTime.UtcNow;
 

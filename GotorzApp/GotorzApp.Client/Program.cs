@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 
 namespace GotorzApp.Client
@@ -9,6 +10,8 @@ namespace GotorzApp.Client
             var builder = WebAssemblyHostBuilder.CreateDefault(args);
 
             builder.Services.AddBlazorBootstrap();
+
+
 
             await builder.Build().RunAsync();
         }

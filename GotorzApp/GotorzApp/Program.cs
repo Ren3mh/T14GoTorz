@@ -49,6 +49,8 @@ namespace GotorzApp
             builder.Services.AddScoped<IService<Flightpath>, FlightpathService>();
             builder.Services.AddScoped<IService<IataLocation>, IataLocationService>();
             builder.Services.AddScoped<ICurrentWeatherService, CurrentWeatherService>();
+            builder.Services.AddScoped<ChatService>();
+
 
             builder.Services.AddCascadingAuthenticationState();
 
@@ -71,6 +73,7 @@ namespace GotorzApp
             .AddDefaultTokenProviders();
 
             builder.Services.AddSingleton<IEmailSender<GotorzAppUser>, IdentityNoOpEmailSender>();
+           
 
             var app = builder.Build();
 

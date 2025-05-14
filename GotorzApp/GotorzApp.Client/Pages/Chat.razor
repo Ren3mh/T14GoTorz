@@ -3,17 +3,16 @@
 @using Microsoft.AspNetCore.SignalR.Client
 @inject NavigationManager Navigation
 @implements IAsyncDisposable
+@using Microsoft.AspNetCore.Components.Authorization
 @using Microsoft.AspNetCore.Authorization
+@* @inject AuthenticationStateProvider AuthenticationStateProvider *@
 @attribute [Authorize]
 
 <PageTitle>Chat</PageTitle>
 
-<div class="form-group">
-    <label>
-        User:
-        <input @bind="userInput" />
-    </label>
-</div>
+  User: @userName
+
+
 <div class="form-group">
     <label>
         Message:
@@ -34,11 +33,14 @@
 @code {
     private HubConnection? hubConnection;
     private List<string> messages = [];
-    private string? userInput;
+	private string? userName => context != null ? context.User.Identity?.Name : "No user found";
     private string? messageInput;
+    private AuthenticationState context;
+
 
     protected override async Task OnInitializedAsync()
     {
+
         hubConnection = new HubConnectionBuilder()
             .WithUrl(Navigation.ToAbsoluteUri("/chathub"))
             .Build();
@@ -50,16 +52,29 @@
             InvokeAsync(StateHasChanged);
         });
 
+
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = ;
+        @context.User.Identity?.Name
+
+        if (user.Identity is not null && user.Identity.IsAuthenticated)
+        {
+            userName = user.Identity.Name;
+        }
+
         await hubConnection.StartAsync();
     }
 
+    // [Authorize]
     private async Task Send()
     {
-        if (hubConnection is not null)
+        if (hubConnection is not null && !string.IsNullOrWhiteSpace(userName) && !string.IsNullOrWhiteSpace(messageInput))
         {
-            await hubConnection.SendAsync("SendMessage", userInput, messageInput);
+            await hubConnection.SendAsync("SendMessage", userName, messageInput);
+            messageInput = ""; // Clear the input after sending
         }
     }
+
 
     public bool IsConnected =>
         hubConnection?.State == HubConnectionState.Connected;
