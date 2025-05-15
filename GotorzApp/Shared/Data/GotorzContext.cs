@@ -41,11 +41,8 @@ public partial class GotorzContext : IdentityDbContext<GotorzAppUser>
         modelBuilder.Entity<Chat>(entity =>
         {
             entity.Property(e => e.Message).IsRequired();
+            entity.Property(e => e.SenderUserName).IsRequired();
             entity.Property(e => e.SentAt).HasColumnType("datetime");
-            entity.HasOne(e => e.Sender)
-                .WithMany()
-                .HasForeignKey(e => e.SenderId)
-                .OnDelete(DeleteBehavior.Cascade);
         });
 
 

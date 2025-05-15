@@ -6,12 +6,20 @@ namespace Shared
     public class Chat
     {
         public int Id { get; set; }
-        public string SenderId { get; set; } = string.Empty; // FK to AspNetUsers
-        public string ReceiverId { get; set; } // 
-        public string Message { get; set; } = string.Empty;
+        public string SenderUserName { get; set; } // FK to AspNetUsers
+        public string Message { get; set; }
         public DateTime SentAt { get; set; } = DateTime.UtcNow;
 
-        // Navigation property (optional)
-        public GotorzAppUser? Sender { get; set; }
+        public Chat()
+        {
+            // Default constructor
+        }
+
+        public Chat(string senderUserName, string message)
+        {
+            SenderUserName = senderUserName;
+            Message = message;
+            SentAt = DateTime.UtcNow;
+        }
     }
 }

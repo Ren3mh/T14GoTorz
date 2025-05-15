@@ -18,15 +18,12 @@ public class ChatHub : Hub
     {
         Console.WriteLine($"SendMessage called: {user}: {message}");
 
-        // Get the authenticated user's ID (if using authentication)
-        var userId = Context.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? user;
-
         // Save the message to the database
         var chat = new Chat
         {
-            SenderId = userId,
+            SenderUserName = user,
             Message = message,
-            SentAt = DateTime.UtcNow
+            SentAt = DateTime.UtcNow,
         };
         await _chatService.SaveMessageAsync(chat);
 

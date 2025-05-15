@@ -1,30 +1,33 @@
 ﻿using Shared.Data;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Internal;
 
 namespace Shared.Service
 {
     public class ChatService
     {
-        private readonly GotorzContext _context;
+        private readonly IDbContextFactory<GotorzContext> _dbContextFactory;
 
-        public ChatService(GotorzContext context)
+
+        public ChatService(IDbContextFactory<GotorzContext> dbContextFactory)
         {
-            _context = context;
+            _dbContextFactory = dbContextFactory;
         }
 
         // Save a chat message
         public async Task SaveMessageAsync(Chat chat)
         {
+            var _context = await _dbContextFactory.CreateDbContextAsync();
             _context.Chats.Add(chat);
             await _context.SaveChangesAsync();
         }
 
         // Retrieve all messages for a user (sent or received)
-        public async Task<List<Chat>> GetUserChatsAsync(string userId)
+        public async Task<List<Chat>> GetUserChatsAsync()
         {
+            var _context = await _dbContextFactory.CreateDbContextAsync();
+
             return await _context.Chats
-                .Where(c => c.SenderId == userId || c.ReceiverId == userId)
-                .OrderBy(c => c.SentAt)
                 .ToListAsync();
         }
     }

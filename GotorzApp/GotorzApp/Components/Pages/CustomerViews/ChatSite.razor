@@ -1,38 +1,49 @@
 ﻿@page "/chat"
-@rendermode InteractiveWebAssembly
+@rendermode InteractiveServer
 @using Microsoft.AspNetCore.SignalR.Client
 @inject NavigationManager Navigation
 @implements IAsyncDisposable
 @using Microsoft.AspNetCore.Components.Authorization
 @using Microsoft.AspNetCore.Authorization
-@* @inject AuthenticationStateProvider AuthenticationStateProvider *@
-@attribute [Authorize]
+@inject ChatService chatService
+
+
+@using System.Security.Claims
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
 <PageTitle>Chat</PageTitle>
 
-  User: @userName
+<AuthorizeView>
+    <Authorized>
+        <p>Hello, @context.User.Identity?.Name!</p>
+        <div class="form-group">
+            <label>
+                Message:
+                <input @bind="messageInput" size="50" />
+            </label>
+        </div>
+        <button @onclick="Send" disabled="@(!IsConnected)">Send</button>
 
+        <hr>
 
-<div class="form-group">
-    <label>
-        Message:
-        <input @bind="messageInput" size="50" />
-    </label>
-</div>
-<button @onclick="Send" disabled="@(!IsConnected)">Send</button>
-
-<hr>
-
-<ul id="messagesList">
-    @foreach (var message in messages)
-    {
-        <li>@message</li>
-    }
-</ul>
+        <ul id="messagesList">
+            @foreach (var message in messages)
+            {
+                <li>@message.SenderUserName: @message.Message</li>
+            }
+        </ul>
+    </Authorized>
+    <Authorizing>
+        <p>You can only see this content while authentication is in progress.</p>
+    </Authorizing>
+    <NotAuthorized>
+        <p>You are not authorized to view this content.</p>
+    </NotAuthorized>
+</AuthorizeView>
 
 @code {
     private HubConnection? hubConnection;
-    private List<string> messages = [];
+    private List<Chat> messages = new List<Chat>();
 	private string? userName => context != null ? context.User.Identity?.Name : "No user found";
     private string? messageInput;
     private AuthenticationState context;
@@ -47,28 +58,21 @@
 
         hubConnection.On<string, string>("ReceiveMessage", (user, message) =>
         {
-            var encodedMsg = $"{user}: {message}";
+            var encodedMsg = new Chat(user, message);
             messages.Add(encodedMsg);
             InvokeAsync(StateHasChanged);
         });
 
-
-        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-        var user = ;
-        @context.User.Identity?.Name
-
-        if (user.Identity is not null && user.Identity.IsAuthenticated)
-        {
-            userName = user.Identity.Name;
-        }
-
         await hubConnection.StartAsync();
+
+        context = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        messages = await chatService.GetUserChatsAsync();
     }
 
     // [Authorize]
     private async Task Send()
     {
-        if (hubConnection is not null && !string.IsNullOrWhiteSpace(userName) && !string.IsNullOrWhiteSpace(messageInput))
+        if (IsConnected && !string.IsNullOrWhiteSpace(userName) && !string.IsNullOrWhiteSpace(messageInput))
         {
             await hubConnection.SendAsync("SendMessage", userName, messageInput);
             messageInput = ""; // Clear the input after sending
