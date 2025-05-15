@@ -3,8 +3,6 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection.Metadata;
-using Shared;
-using Shared.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore; // ✅
 
@@ -43,6 +41,10 @@ public partial class GotorzContext : IdentityDbContext<GotorzAppUser>
             entity.Property(e => e.Message).IsRequired();
             entity.Property(e => e.SenderUserName).IsRequired();
             entity.Property(e => e.SentAt).HasColumnType("datetime");
+
+            entity.HasOne(c => c.User)
+                .WithMany()
+                .HasForeignKey(c => c.UserId);
         });
 
 

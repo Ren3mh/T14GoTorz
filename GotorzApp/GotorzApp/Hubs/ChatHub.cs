@@ -25,7 +25,6 @@ public class ChatHub : Hub
             Message = message,
             SentAt = DateTime.UtcNow,
         };
-        await _chatService.SaveMessageAsync(chat);
 
         // Broadcast to all clients
         await Clients.All.SendAsync("ReceiveMessage", user, message);

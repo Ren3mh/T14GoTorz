@@ -8,6 +8,7 @@
 @inject ChatService chatService
 
 
+
 @using System.Security.Claims
 @inject AuthenticationStateProvider AuthenticationStateProvider
 
@@ -76,6 +77,15 @@
         {
             await hubConnection.SendAsync("SendMessage", userName, messageInput);
             messageInput = ""; // Clear the input after sending
+
+            ClaimsPrincipal claim = context.User;
+            var newChat = new Chat
+                {
+                    SenderUserName = userName,
+                    Message = messageInput,
+                    SentAt = DateTime.UtcNow,
+                };
+            await chatService.SaveMessageAsync(newChat, claim.Identity);
         }
     }
 

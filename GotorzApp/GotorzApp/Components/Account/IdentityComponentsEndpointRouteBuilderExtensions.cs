@@ -2,13 +2,13 @@
 using System.Text.Json;
 using GotorzApp.Components.Account.Pages;
 using GotorzApp.Components.Account.Pages.Manage;
-using Shared.Data;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
+using Shared;
 
 namespace Microsoft.AspNetCore.Routing
 {

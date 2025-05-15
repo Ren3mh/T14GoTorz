@@ -1,6 +1,6 @@
-﻿using Shared.Data;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using Shared;
 
 namespace GotorzApp.Components.Account
 {
