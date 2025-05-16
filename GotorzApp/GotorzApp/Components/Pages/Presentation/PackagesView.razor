@@ -1,6 +1,7 @@
 ﻿@page "/packages"
 @inject ITravelPackageService TravelPackageService
 @inject ICurrentWeatherService CurrentWeatherService
+@rendermode InteractiveServer
 
 @if (unsortedTravelPackages == null)
 {
@@ -35,7 +36,7 @@ else
     </div>
 
     @* Travelpackages *@
-    <div class="container">
+    <div >
         <div class="row">
             <div class="col-md-6">
                 <table class="table">
