@@ -76,16 +76,17 @@
         if (IsConnected && !string.IsNullOrWhiteSpace(userName) && !string.IsNullOrWhiteSpace(messageInput))
         {
             await hubConnection.SendAsync("SendMessage", userName, messageInput);
-            messageInput = ""; // Clear the input after sending
-
+            
             ClaimsPrincipal claim = context.User;
             var newChat = new Chat
                 {
                     SenderUserName = userName,
                     Message = messageInput,
-                    SentAt = DateTime.UtcNow,
+                    SentAt = DateTime.Now,
                 };
-            await chatService.SaveMessageAsync(newChat, claim.Identity);
+            await chatService.SaveMessageAsync(newChat, claim);
+
+            messageInput = ""; // Clear the input after sending
         }
     }
 

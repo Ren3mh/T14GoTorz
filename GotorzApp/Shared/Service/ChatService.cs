@@ -18,11 +18,10 @@ namespace Shared.Service
         }
 
         // Save a chat message
-        public async Task SaveMessageAsync(Chat newChat, IIdentity identity)
+        public async Task SaveMessageAsync(Chat newChat, ClaimsPrincipal identity)
         {
-            var claims = new ClaimsPrincipal(identity);
             var _context = await _dbContextFactory.CreateDbContextAsync();
-            var user = await _userManager.GetUserAsync(claims);
+            var user = await _userManager.GetUserAsync(identity);
             if (user != null)
             {
                 newChat.UserId = user.Id; // Set the UserId property 
