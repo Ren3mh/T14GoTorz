@@ -41,11 +41,11 @@ public class TravelPackageService : ITravelPackageService
     public async Task<bool> Add(TravelPackage newTravelPackage)
     {
         using var context = _dbContextFactory.CreateDbContext();
-        using (var transaction = await context.Database.BeginTransactionAsync())
+        using var transaction = await context.Database.BeginTransactionAsync();
         try
         {
             // Add OutboundFlight
-            context.Flights.Add(newTravelPackage.Flightpaths.First().OutboundFlight);
+            var OutboundFlight = context.Flights.Add(newTravelPackage.Flightpaths.First().OutboundFlight);
             context.SaveChanges();
 
             // Add HomeboundFlight
@@ -56,15 +56,25 @@ public class TravelPackageService : ITravelPackageService
             context.Flightpaths.Add(newTravelPackage.Flightpaths.First());
             context.SaveChanges();
 
+            // Add Hotel
+            context.Hotels.Add(newTravelPackage.Hotel);
+            context.SaveChanges();
+
+            // Add TravelPackage
+            context.TravelPackages.Add(newTravelPackage);
+            context.SaveChanges();
+
             // Commit the transaction if all operations are successful
             transaction.Commit();
             return true;
         }
-        catch (Exception)
+        catch (Exception ex)
         {
             // Rollback the transaction if any operation fails
             transaction.Rollback();
-            throw;
+            Console.WriteLine("Error occurred while adding travel package: " + newTravelPackage.Title);
+            Console.WriteLine($"Exception: {ex.Message}");
+            return false;
         }
     }
 
