@@ -60,9 +60,41 @@ public class TravelPackageService : ITravelPackageService
         }
     }
 
-    public Task<bool> Update(TravelPackage TravelPackage)
+    public async Task<bool> Update(TravelPackage TravelPackage)
     {
-        throw new NotImplementedException();
+        using var context = _dbContextFactory.CreateDbContext();
+        using var transaction = await context.Database.BeginTransactionAsync();
+        try
+        {
+            var existingTravelPackage = context.TravelPackages
+                .Include(e => e.Flightpaths)
+                .ThenInclude(o => o.OutboundFlight.IataDestination)
+                .Include(e => e.Flightpaths)
+                .ThenInclude(o => o.OutboundFlight.IataOrigin)
+                .Include(e => e.Flightpaths)
+                .ThenInclude(h => h.HomeboundFlight.IataDestination)
+                .Include(e => e.Flightpaths)
+                .ThenInclude(h => h.HomeboundFlight.IataOrigin)
+                .Include(e => e.Hotel)
+                .FirstOrDefault(tp => tp.Id == TravelPackage.Id);
+
+            if (existingTravelPackage == null)
+            {
+                return false;
+            }
+            context.Entry(existingTravelPackage).CurrentValues.SetValues(TravelPackage);
+            context.SaveChanges();
+            transaction.Commit();
+            return true;
+        }
+        catch (Exception ex)
+        {
+            // Rollback the transaction if any operation fails
+            transaction.Rollback();
+            Console.WriteLine("Error occurred while updating travel package: " + TravelPackage.Title);
+            Console.WriteLine($"Exception: {ex.Message}");
+            return false;
+        }
     }
 
     public async Task<bool> Delete(int id)

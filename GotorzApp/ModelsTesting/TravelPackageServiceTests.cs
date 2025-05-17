@@ -29,7 +29,7 @@ public class TravelPackageServiceTests
     {
         // Arrange
         var options = new DbContextOptionsBuilder<GotorzContext>()
-            .UseInMemoryDatabase(databaseName: "TestDatabase")
+            .UseInMemoryDatabase(databaseName: "TestDatabase1")
             .ConfigureWarnings(warnings => warnings.Ignore(InMemoryEventId.TransactionIgnoredWarning))
             .Options;
 
@@ -123,6 +123,41 @@ public class TravelPackageServiceTests
         Assert.True(newContext.Flightpaths.Count() == 1);
         Assert.True(newContext.Flights.Count() == 2);
         Assert.True(newContext.IataLocations.Count() == 3);
+    }
+
+    [Fact]
+    public async Task Update_TravelPackage_SuccessAsync()
+    {
+        // Arrange
+        var options = new DbContextOptionsBuilder<GotorzContext>()
+            .UseInMemoryDatabase(databaseName: "TestDatabase3")
+            .ConfigureWarnings(warnings => warnings.Ignore(InMemoryEventId.TransactionIgnoredWarning))
+            .Options;
+
+        using var context = new GotorzContext(options);
+        context.Database.EnsureCreated();
+
+        // Seed the database with initial data
+        var travelPackageToUpdate = CreateTravelPackage();
+        travelPackageToUpdate.Id = 1;
+        context.TravelPackages.Add(travelPackageToUpdate);
+        context.SaveChanges();
+        
+        var dbContextFactoryMock = new Mock<IDbContextFactory<GotorzContext>>();
+        dbContextFactoryMock.Setup(factory => factory.CreateDbContext()).Returns(context);
+        var service = new TravelPackageService(dbContextFactoryMock.Object);
+        
+        // Act
+        travelPackageToUpdate.Title = "Updated Title";
+        var result = await service.Update(travelPackageToUpdate);
+        
+        // Assert
+        Assert.True(result);
+
+        var newContext = new GotorzContext(options);
+        var updatedTravelPackage = await newContext.TravelPackages.FindAsync(1);
+        Assert.NotNull(updatedTravelPackage);
+        Assert.Equal("Updated Title", updatedTravelPackage.Title);
     }
 
     private TravelPackage CreateTravelPackage()
