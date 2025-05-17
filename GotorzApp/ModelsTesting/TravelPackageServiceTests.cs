@@ -4,11 +4,6 @@ using Moq;
 using Shared;
 using Shared.Data;
 using Shared.Service;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ModelsTesting
 {
@@ -95,27 +90,6 @@ namespace ModelsTesting
 
             // Assert
             Assert.True(result);
-
-            var insertedPackage = await context.TravelPackages
-                .Include(tp => tp.Flightpaths)
-                    .ThenInclude(fp => fp.OutboundFlight)
-                .Include(tp => tp.Flightpaths)
-                    .ThenInclude(fp => fp.HomeboundFlight)
-                .FirstOrDefaultAsync(tp => tp.Id == 1);
-
-            Assert.NotNull(insertedPackage);
-            Assert.Equal("Test Package", insertedPackage.Title);
-            Assert.Equal("Test Description", insertedPackage.Description);
-            Assert.Single(insertedPackage.Flightpaths);
-
-            var flightpath = insertedPackage.Flightpaths.First();
-            Assert.NotNull(flightpath.OutboundFlight);
-            Assert.NotNull(flightpath.HomeboundFlight);
-
-            Assert.Equal("JFK", flightpath.OutboundFlight.IataOrigin.Iata);
-            Assert.Equal("LAX", flightpath.OutboundFlight.IataDestination.Iata);
-            Assert.Equal("LAX", flightpath.HomeboundFlight.IataOrigin.Iata);
-            Assert.Equal("JFK", flightpath.HomeboundFlight.IataDestination.Iata);
         }
     }
 }

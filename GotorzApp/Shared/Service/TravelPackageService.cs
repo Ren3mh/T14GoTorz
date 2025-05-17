@@ -44,27 +44,9 @@ public class TravelPackageService : ITravelPackageService
         using var transaction = await context.Database.BeginTransactionAsync();
         try
         {
-            // Add OutboundFlight
-            var OutboundFlight = context.Flights.Add(newTravelPackage.Flightpaths.First().OutboundFlight);
+            var tp = context.TravelPackages.Add(newTravelPackage);
             context.SaveChanges();
 
-            // Add HomeboundFlight
-            context.Flights.Add(newTravelPackage.Flightpaths.First().HomeboundFlight);
-            context.SaveChanges();
-
-            // Add Flightpath
-            context.Flightpaths.Add(newTravelPackage.Flightpaths.First());
-            context.SaveChanges();
-
-            // Add Hotel
-            context.Hotels.Add(newTravelPackage.Hotel);
-            context.SaveChanges();
-
-            // Add TravelPackage
-            context.TravelPackages.Add(newTravelPackage);
-            context.SaveChanges();
-
-            // Commit the transaction if all operations are successful
             transaction.Commit();
             return true;
         }

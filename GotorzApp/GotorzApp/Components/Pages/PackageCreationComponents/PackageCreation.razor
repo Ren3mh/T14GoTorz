@@ -1,6 +1,5 @@
 ﻿@page "/pc"
 @using System.ComponentModel.DataAnnotations;
-@inject IService<Hotel> HotelService
 @inject ITravelPackageService TravelPackageService
 @rendermode InteractiveServer
 @attribute [StreamRendering]
@@ -9,7 +8,7 @@
 
 <h1>Package Createion</h1>
 
-<Accordion @ref="accordion1">
+<Accordion @ref="accordion">
     <AccordionItem>
         <TitleTemplate>
             <Icon Name="IconName.AirplaneFill" Class="me-1" /> Create Flights
@@ -41,7 +40,7 @@
         <InputTextArea id="Description" @bind-Value="newTravelPackage.Description" class="form-control" />
         <ValidationMessage For="() => newTravelPackage.Description" class="text-danger" />
     </div>
-    <button type="submit" disabled="@(!IsValid())" class="btn btn-primary">Create Travel Package</button>
+    <button id="submitBtn" type="submit" disabled="@(!IsValid())" class="btn btn-primary">Create Travel Package</button>
 </EditForm>
 
 @if (added)
@@ -53,18 +52,6 @@
     <h4>Flightpath</h4>
     <p>@newTravelPackage.Flightpaths.First().Fare</p>
     <p>@newTravelPackage.Flightpaths.First().Luggage</p>
-
-    <p>Outbound</p>
-    <p>@newTravelPackage.Flightpaths.First().OutboundFlight.IataOrigin.City</p>
-    <p>@newTravelPackage.Flightpaths.First().OutboundFlight.IataDestination.City</p>
-    <p>@newTravelPackage.Flightpaths.First().OutboundFlight.DepartureTime</p>
-    <p>@newTravelPackage.Flightpaths.First().OutboundFlight.ArrivalTime</p>
-
-    <p>Outbound</p>
-    <p>@newTravelPackage.Flightpaths.First().HomeboundFlight.IataOrigin.Iata</p>
-    <p>@newTravelPackage.Flightpaths.First().HomeboundFlight.IataDestination.Iata</p>
-    <p>@newTravelPackage.Flightpaths.First().HomeboundFlight.DepartureTime</p>
-    <p>@newTravelPackage.Flightpaths.First().HomeboundFlight.ArrivalTime</p>
 
     <h4>Hotel</h4>
     <p>@newTravelPackage.Hotel.Name </p>
@@ -81,11 +68,11 @@
 }
 
 @code {
-    private Accordion accordion1 = default!;
-    private async Task ShowHotelCreationAsync() => await accordion1.ShowAccordionItemByIndexAsync(1);
+    private Accordion accordion = default!;
+    private async Task ShowHotelCreationAsync() => await accordion.ShowAccordionItemByIndexAsync(1);
 
-    private async Task HideFlightpathCreationAsync() => await accordion1.HideAccordionItemByIndexAsync(0);
-    private Task HideAllAccordionItemsAsync() => accordion1.HideAllAccordionItemsAsync();
+    private async Task HideFlightpathCreationAsync() => await accordion.HideAccordionItemByIndexAsync(0);
+    private Task HideAllAccordionItemsAsync() => accordion.HideAllAccordionItemsAsync();
 
     FPCreation flightpathForm = new FPCreation();
     private void HandleValidFlightpathSubmit(Flightpath flightpath)
@@ -128,16 +115,27 @@
     }
 
     [SupplyParameterFromForm(FormName = "CreateTravelPackage")]
-    TravelPackage newTravelPackage { get; set; } = new TravelPackage();
+    public TravelPackage newTravelPackage { get; set; } = new TravelPackage();
 
     protected override async Task OnInitializedAsync()
     {
     }
 
-    bool added = false;
+    public bool added = false;
     public async Task SubmitTravelPackage()
     {
-        added = true;
-        await TravelPackageService.Add(newTravelPackage);
+        var travelPackageToInsert = new TravelPackage
+            {
+                Title = newTravelPackage.Title,
+                Description = newTravelPackage.Description,
+                Flightpaths = new List<Flightpath> { newTravelPackage.Flightpaths.First() },
+                Hotel = newTravelPackage.Hotel
+            };
+        travelPackageToInsert.Flightpaths.First().OutboundFlight.IataOrigin = null;
+        travelPackageToInsert.Flightpaths.First().OutboundFlight.IataDestination = null;
+        travelPackageToInsert.Flightpaths.First().HomeboundFlight.IataOrigin = null;
+        travelPackageToInsert.Flightpaths.First().HomeboundFlight.IataDestination = null;
+
+        added = await TravelPackageService.Add(travelPackageToInsert);
     }
 }
