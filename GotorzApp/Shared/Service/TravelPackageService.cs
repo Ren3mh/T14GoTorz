@@ -65,8 +65,34 @@ public class TravelPackageService : ITravelPackageService
         throw new NotImplementedException();
     }
 
-    public Task<bool> Delete(int id)
+    public async Task<bool> Delete(int id)
     {
-        throw new NotImplementedException();
+        using var context = _dbContextFactory.CreateDbContext();
+        using var transaction = await context.Database.BeginTransactionAsync();
+        try
+        {
+            var travelPackage = context.TravelPackages.Find(id);
+            if (travelPackage == null)
+            {
+                return false;
+            }
+
+            context.Flightpaths.RemoveRange(travelPackage.Flightpaths);
+            context.Flights.RemoveRange(travelPackage.Flightpaths.SelectMany(fp => new[] { fp.OutboundFlight, fp.HomeboundFlight }));
+            context.TravelPackages.Remove(travelPackage);
+            context.Hotels.Remove(travelPackage.Hotel);
+            context.SaveChanges();
+
+            transaction.Commit();
+            return true;
+        }
+        catch (Exception ex)
+        {
+            // Rollback the transaction if any operation fails
+            transaction.Rollback();
+            Console.WriteLine("Error occurred while deleting travel package with ID: " + id);
+            Console.WriteLine($"Exception: {ex.Message}");
+            return false;
+        }
     }
 }

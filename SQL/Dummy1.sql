@@ -1,4 +1,4 @@
-USE Gotorz;
+USE GotorzAppContext;
 Go
 
 -- Insert IATA locations
