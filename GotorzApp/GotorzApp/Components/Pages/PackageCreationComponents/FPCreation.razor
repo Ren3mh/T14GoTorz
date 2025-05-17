@@ -1,5 +1,5 @@
 ﻿@using System.ComponentModel.DataAnnotations;
-@inject IService<IataLocation> IataLocationService
+@inject IIataLocationService IataLocationService
 
 
 <div class="row">
@@ -112,7 +112,9 @@
             DepartureTime = outbound.DepartureTime,
             ArrivalTime = outbound.ArrivalTime,
             IataOrigin = Iatas.Find(iata => iata.Id == selectedIataOriginId),
-            IataDestination = Iatas.Find(iata => iata.Id == selectedIataDestinationId)
+            IataDestination = Iatas.Find(iata => iata.Id == selectedIataDestinationId),
+            IataOriginId = selectedIataOriginId,
+            IataDestinationId = selectedIataDestinationId
         };
 
         var _homebound = new Flight()
@@ -120,7 +122,9 @@
             DepartureTime = homebound.DepartureTime,
             ArrivalTime = homebound.ArrivalTime,
             IataOrigin = Iatas.Find(iata => iata.Id == selectedIataDestinationId),
-            IataDestination = Iatas.Find(iata => iata.Id == selectedIataOriginId)
+            IataDestination = Iatas.Find(iata => iata.Id == selectedIataOriginId),
+            IataOriginId = selectedIataDestinationId,
+            IataDestinationId = selectedIataOriginId
         };
 
         var _newFlightpath = newFlightpath;
