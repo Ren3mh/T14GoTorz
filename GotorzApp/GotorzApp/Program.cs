@@ -44,10 +44,10 @@ namespace GotorzApp
 
 
             builder.Services.AddScoped<IFlightService, FlightService>();
-            builder.Services.AddScoped<IService<Hotel>, HotelService>();
+            builder.Services.AddScoped<IHotelService, HotelService>();
             builder.Services.AddScoped<ITravelPackageService, TravelPackageService>();
             builder.Services.AddScoped<IService<Flightpath>, FlightpathService>();
-            builder.Services.AddScoped<IService<IataLocation>, IataLocationService>();
+            builder.Services.AddScoped<IIataLocationService, IataLocationService>();
             builder.Services.AddScoped<ICurrentWeatherService, CurrentWeatherService>();
             builder.Services.AddScoped<ChatService>();
 

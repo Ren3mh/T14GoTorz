@@ -8,7 +8,7 @@ using Shared.Data;
 
 namespace Shared.Service;
 
-public class IataLocationService: IService<IataLocation>
+public class IataLocationService : IIataLocationService
 {
 
     private readonly IDbContextFactory<GotorzContext> _dbContextFactory;
@@ -26,10 +26,26 @@ public class IataLocationService: IService<IataLocation>
         return iatas;
     }
 
-    public async Task Add(IataLocation x)
+    public async Task<bool> Add(IataLocation x)
     {
         using var context = _dbContextFactory.CreateDbContext();
         context.IataLocations.Add(x);
         await context.SaveChangesAsync();
+        return true;
+    }
+
+    public Task<IataLocation> GetById(int id)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<bool> Update(IataLocation iata)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<bool> Delete(int id)
+    {
+        throw new NotImplementedException();
     }
 }

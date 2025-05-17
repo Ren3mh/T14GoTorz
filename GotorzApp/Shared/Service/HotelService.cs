@@ -8,7 +8,7 @@ using Shared.Data;
 
 namespace Shared.Service;
 
-public class HotelService : IService<Hotel>
+public class HotelService : IHotelService
 {
 
     private readonly IDbContextFactory<GotorzContext> _dbContextFactory;
@@ -26,10 +26,26 @@ public class HotelService : IService<Hotel>
         return hotels;
     }
 
-    public async Task Add(Hotel x)
+    public async Task<bool> Add(Hotel x)
     {
         using var context = _dbContextFactory.CreateDbContext();
         context.Hotels.Add(x);
         await context.SaveChangesAsync();
+        return true;
+    }
+
+    public Task<Hotel> GetById(int id)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<bool> Update(Hotel hotel)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<bool> Delete(int id)
+    {
+        throw new NotImplementedException();
     }
 }

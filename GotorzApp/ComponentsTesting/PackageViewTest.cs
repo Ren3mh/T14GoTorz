@@ -15,8 +15,7 @@ public class PackageViewTest : TestContext
 {
     private readonly Mock<ITravelPackageService> packageServiceMock;
     private readonly Mock<ICurrentWeatherService> currentWeatherServiceMock;
-
-
+    
     public PackageViewTest()
     {
         packageServiceMock = new Mock<ITravelPackageService>();
@@ -110,6 +109,7 @@ public class PackageViewTest : TestContext
         var input = cut.Find("input#HotelNameInput");
         Assert.NotNull(input);
     }
+
     [Fact]
     public void EditPropertyAndSave()
     {
@@ -133,6 +133,7 @@ public class PackageViewTest : TestContext
         {
             Main = new Main { TempMax = 25 }
         };
+
         // Act
         var cut = RenderComponent<TravelPackageEditor>(parameters => parameters
             .Add(p => p.SelectedPackage, selectedPackage)  //måske denne bare KUN skulle render PackagesView?
@@ -146,5 +147,4 @@ public class PackageViewTest : TestContext
         // Assert
         Assert.Equal("New Hotel Name", selectedPackage.Hotel.Name);
     }
-
 }
