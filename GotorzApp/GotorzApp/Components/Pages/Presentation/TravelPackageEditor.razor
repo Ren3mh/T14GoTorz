@@ -1,4 +1,13 @@
-﻿<h1 style="font-weight:bold">@SelectedPackage.Title</h1>
+﻿@if (isEditing)
+{
+    <input id="title" style="font-weight:bold" type="text" class="form-control mb-2" @bind="editedTravelPackage.Title" />
+}
+else
+{
+    <h1 style="font-weight:bold">@SelectedPackage.Title</h1>
+}
+
+
 <h4 style="font-weight:lighter; text-shadow: 2px 2px 5px purple;">@SelectedPackage.Description</h4>
 
 <div class="col">
@@ -139,6 +148,9 @@
     [Parameter]
     public EventCallback<TravelPackage> OnDelete { get; set; }
 
+    [Parameter]
+    public EventCallback OnSaveChanges { get; set; }
+
     void edit()
     {
         swapEditing();
@@ -172,7 +184,9 @@
     void save()
     {
         SelectedPackage.Hotel = editedTravelPackage.Hotel;
+        SelectedPackage.Title = editedTravelPackage.Title;
         swapEditing();
+        OnSaveChanges.InvokeAsync();
     }
 
     bool isEditing = false;
