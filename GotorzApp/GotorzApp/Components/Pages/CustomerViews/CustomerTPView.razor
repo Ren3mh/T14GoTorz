@@ -47,18 +47,18 @@ else
         <button @onclick="SwapSorting">Sorted by lowest price: @SortLowestPrice</button>
     </div>
     </div>
-    <div style="margin-top: 10px" class="card-group"> @* lav en ny cardgroup til de næste 3 cards *@
-        <div class="row">
-        @foreach (var travelPackage in filteredTravelPackages) //Lav 3 cards i gruppen
+    <div style="margin-top: 10px" class="card-group"> 
+        <div class="row"> @* experiment with taking this div out *@
+        @foreach (var travelPackage in filteredTravelPackages)
         {
             <div class="col">
-                    <div style="width: 10rem; margin-bottom: 15px" class="card">
+                    <div style="width: 10rem; margin-bottom: 15px" class="card"> @* "margin-bottom: 15px" gør så der er lidt mellemrum fra bunden af et kort til toppen af kortet under. Måske burde kortene alignes, så de alle er lige lange? *@
                 <img src="/images/hotel.jpg" class="card-img-top" alt="placeholder">
             <div class="card-body">
                 <h5 class="card-title">@travelPackage.Title</h5>
                     <p class="CardSubTitle mb-2 text-muted">@travelPackage.Hotel.Name</p>
                     <p class="card-text">@travelPackage.Description</p>
-                <Button Color="ButtonColor.Primary" To="/chat" type="ButtonType.Link">Rejs!</Button> 
+                <Button Color="ButtonColor.Primary" To="/chat" type="ButtonType.Link">Rejs!</Button> @* Tilføjet routing til chatten, hvor jeg får en fejl. Hjælp?  Også tom "Pages" mappe i client*@
             </div>
             </div>
             </div>
@@ -71,6 +71,7 @@ else
 
 
     public int displayedTPs; //Displayed TravelPackages int til at stoppe nye cardgroups og til at vise nye cards i loops
+    @* fjern ovenstående? *@
 
     private async Task SelectPackage(int packageId)
     {
