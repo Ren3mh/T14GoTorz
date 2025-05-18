@@ -97,13 +97,12 @@ public class TravelPackageService : ITravelPackageService
         }
     }
 
-    public async Task<bool> Delete(int id)
+    public async Task<bool> Delete(TravelPackage travelPackage)
     {
         using var context = _dbContextFactory.CreateDbContext();
         using var transaction = await context.Database.BeginTransactionAsync();
         try
         {
-            var travelPackage = context.TravelPackages.Find(id);
             if (travelPackage == null)
             {
                 return false;
@@ -122,7 +121,7 @@ public class TravelPackageService : ITravelPackageService
         {
             // Rollback the transaction if any operation fails
             transaction.Rollback();
-            Console.WriteLine("Error occurred while deleting travel package with ID: " + id);
+            Console.WriteLine("Error occurred while deleting travel package");
             Console.WriteLine($"Exception: {ex.Message}");
             return false;
         }

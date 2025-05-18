@@ -94,7 +94,7 @@
         </div>
         <div class="row">
             <div class="col">
-                <button style="height: 50px; width: 110px; margin-left: 5px; font-weight:bold">Slet</button>
+                <button id="delete" style="height: 50px; width: 110px; margin-left: 5px; font-weight:bold" @onclick="() => OnDelete.InvokeAsync(SelectedPackage)" >Slet</button>
                 <button id="edit" style="height: 50px; width: 110px; margin-left: 50px; font-weight:bold" hidden="@isEditing" @onclick="@edit" >Redigér</button>
                 <button id="save" style="height: 50px; width: 110px; margin-left: 50px; font-weight:bold" hidden="@(!isEditing)" @onclick="@save">Gem</button>
                 <button style="height: 50px; width: 110px; margin-left: 50px; font-weight:bold" hidden="@(!isEditing)" @onclick="@cancel">Afbryd</button>
@@ -135,6 +135,9 @@
                 HotelId = SelectedPackage.HotelId,
             };
     }
+
+    [Parameter]
+    public EventCallback<TravelPackage> OnDelete { get; set; }
 
     void edit()
     {
