@@ -4,7 +4,7 @@ on:
   push:
     branches: [ main, Development ]
   pull_request:
-    branches: [ main ]
+    branches: [ main, Development ]
 
 jobs:
   build:
@@ -42,5 +42,4 @@ jobs:
       with:
         name: coverage-report
         path: coveragereport
-
 
