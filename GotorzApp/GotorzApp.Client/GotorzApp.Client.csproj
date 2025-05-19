@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <NoDefaultLaunchSettingsFile>true</NoDefaultLaunchSettingsFile>
@@ -9,8 +9,21 @@
   </PropertyGroup>
 
   <ItemGroup>
-	<PackageReference Include="Blazor.Bootstrap" Version="3.2.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.14" />
-	<ProjectReference Include="..\Shared\Shared.csproj" />
+    <Compile Remove="Pages\**" />
+    <Content Remove="Pages\**" />
+    <EmbeddedResource Remove="Pages\**" />
+    <None Remove="Pages\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+	<PackageReference Include="Blazor.Bootstrap" Version="3.3.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="9.0.5" />
+
+	  <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Authentication" Version="9.0.5" />
+
+	  <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="9.0.5" />
+	  <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="9.0.5" />
+
+	  <ProjectReference Include="..\Shared\Shared.csproj" />
   </ItemGroup>
 </Project>

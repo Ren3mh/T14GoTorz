@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
+namespace Shared;       
 public class CurrentWeather
 {
     [JsonPropertyName("coord")]

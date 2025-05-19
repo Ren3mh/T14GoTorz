@@ -1,4 +1,4 @@
-﻿@inject IService<IataLocation> IataLocationService
+﻿@inject IIataLocationService IataLocationService
 
 <div class="row">
     <div class="col-md-8">
@@ -24,7 +24,7 @@
 
             <div class="mb-3">
                 <h4>Select Origin:</h4>
-                <InputSelect id="IataOriginId" @bind-Value="NewFlight.IataoriginId">
+                <InputSelect id="IataOriginId" @bind-Value="NewFlight.IataOriginId">
                     @if (Iatas == null)
                     {
                         <span>Loading...</span>
@@ -40,7 +40,7 @@
             </div>
             <div class="mb-3">
                 <h4>Select Destination:</h4>
-                <InputSelect id="IataDestinationId" @bind-Value="NewFlight.IatadestinationId">
+                <InputSelect id="IataDestinationId" @bind-Value="NewFlight.IataDestinationId">
                     @if (Iatas == null)
                     {
                         <span>Loading...</span>
@@ -71,8 +71,8 @@
             {
                 DepartureTime = NewFlight.DepartureTime,
                 ArrivalTime = NewFlight.ArrivalTime,
-                IatadestinationId = NewFlight.IatadestinationId,
-                IataoriginId = NewFlight.IataoriginId
+                IataDestinationId = NewFlight.IataDestinationId,
+                IataOriginId = NewFlight.IataOriginId
             };
 
             await OnValidSubmit.InvokeAsync(flightToSend);

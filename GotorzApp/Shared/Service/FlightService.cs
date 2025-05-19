@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Shared.Data;
 
 namespace Shared.Service;
-public class FlightService : IService<Flight>
+public class FlightService : IFlightService
 {
 
     private readonly IDbContextFactory<GotorzContext> _dbContextFactory;
@@ -17,21 +17,37 @@ public class FlightService : IService<Flight>
         _dbContextFactory = dbContextFactory;
     }
 
-    public async Task Add(Flight x)
-    {
-        using var context = _dbContextFactory.CreateDbContext();
-        context.Add(x);
-        await context.SaveChangesAsync();
-    }
-
     public async Task<List<Flight>> GetAll()
     {
         using var context = _dbContextFactory.CreateDbContext();
         var flights = await context.Flights
-        .Include(e => e.Iataorigin)
-        .Include(e => e.Iatadestination)
+        .Include(e => e.IataOrigin)
+        .Include(e => e.IataDestination)
         .ToListAsync();
+
         return flights;
     }
+
+    public Task<Flight> GetById(int id)
+    {
+        throw new NotImplementedException();
+    }
+
+    public async Task<bool> Add(Flight flight)
+    {
+        using var context = _dbContextFactory.CreateDbContext();
+        context.Add(flight);
+        await context.SaveChangesAsync();
+        return true;
+    }
+    public Task<bool> Update(Flight flight)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<bool> Delete(int id)
+    {
+        throw new NotImplementedException();
+    }   
 }
 

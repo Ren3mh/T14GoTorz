@@ -3,13 +3,14 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection.Metadata;
-using Shared;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore;//Entity framework relational
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore; // ✅
+
+
 
 namespace Shared.Data;
 
-public partial class GotorzContext : DbContext
+public partial class GotorzContext : IdentityDbContext<GotorzAppUser>
 {
     public GotorzContext(DbContextOptions<GotorzContext> options)
         : base(options)
@@ -28,22 +29,40 @@ public partial class GotorzContext : DbContext
 
     public virtual DbSet<VwFlight> VwFlights { get; set; }
 
+    public virtual DbSet<Chat> Chats { get; set; }
+
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        base.OnModelCreating(modelBuilder);
+
+        modelBuilder.Entity<Chat>(entity =>
+        {
+            entity.Property(e => e.Message).IsRequired();
+            entity.Property(e => e.SenderUserName).IsRequired();
+            entity.Property(e => e.SentAt).HasColumnType("datetime");
+
+            entity.HasOne(c => c.User)
+                .WithMany()
+                .HasForeignKey(c => c.UserId);
+        });
+
+
         modelBuilder.Entity<Flight>(entity =>
         {
+
             entity.Property(e => e.ArrivalTime).HasColumnType("datetime");
             entity.Property(e => e.DepartureTime).HasColumnType("datetime");
-            entity.Property(e => e.IatadestinationId).HasColumnName("IATADestinationId");
-            entity.Property(e => e.IataoriginId).HasColumnName("IATAOriginId");
+            entity.Property(e => e.IataDestinationId).HasColumnName("IATADestinationId");
+            entity.Property(e => e.IataOriginId).HasColumnName("IATAOriginId");
 
-            entity.HasOne(d => d.Iatadestination).WithMany(p => p.FlightIatadestinations)
-                .HasForeignKey(d => d.IatadestinationId)
+            entity.HasOne(d => d.IataDestination).WithMany(p => p.FlightIatadestinations)
+                .HasForeignKey(d => d.IataDestinationId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK1_Flights_IATA_locations");
 
-            entity.HasOne(d => d.Iataorigin).WithMany(p => p.FlightIataorigins)
-                .HasForeignKey(d => d.IataoriginId)
+            entity.HasOne(d => d.IataOrigin).WithMany(p => p.FlightIataorigins)
+                .HasForeignKey(d => d.IataOriginId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK2_Flights_IATA_locations");
         });

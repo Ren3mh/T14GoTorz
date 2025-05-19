@@ -1,8 +1,8 @@
 ﻿@page "/flights"
-@inject IService<Flight> FlightService
+@inject IFlightService FlightService
 @inject NavigationManager NavigationManager
 
-<h3>Flight List</h3> //Test kommentar til Development branch
+<h3>Flight List</h3>
 
 @if (flights == null)
 {
@@ -40,16 +40,16 @@ else
             {
                 <tr>
                     <td>
-                        @item.Iataorigin.City
+                        @item.IataOrigin.City
                     </td>
                     <td>
-                        @item.Iatadestination.City
+                        @item.IataDestination.City
                     </td>
                     <td>
-                        @item.Iataorigin.Iata
+                        @item.IataOrigin.Iata
                     </td>
                     <td>
-                        @item.Iatadestination.Iata
+                        @item.IataDestination.Iata
                     </td>
                     <td>
                         @item.ArrivalTime
@@ -66,7 +66,7 @@ else
 
 }
 
-<button @onclick="AddFlight" class="btn btn-primary">Add Flight</button>
+<button @onclick="GoToPackageCreation" class="btn btn-primary">Go to Package Creation</button>
 
 @code {
 
@@ -74,15 +74,14 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-
         flights = await FlightService.GetAll() ?? new List<Flight>();
     }
 
 
     
-    void AddFlight()
+    void GoToPackageCreation()
 	{
-		NavigationManager.NavigateTo("/flightCreation");
+		NavigationManager.NavigateTo("/pc");
 	}
 
 }
