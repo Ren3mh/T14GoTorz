@@ -15,7 +15,7 @@ namespace Shared.Data
                 .Build();
 
             var optionsBuilder = new DbContextOptionsBuilder<GotorzContext>();
-            var connectionString = configuration.GetConnectionString("GotorzAppContext");
+            var connectionString = configuration.GetConnectionString("DbConnectionString");
 
             optionsBuilder.UseSqlServer(connectionString);
 
