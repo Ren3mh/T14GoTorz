@@ -61,14 +61,55 @@ else
 
             @* Selected package *@
             <div class="col">
-                <TravelPackageEditor SelectedPackage="SelectedPackage" CurrentWeather="currentWeather" />
+                <TravelPackageEditor OnDelete="HandleDelete" OnSaveChanges="HandleSaveChanges" SelectedPackage="SelectedPackage" CurrentWeather="currentWeather" />
             </div>
         </div>
     </div>
 }
 
 @code {
-    
+    private async Task HandleDelete(TravelPackage packageToDelete)
+    {
+        if (packageToDelete != null)
+        {
+            var success = await TravelPackageService.Delete(packageToDelete);
+
+            if (success)
+            {
+                unsortedTravelPackages.Remove(packageToDelete);
+                filteredTravelPackages.Remove(packageToDelete);
+
+                SelectedPackage = filteredTravelPackages.FirstOrDefault();
+                StateHasChanged();
+            }
+            else
+            {
+                Console.WriteLine("Failed to delete the package.");
+            }
+        }
+    }
+
+    private async Task HandleSaveChanges()
+    {
+        if (SelectedPackage != null)
+        {
+            var success = await TravelPackageService.Update(SelectedPackage);
+            if (success)
+            {
+                var index = unsortedTravelPackages.FindIndex(tp => tp.Id == SelectedPackage.Id);
+                if (index != -1)
+                {
+                    unsortedTravelPackages[index] = SelectedPackage;
+                    filteredTravelPackages[index] = SelectedPackage;
+                }
+                StateHasChanged();
+            }
+            else
+            {
+                Console.WriteLine("Failed to save changes.");
+            }
+        }
+    }
 
     async Task SelectPackage(int packageId)
     {

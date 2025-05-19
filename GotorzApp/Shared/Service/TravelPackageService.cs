@@ -60,7 +60,7 @@ public class TravelPackageService : ITravelPackageService
         }
     }
 
-    public async Task<bool> Update(TravelPackage TravelPackage)
+    public async Task<bool> Update(TravelPackage updatedTravelPackage)
     {
         using var context = _dbContextFactory.CreateDbContext();
         using var transaction = await context.Database.BeginTransactionAsync();
@@ -76,13 +76,14 @@ public class TravelPackageService : ITravelPackageService
                 .Include(e => e.Flightpaths)
                 .ThenInclude(h => h.HomeboundFlight.IataOrigin)
                 .Include(e => e.Hotel)
-                .FirstOrDefault(tp => tp.Id == TravelPackage.Id);
+                .FirstOrDefault(tp => tp.Id == updatedTravelPackage.Id);
 
             if (existingTravelPackage == null)
             {
                 return false;
             }
-            context.Entry(existingTravelPackage).CurrentValues.SetValues(TravelPackage);
+            context.Entry(existingTravelPackage).CurrentValues.SetValues(updatedTravelPackage);
+            context.Entry(existingTravelPackage.Hotel).CurrentValues.SetValues(updatedTravelPackage.Hotel);
             context.SaveChanges();
             transaction.Commit();
             return true;
@@ -91,19 +92,18 @@ public class TravelPackageService : ITravelPackageService
         {
             // Rollback the transaction if any operation fails
             transaction.Rollback();
-            Console.WriteLine("Error occurred while updating travel package: " + TravelPackage.Title);
+            Console.WriteLine("Error occurred while updating travel package: " + updatedTravelPackage.Title);
             Console.WriteLine($"Exception: {ex.Message}");
             return false;
         }
     }
 
-    public async Task<bool> Delete(int id)
+    public async Task<bool> Delete(TravelPackage travelPackage)
     {
         using var context = _dbContextFactory.CreateDbContext();
         using var transaction = await context.Database.BeginTransactionAsync();
         try
         {
-            var travelPackage = context.TravelPackages.Find(id);
             if (travelPackage == null)
             {
                 return false;
@@ -122,7 +122,7 @@ public class TravelPackageService : ITravelPackageService
         {
             // Rollback the transaction if any operation fails
             transaction.Rollback();
-            Console.WriteLine("Error occurred while deleting travel package with ID: " + id);
+            Console.WriteLine("Error occurred while deleting travel package");
             Console.WriteLine($"Exception: {ex.Message}");
             return false;
         }

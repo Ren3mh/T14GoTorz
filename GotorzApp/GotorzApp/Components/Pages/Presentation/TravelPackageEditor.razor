@@ -1,4 +1,13 @@
-﻿<h1 style="font-weight:bold">@SelectedPackage.Title</h1>
+﻿@if (isEditing)
+{
+    <input id="title" style="font-weight:bold" type="text" class="form-control mb-2" @bind="editedTravelPackage.Title" />
+}
+else
+{
+    <h1 style="font-weight:bold">@SelectedPackage.Title</h1>
+}
+
+
 <h4 style="font-weight:lighter; text-shadow: 2px 2px 5px purple;">@SelectedPackage.Description</h4>
 
 <div class="col">
@@ -94,7 +103,7 @@
         </div>
         <div class="row">
             <div class="col">
-                <button style="height: 50px; width: 110px; margin-left: 5px; font-weight:bold">Slet</button>
+                <button id="delete" style="height: 50px; width: 110px; margin-left: 5px; font-weight:bold" @onclick="() => OnDelete.InvokeAsync(SelectedPackage)" >Slet</button>
                 <button id="edit" style="height: 50px; width: 110px; margin-left: 50px; font-weight:bold" hidden="@isEditing" @onclick="@edit" >Redigér</button>
                 <button id="save" style="height: 50px; width: 110px; margin-left: 50px; font-weight:bold" hidden="@(!isEditing)" @onclick="@save">Gem</button>
                 <button style="height: 50px; width: 110px; margin-left: 50px; font-weight:bold" hidden="@(!isEditing)" @onclick="@cancel">Afbryd</button>
@@ -136,6 +145,12 @@
             };
     }
 
+    [Parameter]
+    public EventCallback<TravelPackage> OnDelete { get; set; }
+
+    [Parameter]
+    public EventCallback OnSaveChanges { get; set; }
+
     void edit()
     {
         swapEditing();
@@ -169,7 +184,9 @@
     void save()
     {
         SelectedPackage.Hotel = editedTravelPackage.Hotel;
+        SelectedPackage.Title = editedTravelPackage.Title;
         swapEditing();
+        OnSaveChanges.InvokeAsync();
     }
 
     bool isEditing = false;

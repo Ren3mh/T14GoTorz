@@ -107,8 +107,11 @@ public class TravelPackageServiceTests
         dbContextFactoryMock.Setup(factory => factory.CreateDbContext()).Returns(context);
         var service = new TravelPackageService(dbContextFactoryMock.Object);
 
+        travelPackages[0].Id = 1;
+        travelPackages[1].Id = 2;
+
         // Act
-        var result = await service.Delete(1);
+        var result = await service.Delete(travelPackages[0]);
 
         // Assert
         Assert.True(result);
