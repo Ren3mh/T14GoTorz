@@ -8,5 +8,5 @@ public interface ITravelPackageService
     Task<TravelPackage> GetById(int id);
     Task<bool> Add(TravelPackage travelPackage);
     Task<bool> Update(TravelPackage TravelPackage);
-    Task<bool> Delete(int id);
+    Task<bool> Delete(TravelPackage travelPackage);
 }

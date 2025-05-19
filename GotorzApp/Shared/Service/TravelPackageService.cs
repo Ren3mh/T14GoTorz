@@ -41,40 +41,90 @@ public class TravelPackageService : ITravelPackageService
     public async Task<bool> Add(TravelPackage newTravelPackage)
     {
         using var context = _dbContextFactory.CreateDbContext();
-        using (var transaction = await context.Database.BeginTransactionAsync())
+        using var transaction = await context.Database.BeginTransactionAsync();
         try
         {
-            // Add OutboundFlight
-            context.Flights.Add(newTravelPackage.Flightpaths.First().OutboundFlight);
+            var tp = context.TravelPackages.Add(newTravelPackage);
             context.SaveChanges();
 
-            // Add HomeboundFlight
-            context.Flights.Add(newTravelPackage.Flightpaths.First().HomeboundFlight);
-            context.SaveChanges();
-
-            // Add Flightpath
-            context.Flightpaths.Add(newTravelPackage.Flightpaths.First());
-            context.SaveChanges();
-
-            // Commit the transaction if all operations are successful
             transaction.Commit();
             return true;
         }
-        catch (Exception)
+        catch (Exception ex)
         {
             // Rollback the transaction if any operation fails
             transaction.Rollback();
-            throw;
+            Console.WriteLine("Error occurred while adding travel package: " + newTravelPackage.Title);
+            Console.WriteLine($"Exception: {ex.Message}");
+            return false;
         }
     }
 
-    public Task<bool> Update(TravelPackage TravelPackage)
+    public async Task<bool> Update(TravelPackage updatedTravelPackage)
     {
-        throw new NotImplementedException();
+        using var context = _dbContextFactory.CreateDbContext();
+        using var transaction = await context.Database.BeginTransactionAsync();
+        try
+        {
+            var existingTravelPackage = context.TravelPackages
+                .Include(e => e.Flightpaths)
+                .ThenInclude(o => o.OutboundFlight.IataDestination)
+                .Include(e => e.Flightpaths)
+                .ThenInclude(o => o.OutboundFlight.IataOrigin)
+                .Include(e => e.Flightpaths)
+                .ThenInclude(h => h.HomeboundFlight.IataDestination)
+                .Include(e => e.Flightpaths)
+                .ThenInclude(h => h.HomeboundFlight.IataOrigin)
+                .Include(e => e.Hotel)
+                .FirstOrDefault(tp => tp.Id == updatedTravelPackage.Id);
+
+            if (existingTravelPackage == null)
+            {
+                return false;
+            }
+            context.Entry(existingTravelPackage).CurrentValues.SetValues(updatedTravelPackage);
+            context.Entry(existingTravelPackage.Hotel).CurrentValues.SetValues(updatedTravelPackage.Hotel);
+            context.SaveChanges();
+            transaction.Commit();
+            return true;
+        }
+        catch (Exception ex)
+        {
+            // Rollback the transaction if any operation fails
+            transaction.Rollback();
+            Console.WriteLine("Error occurred while updating travel package: " + updatedTravelPackage.Title);
+            Console.WriteLine($"Exception: {ex.Message}");
+            return false;
+        }
     }
 
-    public Task<bool> Delete(int id)
+    public async Task<bool> Delete(TravelPackage travelPackage)
     {
-        throw new NotImplementedException();
+        using var context = _dbContextFactory.CreateDbContext();
+        using var transaction = await context.Database.BeginTransactionAsync();
+        try
+        {
+            if (travelPackage == null)
+            {
+                return false;
+            }
+
+            context.Flightpaths.RemoveRange(travelPackage.Flightpaths);
+            context.Flights.RemoveRange(travelPackage.Flightpaths.SelectMany(fp => new[] { fp.OutboundFlight, fp.HomeboundFlight }));
+            context.TravelPackages.Remove(travelPackage);
+            context.Hotels.Remove(travelPackage.Hotel);
+            context.SaveChanges();
+
+            transaction.Commit();
+            return true;
+        }
+        catch (Exception ex)
+        {
+            // Rollback the transaction if any operation fails
+            transaction.Rollback();
+            Console.WriteLine("Error occurred while deleting travel package");
+            Console.WriteLine($"Exception: {ex.Message}");
+            return false;
+        }
     }
 }

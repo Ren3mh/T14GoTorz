@@ -11,8 +11,6 @@ namespace GotorzApp.Client
 
             builder.Services.AddBlazorBootstrap();
 
-
-
             await builder.Build().RunAsync();
         }
     }
