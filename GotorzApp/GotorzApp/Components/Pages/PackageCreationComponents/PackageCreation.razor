@@ -4,6 +4,19 @@
 @rendermode InteractiveServer
 @attribute [StreamRendering]
 
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize(Roles = "Guide, Admin")] 
+@* HER skriver man rollerne ^ *@
+
+<AuthorizeView Roles="Admin">
+    <Authorized>
+        <h3>DU er ADMIN</h3>
+    </Authorized>
+    <NotAuthorized>
+        <h3>DU er ikke ADMIN</h3>
+    </NotAuthorized>
+</AuthorizeView>
+
 <PageTitle>Put together a package!</PageTitle>
 
 <h1>Package Createion</h1>
