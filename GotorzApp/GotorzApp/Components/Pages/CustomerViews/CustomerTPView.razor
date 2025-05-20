@@ -66,6 +66,22 @@ else
         }
         </div>
     </div>
+    <CardGroup style="margin-top: 10px"> @* Distance to the content above. *@
+        @foreach (var travelPackage in filteredTravelPackages)
+        {
+            <div class="col"> @* It don't look good or even work without this one! *@
+                <Card style="width: 22rem; margin-bottom: 15px"> @* Size of each card (try to show 18rem) and 15px of distance between the bottom of one card and the top of another card. *@
+                    <img src="/images/hotel.jpg" alt="Picture of a hotel" /> @* Kan indsætte class="card-img-top" for at toppen af kortene får rounded corners *@
+                    <CardBody>
+                        <CardTitle>@travelPackage.Title</CardTitle>
+                        <CardText>@travelPackage.Description</CardText>
+                        <CardText Class="text-muted">@travelPackage.Hotel.Name</CardText>
+                        <Button Color="ButtonColor.Primary" To="/chat" type="ButtonType.Link">Rejs!</Button>
+                    </CardBody>
+                </Card>
+            </div>
+        }
+    </CardGroup>
 }
 
 @code {
