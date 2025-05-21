@@ -112,10 +112,6 @@ public class PackageCreationTests : TestContext
         cut.Find("button#submitBtn").Click();
         cut.Render(); // Force a re-render of the component
 
-        //// Debugging output
-        //var markup = cut.Markup;
-        //Console.WriteLine(markup); // Print the component's markup to the console
-
         // Assert
         Assert.True(cut.Instance.added);
         packageServiceMock.Verify(service => service.Add(It.IsAny<TravelPackage>()), Times.Once);
