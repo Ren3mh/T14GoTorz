@@ -30,7 +30,7 @@
         <ul id="messagesList">
             @foreach (var message in messages)
             {
-                <li>@message.SenderUserName: @message.Message</li>
+                <li>@message.SentAt @message.SenderUserName: @message.Message</li>
             }
         </ul>
     </Authorized>
@@ -46,6 +46,7 @@
     private HubConnection? hubConnection;
     private List<Chat> messages = new List<Chat>();
 	private string? userName => context != null ? context.User.Identity?.Name : "No user found";
+    private string? userReceiver => userName != "ren3ersej@gmail.com" ? "ren3ersej@gmail.com" : "kunde@kunde.dk";
     private string? messageInput;
     private AuthenticationState context;
 
@@ -59,7 +60,7 @@
 
         hubConnection.On<string, string>("ReceiveMessage", (user, message) =>
         {
-            var encodedMsg = new Chat(user, message);
+            var encodedMsg = new Chat(user, userName, message);
             messages.Add(encodedMsg);
             InvokeAsync(StateHasChanged);
         });
@@ -81,6 +82,7 @@
             var newChat = new Chat
                 {
                     SenderUserName = userName,
+                    ReceiverUserName = userReceiver,
                     Message = messageInput,
                     SentAt = DateTime.Now,
                 };
