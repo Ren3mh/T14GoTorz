@@ -39,5 +39,14 @@ namespace Shared.Service
             return await _context.Chats
                 .ToListAsync();
         }
-    }
+
+        // Retrieve all messages between two users
+        public async Task<List<Chat>> GetChatHistoryAsync(string userId1, string userId2)
+        {
+            var _context = await _dbContextFactory.CreateDbContextAsync();
+            return await _context.Chats
+                .Where(c => (c.SenderUserName == userId1 && c.ReceiverUserName == userId2) ||
+                            (c.SenderUserName == userId2 && c.ReceiverUserName == userId1))
+                .ToListAsync();
+        }
 }
