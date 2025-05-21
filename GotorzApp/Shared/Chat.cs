@@ -21,10 +21,10 @@ namespace Shared
             // Default constructor
         }
 
-        public Chat(string senderUserName, string receiverUserName, string message)
+        public Chat(string senderUserName, /*string receiverUserName,*/ string message)
         {
             SenderUserName = senderUserName;
-            ReceiverUserName = receiverUserName;
+            //ReceiverUserName = receiverUserName;
             Message = message;
             SentAt = DateTime.UtcNow;
         }
