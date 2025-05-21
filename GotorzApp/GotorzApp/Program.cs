@@ -67,6 +67,11 @@ namespace GotorzApp
             .AddSignInManager()
             .AddDefaultTokenProviders();
 
+            builder.Services.ConfigureApplicationCookie(options =>
+            {
+                options.LoginPath = "/account/login";
+            });
+
             builder.Services.AddSingleton<IEmailSender<GotorzAppUser>, IdentityNoOpEmailSender>();
            
 
@@ -91,13 +96,13 @@ namespace GotorzApp
             app.UseStaticFiles();
             app.UseAntiforgery();
 
+
             app.MapRazorComponents<App>()
                 .AddInteractiveServerRenderMode()
                 .AddInteractiveWebAssemblyRenderMode()
                 .AddAdditionalAssemblies(typeof(Client._Imports).Assembly);
 
             app.MapHub<ChatHub>("/chathub");
-
             app.MapAdditionalIdentityEndpoints();;
 
             app.Run();
