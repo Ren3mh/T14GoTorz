@@ -49,4 +49,17 @@ namespace Shared.Service
                             (c.SenderUserName == userId2 && c.ReceiverUserName == userId1))
                 .ToListAsync();
         }
+
+        //// Retrieve all usernames and ids a user has chatted with
+        //public async Task<List<string>> GetChatUsernamesAsync(string userId)
+        //{
+        //    var _context = await _dbContextFactory.CreateDbContextAsync();
+        //    return await _context.Chats
+        //        .Where(c => c.SenderUserName == userId || c.ReceiverUserName == userId)
+        //        .Select(c => c.SenderUserName == userId ? c.ReceiverUserName : c.SenderUserName)
+        //        .Distinct()
+        //        .ToListAsync();
+        //}
+
+    }
 }
