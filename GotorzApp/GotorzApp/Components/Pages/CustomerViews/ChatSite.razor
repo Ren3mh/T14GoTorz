@@ -17,6 +17,20 @@
 <AuthorizeView>
     <Authorized>
         <p>Hello, @context.User.Identity?.Name!</p>
+        <AuthorizeView Roles="Guide">
+                <Authorized Context="ActiveChats">
+                    <p>Active Chats:</p>
+                    <ul>
+                        @foreach (var user in activeChats)
+                        {
+                            <li @onclick="() => SelectChat(user)" style="cursor:pointer;@(selectedChatUser == user ? "font-weight:bold;" : "")">
+                                @user
+                            </li>
+                        }
+                    </ul>
+			    </Authorized>
+            </AuthorizeView>
+
         <div class="form-group">
             <label>
                 Message:
@@ -48,6 +62,9 @@
 	private string? userName => context != null ? context.User.Identity?.Name : "No user found";
     private string? userReceiver => userName != "ren3ersej@gmail.com" ? "ren3ersej@gmail.com" : "kunde@kunde.dk";
     private string? messageInput;
+	
+    private string? selectedChatUser;
+    private List<string> activeChats = new List<string>();
     private AuthenticationState context;
 
 
@@ -69,6 +86,7 @@
 
         context = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         messages = await chatService.GetUserChatsAsync();
+        activeChats = await chatService.GetChatUsernamesAsync(userName);
     }
 
     // [Authorize]
@@ -92,7 +110,6 @@
         }
     }
 
-
     public bool IsConnected =>
         hubConnection?.State == HubConnectionState.Connected;
 
@@ -102,5 +119,13 @@
         {
             await hubConnection.DisposeAsync();
         }
+    }
+
+    private async Task SelectChat(string user)
+    {
+        selectedChatUser = user;
+        // Load chat history with the selected user
+        messages = await chatService.GetChatHistoryAsync(userName, selectedChatUser);
+        StateHasChanged();
     }
 }
