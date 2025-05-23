@@ -14,19 +14,10 @@ public class ChatHub : Hub
         _chatService = chatService;
     }
 
-    public async Task SendMessage(string user, string message)
+    public async Task SendMessage(string senderUserName, string receiverUserName, string message)
     {
-        Console.WriteLine($"SendMessage called: {user}: {message}");
-
-        // Save the message to the database
-        var chat = new Chat
-        {
-            SenderUserName = user,
-            Message = message,
-            SentAt = DateTime.UtcNow,
-        };
-
-        // Broadcast to all clients
-        await Clients.All.SendAsync("ReceiveMessage", user, message);
+        // Send to both sender and receiver
+        await Clients.Users(senderUserName, receiverUserName)
+            .SendAsync("ReceiveMessage", senderUserName, receiverUserName, message);
     }
 }

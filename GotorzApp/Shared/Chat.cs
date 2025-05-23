@@ -8,6 +8,7 @@ namespace Shared
     {
         public int Id { get; set; }
         public string SenderUserName { get; set; } // FK to AspNetUsers
+        public string ReceiverUserName { get; set; } // FK to AspNetUsers
         public string Message { get; set; }
         public DateTime SentAt { get; set; } = DateTime.UtcNow;
 
@@ -20,9 +21,10 @@ namespace Shared
             // Default constructor
         }
 
-        public Chat(string senderUserName, string message)
+        public Chat(string senderUserName, string receiverUserName, string message)
         {
             SenderUserName = senderUserName;
+            ReceiverUserName = receiverUserName;
             Message = message;
             SentAt = DateTime.UtcNow;
         }

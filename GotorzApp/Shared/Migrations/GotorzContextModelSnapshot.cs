@@ -167,6 +167,10 @@ namespace Shared.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("ReceiverUserName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("SenderUserName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
