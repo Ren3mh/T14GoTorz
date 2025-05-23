@@ -1,4 +1,6 @@
-﻿@if (isEditing)
+﻿@inject ICurrentWeatherService CurrentWeatherService
+
+@if (isEditing)
 {
     <input id="title" style="font-weight:bold" type="text" class="form-control mb-2" @bind="editedTravelPackage.Title" />
 }
@@ -59,7 +61,7 @@ else
 
                 <div class="col">
                     <h5 style="text-decoration-line: underline;">Temp.</h5>
-                    <p>@CurrentWeather.Main.TempMax</p>
+                    <p>@SelectedPackage.LocalTemperature</p>
 
                     <h5 style="text-decoration-line: underline;">Price</h5>
                     @if (isEditing)
@@ -117,7 +119,7 @@ else
     public TravelPackage SelectedPackage { get; set; }
     TravelPackage editedTravelPackage;
 
-    [Parameter]
+    // [Parameter]
     public CurrentWeather CurrentWeather { get; set; }
 
     protected override void OnInitialized()
@@ -143,6 +145,7 @@ else
                 },
                 HotelId = SelectedPackage.HotelId,
             };
+        GetandSaveTemptoPackage();
     }
 
     [Parameter]
@@ -194,4 +197,22 @@ else
     {
         isEditing = !isEditing;
     }
+
+
+    private async Task GetandSaveTemptoPackage()
+
+	{
+		if (SelectedPackage != null)
+		{
+			// Get the current weather for the destination city
+			var city = SelectedPackage.Flightpaths.First().OutboundFlight.IataDestination.City;
+			var countryCode = "fr"; // Example country code, replace with actual if needed
+			// Fetch the current weather data
+			CurrentWeather = await CurrentWeatherService.GetCurrentWeather(city);
+			// Update the package with the current weather data
+			SelectedPackage.LocalTemperature = CurrentWeather.Main.TempMax;
+
+		}
+	}
+
 }

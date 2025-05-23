@@ -15,6 +15,8 @@ public partial class TravelPackage
     [Required]
     public string Description { get; set; }
 
+    public double? LocalTemperature { get; set; }
+
     [Required]
     [CustomValidation(typeof(TravelPackageValidator), "ValidateFlightpaths")]
     public ICollection<Flightpath> Flightpaths { get; set; } = new List<Flightpath>();

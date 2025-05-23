@@ -1,6 +1,6 @@
 ﻿@page "/packages"
 @inject ITravelPackageService TravelPackageService
-@inject ICurrentWeatherService CurrentWeatherService
+@* @inject ICurrentWeatherService CurrentWeatherService *@
 @rendermode InteractiveServer
 
 @if (unsortedTravelPackages == null)
@@ -61,7 +61,7 @@ else
 
             @* Selected package *@
             <div class="col">
-                <TravelPackageEditor OnDelete="HandleDelete" OnSaveChanges="HandleSaveChanges" SelectedPackage="SelectedPackage" CurrentWeather="currentWeather" />
+                <TravelPackageEditor OnDelete="HandleDelete" OnSaveChanges="HandleSaveChanges" SelectedPackage="SelectedPackage" />
             </div>
         </div>
     </div>
@@ -114,13 +114,13 @@ else
     async Task SelectPackage(int packageId)
     {
         SelectedPackage = unsortedTravelPackages.Find(tp => tp.Id == packageId);
-        currentWeather = await CurrentWeatherService.GetCurrentWeather(SelectedPackage.Flightpaths.First().OutboundFlight.IataDestination.City);
+        // currentWeather = await CurrentWeatherService.GetCurrentWeather(SelectedPackage.Flightpaths.First().OutboundFlight.IataDestination.City);
     }
     public TravelPackage? SelectedPackage { get; set; }
 
     DateTime EarliestDeparture;
 
-    CurrentWeather currentWeather;
+    // CurrentWeather currentWeather;
 
     List<TravelPackage> filteredTravelPackages = new List<TravelPackage>();
     List<TravelPackage> unsortedTravelPackages;
@@ -143,7 +143,7 @@ else
                 }
             }
             SelectedPackage = unsortedTravelPackages.First();
-            currentWeather = await CurrentWeatherService.GetCurrentWeather(SelectedPackage.Flightpaths.First().OutboundFlight.IataDestination.City);
+            // currentWeather = await CurrentWeatherService.GetCurrentWeather(SelectedPackage.Flightpaths.First().OutboundFlight.IataDestination.City);
 
             EarliestDeparture = DateTime.Today;
         }
