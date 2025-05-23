@@ -36,7 +36,9 @@ namespace GotorzApp
 
             //Add database context
             builder.Services.AddDbContextFactory<GotorzContext>(options =>
-                options.UseSqlServer(builder.Configuration.GetConnectionString("DbConnectionString")));
+                options.UseSqlServer(
+                    builder.Configuration.GetConnectionString("GotorzAppContext"),// GotorzAppContext eller DbConnectionString (Husk db factory)
+                    b => b.MigrationsAssembly("GotorzApp"))); //Fordi den er i Shared
             builder.Services.AddHttpClient<CurrentWeatherService>();
 
             builder.Services.AddDefaultIdentity<IdentityUser>()
@@ -60,17 +62,17 @@ namespace GotorzApp
 
             builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
 
-            //builder.Services.AddAuthentication(options =>
-            //{
-            //    options.DefaultScheme = IdentityConstants.ApplicationScheme;
-            //    options.DefaultSignInScheme = IdentityConstants.ExternalScheme;
-            //})
-            //.AddIdentityCookies();
 
             builder.Services.AddIdentityCore<GotorzAppUser>(options => options.SignIn.RequireConfirmedAccount = true)
+            .AddRoles<IdentityRole>() // TILFØJET for roller
             .AddEntityFrameworkStores<GotorzContext>()
             .AddSignInManager()
             .AddDefaultTokenProviders();
+
+            builder.Services.ConfigureApplicationCookie(options =>
+            {
+                options.LoginPath = "/account/login";
+            });
 
             builder.Services.AddSingleton<IEmailSender<GotorzAppUser>, IdentityNoOpEmailSender>();
            
@@ -96,13 +98,13 @@ namespace GotorzApp
             app.UseStaticFiles();
             app.UseAntiforgery();
 
+
             app.MapRazorComponents<App>()
                 .AddInteractiveServerRenderMode()
                 .AddInteractiveWebAssemblyRenderMode()
                 .AddAdditionalAssemblies(typeof(Client._Imports).Assembly);
 
             app.MapHub<ChatHub>("/chathub");
-
             app.MapAdditionalIdentityEndpoints();;
 
             app.Run();

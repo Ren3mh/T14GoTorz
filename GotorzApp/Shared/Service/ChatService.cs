@@ -32,12 +32,44 @@ namespace Shared.Service
         }
 
         // Retrieve all messages for a user (sent or received)
-        public async Task<List<Chat>> GetUserChatsAsync()
+        public async Task<List<Chat>> GetUserChatsAsync(string userId)
         {
             var _context = await _dbContextFactory.CreateDbContextAsync();
 
             return await _context.Chats
+                .Where(c => c.SenderUserName == userId || c.ReceiverUserName == userId)
                 .ToListAsync();
         }
+
+        // Retrieve all messages between two users
+        public async Task<List<Chat>> GetChatHistoryAsync(string userId1, string userId2)
+        {
+            var _context = await _dbContextFactory.CreateDbContextAsync();
+            return await _context.Chats
+                .Where(c => (c.SenderUserName == userId1 && c.ReceiverUserName == userId2) ||
+                            (c.SenderUserName == userId2 && c.ReceiverUserName == userId1))
+                .ToListAsync();
+        }
+
+        // Retrieve all usernames and ids a user has chatted with
+        public async Task<List<string>> GetChatUsernamesAsync(string userId)
+        {
+            var _context = await _dbContextFactory.CreateDbContextAsync();
+            return await _context.Chats
+                .Where(c => c.SenderUserName == userId || c.ReceiverUserName == userId)
+                .Select(c => c.SenderUserName == userId ? c.ReceiverUserName : c.SenderUserName) // Er Sender dig? Ja, så Receiver. Nej, så Sender.
+                .Distinct()
+                .ToListAsync();
+        }
+
+        public async Task<string> GetUserId(string userName)
+        {
+            var _context = await _dbContextFactory.CreateDbContextAsync();
+            return await _context.Users
+                .Where(u => u.UserName == userName)
+                .Select(u => u.Id)
+                .FirstOrDefaultAsync();
+        }
+
     }
 }

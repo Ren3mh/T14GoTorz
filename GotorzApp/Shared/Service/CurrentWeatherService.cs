@@ -22,7 +22,7 @@ namespace Shared.Service
             _apiKey = configuration["ApiKeys:OpenWeatherMapKey"];
         }
 
-        public async Task<CurrentWeather>? GetCurrentWeather(string city, string countryCode)
+        public async Task<CurrentWeather>? GetCurrentWeather(string city)
         {
             var response = await _httpClient.GetAsync($"https://api.openweathermap.org/data/2.5/weather?q={city}&appid={_apiKey}&units=metric");
             response.EnsureSuccessStatusCode();

@@ -114,7 +114,7 @@ else
     async Task SelectPackage(int packageId)
     {
         SelectedPackage = unsortedTravelPackages.Find(tp => tp.Id == packageId);
-        //currentWeather = await CurrentWeatherService.GetCurrentWeather(SelectedPackage.Flightpaths.First().OutboundFlight.IataDestination.City, "fr");
+        currentWeather = await CurrentWeatherService.GetCurrentWeather(SelectedPackage.Flightpaths.First().OutboundFlight.IataDestination.City);
     }
     public TravelPackage? SelectedPackage { get; set; }
 
@@ -143,15 +143,7 @@ else
                 }
             }
             SelectedPackage = unsortedTravelPackages.First();
-            //currentWeather = await CurrentWeatherService.GetCurrentWeather(SelectedPackage.Flightpaths.First().OutboundFlight.IataDestination.City, "fr");
-            currentWeather = new CurrentWeather
-                {
-                    Main = new Main
-                    {
-                        TempMax = 25,
-                        TempMin = 15
-                    }
-                };
+            currentWeather = await CurrentWeatherService.GetCurrentWeather(SelectedPackage.Flightpaths.First().OutboundFlight.IataDestination.City);
 
             EarliestDeparture = DateTime.Today;
         }
