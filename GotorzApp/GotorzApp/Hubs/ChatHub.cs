@@ -1,7 +1,5 @@
 ﻿using Microsoft.AspNetCore.SignalR;
-using Shared.Service;
-using Shared;
-using System.Security.Claims;
+using SharedLib.Service;
 
 namespace GotorzApp.Hubs;
 

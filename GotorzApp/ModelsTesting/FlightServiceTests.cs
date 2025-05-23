@@ -4,10 +4,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Moq;
-using Shared;
-using Shared.Service;
+using SharedLib;
+using SharedLib.Service;
 using Xunit;
-using Shared.Data;
+using SharedLib.Data;
 
 
 namespace ModelsTesting;

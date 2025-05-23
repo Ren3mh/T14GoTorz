@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
+<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
 
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
@@ -9,21 +9,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Pages\**" />
-    <Content Remove="Pages\**" />
-    <EmbeddedResource Remove="Pages\**" />
-    <None Remove="Pages\**" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="9.0.3" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Authentication" Version="9.0.3" />
   </ItemGroup>
 
   <ItemGroup>
-	<PackageReference Include="Blazor.Bootstrap" Version="3.3.1" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="9.0.5" />
-
-	  <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Authentication" Version="9.0.5" />
-
-	  <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="9.0.5" />
-	  <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="9.0.5" />
-
-	  <ProjectReference Include="..\Shared\Shared.csproj" />
+    <ProjectReference Include="..\SharedLib\SharedLib.csproj" />
   </ItemGroup>
+
 </Project>

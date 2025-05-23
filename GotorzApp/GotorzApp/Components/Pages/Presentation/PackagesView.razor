@@ -11,7 +11,7 @@ else if (unsortedTravelPackages.Count == 0)
 {
     <span>No packages available.</span>
 }
-else 
+else
 {
     <h2>Rejsepakker</h2>
 
@@ -36,7 +36,7 @@ else
     </div>
 
     @* Travelpackages *@
-    <div >
+    <div>
         <div class="row">
             <div class="col-md-6">
                 <table class="table">
@@ -193,7 +193,7 @@ else
     {
 
         if (selectedIataCode != null)
-        {  
+        {
             travelPackages = travelPackages
                 .Where(tp => tp.Flightpaths.Any(f => f.OutboundFlight.IataOrigin.Id == selectedIataCode))
                 .ToList();

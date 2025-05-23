@@ -2,8 +2,8 @@
 using GotorzApp.Components.Pages.Presentation;
 using Microsoft.AspNetCore.Components;
 using Moq;
-using Shared;
-using Shared.Service;
+using SharedLib;
+using SharedLib.Service;
 using System.Collections.Generic;
 using System;
 

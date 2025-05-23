@@ -1,9 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Moq;
-using Shared;
-using Shared.Data;
-using Shared.Service;
+using SharedLib;
+using SharedLib.Data;
+using SharedLib.Service;
 
 namespace ModelsTesting;
 

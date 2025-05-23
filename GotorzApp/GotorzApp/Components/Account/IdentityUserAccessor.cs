@@ -1,5 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Shared;
+using SharedLib;
+using Microsoft.AspNetCore.Identity;
 
 namespace GotorzApp.Components.Account
 {
