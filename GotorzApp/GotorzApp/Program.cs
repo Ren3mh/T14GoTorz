@@ -36,7 +36,9 @@ namespace GotorzApp
 
             //Add database context
             builder.Services.AddDbContextFactory<GotorzContext>(options =>
-                options.UseSqlServer(builder.Configuration.GetConnectionString("GotorzAppContext"))); // GotorzAppContext eller DbConnectionString (Husk db factory)
+                options.UseSqlServer(
+                    builder.Configuration.GetConnectionString("GotorzAppContext"),// GotorzAppContext eller DbConnectionString (Husk db factory)
+                    b => b.MigrationsAssembly("GotorzApp"))); //Fordi den er i Shared
             builder.Services.AddHttpClient<CurrentWeatherService>();
 
             builder.Services.AddDefaultIdentity<IdentityUser>()
