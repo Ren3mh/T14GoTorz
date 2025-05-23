@@ -13,6 +13,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using Microsoft.AspNetCore.Components.Authorization;
+using System.Security.Claims;
+using System.Threading.Tasks;
+
 namespace ComponentsTesting;
 
 public class PackageCreationTests : TestContext
@@ -23,6 +27,7 @@ public class PackageCreationTests : TestContext
     private readonly Mock<ICurrentWeatherService> currentWeatherServiceMock;
     public PackageCreationTests()
     {
+        // Your existing service mocks
         packageServiceMock = new Mock<ITravelPackageService>();
         Services.AddSingleton(packageServiceMock.Object);
 
@@ -34,6 +39,26 @@ public class PackageCreationTests : TestContext
 
         currentWeatherServiceMock = new Mock<ICurrentWeatherService>();
         Services.AddSingleton(currentWeatherServiceMock.Object);
+
+        // Set up test authorization with roles
+        var authContext = this.AddTestAuthorization();
+        authContext.SetAuthorized("Test User");
+        authContext.SetRoles("Admin"); // Required for <AuthorizeView Roles="Admin">
+    }
+
+    [Fact]
+    public void Component_Shows_NotAuthorized_When_User_Not_Admin()
+    {
+        var authContext = this.AddTestAuthorization();
+        authContext.SetAuthorized("Test User");
+        authContext.SetRoles("Guide"); // Not "Admin"
+
+        JSInterop.SetupVoid("window.blazorBootstrap.collapse.initialize", _ => true);
+
+        var cut = RenderComponent<PackageCreation>();
+
+        cut.Find("h1").MarkupMatches("<h1>Package Createion</h1>");
+        cut.Find("h3").MarkupMatches("<h3>DU er ikke ADMIN</h3>");
     }
 
     [Fact]
@@ -55,6 +80,7 @@ public class PackageCreationTests : TestContext
 
         // Assert
         cut.Find("h1").MarkupMatches("<h1>Package Createion</h1>");
+        cut.Find("h3").MarkupMatches("<h3>DU er ADMIN</h3>");
     }
 
     [Fact]
@@ -115,6 +141,6 @@ public class PackageCreationTests : TestContext
         // Assert
         Assert.True(cut.Instance.added);
         packageServiceMock.Verify(service => service.Add(It.IsAny<TravelPackage>()), Times.Once);
-        cut.Find("h3").MarkupMatches("<h3>Travel Package Created</h3>");
+        var result = cut.Find("h3#created").Matches("Travel Package Created");
     }
 }
