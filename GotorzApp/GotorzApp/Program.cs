@@ -10,6 +10,10 @@ using Microsoft.AspNetCore.DataProtection;
 using SharedLib.Service;
 using GotorzApp.Hubs;
 using Microsoft.AspNetCore.ResponseCompression;
+using Microsoft.Identity.Client;
+
+using Prometheus;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -68,6 +72,21 @@ builder.Services.AddIdentityCore<GotorzAppUser>(options => options.SignIn.Requir
 builder.Services.AddSingleton<IEmailSender<GotorzAppUser>, IdentityNoOpEmailSender>();
 
 var app = builder.Build();
+
+// This adds the /metrics endpoint
+app.UseMetricServer();
+
+// Optional: Middleware to count visitors (for example, each HTTP request)
+var counter = Prometheus.Metrics.CreateCounter("visitor_count", "Number of visitors");
+
+app.Use(async (context, next) =>
+{
+    if (context.Request.Path != "/metrics")
+    {
+        counter.Inc();
+    }
+    await next();
+});
 
 app.UseResponseCompression();
 
