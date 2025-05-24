@@ -1,0 +1,9 @@
+services:  
+  mssql_exporter:
+    image: danieloliver/mssql_exporter:latest
+    container_name: mssql_exporter
+    environment:
+      DATA_SOURCE_URI: "Server=mssql;User Id=sander;Password=P8#tM3@kL7$nZ5&;Database=master"
+      PORT: "4000"
+    ports:
+      - "4000:4000"

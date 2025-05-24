@@ -1,0 +1,7 @@
+services:  
+  mssql_init:
+    image: mcr.microsoft.com/mssql-tools
+    container_name: mssql_init
+    volumes:
+      - ./mssql_init.sh:/init.sh
+    entrypoint: ["/init.sh"]
