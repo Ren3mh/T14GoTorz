@@ -8,6 +8,8 @@ using SharedLib.Data;
 using SharedLib.Service;
 using System;
 using Microsoft.Extensions.Caching.StackExchangeRedis;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Options;
 
 namespace ModelsTesting;
 
@@ -40,20 +42,9 @@ public class TravelPackageServiceTests
 
     public TravelPackageServiceTests()
     {
-        //var services = new ServiceCollection();
-        //services.AddStackExchangeRedisCache(options =>
-        //{
-        //    options.Configuration = "localhost:6379";
-        //    options.InstanceName = "Test_";
-        //});
-
-        //var provider = services.BuildServiceProvider();
-        //_redisCache = provider.GetRequiredService<IDistributedCache>();
-        _redisCache = new RedisCache(new RedisCacheOptions
-        {
-            Configuration = "localhost:6379",
-            InstanceName = "Test_"
-        });
+        _redisCache = new MemoryDistributedCache(
+            Options.Create(new MemoryDistributedCacheOptions())
+        );
 
     }
 
