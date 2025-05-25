@@ -5,19 +5,20 @@ namespace SharedLib.Service
 {
     public class PhotoService : IPhotoService
     {
-        private readonly GotorzContext _context;
+        private readonly IDbContextFactory<GotorzContext> _dbContextFactory;
 
-        public PhotoService(GotorzContext context)
+        public PhotoService(IDbContextFactory<GotorzContext> dbContextFactory)
         {
-            _context = context;
+            _dbContextFactory = dbContextFactory;
         }
 
         public async Task<bool> Add(Photo photo)
         {
             try
             {
-                _context.Photos.Add(photo);
-                await _context.SaveChangesAsync();
+                using var context = _dbContextFactory.CreateDbContext();
+                context.Photos.Add(photo);
+                await context.SaveChangesAsync();
                 return true;
             }
             catch (Exception ex)
@@ -29,34 +30,38 @@ namespace SharedLib.Service
 
         public async Task<bool> Delete(int id)
         {
-            var photo = await _context.Photos.FindAsync(id);
+            using var context = _dbContextFactory.CreateDbContext();
+            var photo = await context.Photos.FindAsync(id);
             if (photo == null) return false;
 
-            _context.Photos.Remove(photo);
-            await _context.SaveChangesAsync();
+            context.Photos.Remove(photo);
+            await context.SaveChangesAsync();
             return true;
         }
 
         public async Task<List<Photo>> GetAll()
         {
-            return await _context.Photos.ToListAsync();
+            using var context = _dbContextFactory.CreateDbContext();
+            return await context.Photos.ToListAsync();
         }
 
         public async Task<Photo> GetById(int id)
         {
-            return await _context.Photos.FindAsync(id);
+            using var context = _dbContextFactory.CreateDbContext();
+            return await context.Photos.FindAsync(id);
         }
 
         public async Task<bool> Update(Photo photo)
         {
-            var existing = await _context.Photos.FindAsync(photo.Id);
+            using var context = _dbContextFactory.CreateDbContext();
+            var existing = await context.Photos.FindAsync(photo.Id);
             if (existing == null) return false;
 
             existing.PhotoName = photo.PhotoName;
             existing.PhotoData = photo.PhotoData;
 
-            _context.Photos.Update(existing);
-            await _context.SaveChangesAsync();
+            context.Photos.Update(existing);
+            await context.SaveChangesAsync();
             return true;
         }
     }

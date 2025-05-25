@@ -29,6 +29,8 @@ public class TravelPackageService : ITravelPackageService
             .ThenInclude(h => h.HomeboundFlight.IataOrigin)
 
             .Include(e => e.Hotel)
+
+            .Include(e => e.Photo)
             .ToListAsync();
         return travelpackages;
     }

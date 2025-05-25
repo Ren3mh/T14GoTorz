@@ -186,7 +186,7 @@ namespace SharedLib.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Chats");
+                    b.ToTable("Chats", (string)null);
                 });
 
             modelBuilder.Entity("SharedLib.Flight", b =>
@@ -217,7 +217,7 @@ namespace SharedLib.Migrations
 
                     b.HasIndex("IataOriginId");
 
-                    b.ToTable("Flights");
+                    b.ToTable("Flights", (string)null);
                 });
 
             modelBuilder.Entity("SharedLib.Flightpath", b =>
@@ -251,7 +251,7 @@ namespace SharedLib.Migrations
 
                     b.HasIndex("TravelPackageId");
 
-                    b.ToTable("Flightpaths");
+                    b.ToTable("Flightpaths", (string)null);
                 });
 
             modelBuilder.Entity("SharedLib.GotorzAppUser", b =>
@@ -359,7 +359,7 @@ namespace SharedLib.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Hotels");
+                    b.ToTable("Hotels", (string)null);
                 });
 
             modelBuilder.Entity("SharedLib.IataLocation", b =>
@@ -405,7 +405,7 @@ namespace SharedLib.Migrations
                     b.HasKey("Id")
                         .HasName("PK_Photos");
 
-                    b.ToTable("Photos");
+                    b.ToTable("Photos", (string)null);
                 });
 
             modelBuilder.Entity("SharedLib.TravelPackage", b =>
@@ -436,7 +436,7 @@ namespace SharedLib.Migrations
 
                     b.HasIndex("PhotoId");
 
-                    b.ToTable("TravelPackages");
+                    b.ToTable("TravelPackages", (string)null);
                 });
 
             modelBuilder.Entity("SharedLib.VwFlight", b =>

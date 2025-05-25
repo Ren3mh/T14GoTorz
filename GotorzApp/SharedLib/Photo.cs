@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace SharedLib;
 
-public class Photo
+public partial class Photo
 {
     public int Id { get; set; }
 
@@ -19,7 +19,7 @@ public class Photo
     [Required]
     public byte[] PhotoData { get; set; }
 
-    public ICollection<TravelPackage> TravelPackages { get; set; } = new List<TravelPackage>();
+    
 
     public static async Task<byte[]> CreateByteArrayFromFile(IBrowserFile file)
     {
@@ -35,4 +35,10 @@ public class Photo
             return string.Empty;
         return $"data:image/jpeg;base64,{Convert.ToBase64String(PhotoData)}";
     }
+
+}
+
+public partial class Photo
+{
+    public virtual ICollection<TravelPackage> TravelPackages { get; set; } = new List<TravelPackage>();
 }

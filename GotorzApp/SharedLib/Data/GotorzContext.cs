@@ -23,8 +23,6 @@ public partial class GotorzContext : IdentityDbContext<GotorzAppUser>
 
     public virtual DbSet<TravelPackage> TravelPackages { get; set; }
 
-    public virtual DbSet<VwFlight> VwFlights { get; set; }
-
     public virtual DbSet<Chat> Chats { get; set; }
 
     public DbSet<Photo> Photos { get; set; }
@@ -35,8 +33,6 @@ public partial class GotorzContext : IdentityDbContext<GotorzAppUser>
 
         modelBuilder.Entity<Photo>(p =>
         {
-            p.HasKey(e => e.Id).HasName("PK_Photos");
-            p.Property(e => e.Id).ValueGeneratedOnAdd();
             p.Property(e => e.PhotoName).IsRequired();
             p.Property(e => e.PhotoData).IsRequired();
         });
@@ -132,26 +128,6 @@ public partial class GotorzContext : IdentityDbContext<GotorzAppUser>
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK2_TravelPackages_Photos");
         });
-
-        modelBuilder.Entity<VwFlight>(entity =>
-        {
-            entity
-                .HasNoKey()
-                .ToView("vwFlights");
-
-            entity.Property(e => e.ArrivalTime).HasColumnType("datetime");
-            entity.Property(e => e.DepartureTime).HasColumnType("datetime");
-            entity.Property(e => e.Destination).IsRequired();
-            entity.Property(e => e.IataDestination)
-                .IsRequired()
-                .HasMaxLength(3);
-            entity.Property(e => e.IataOrigin)
-                .IsRequired()
-                .HasMaxLength(3);
-            entity.Property(e => e.Origin).IsRequired();
-        });
-
-        OnModelCreatingPartial(modelBuilder);
     }
 
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);

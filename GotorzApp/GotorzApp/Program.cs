@@ -61,7 +61,7 @@ builder.Services.AddAuthentication(options =>
 // Add database context
 builder.Services.AddDbContextFactory<GotorzContext>(options =>
     options.UseSqlServer(
-        builder.Configuration.GetConnectionString("GotorzAppContext"),
+        builder.Configuration.GetConnectionString("DbConnectionString"),
         b => b.MigrationsAssembly("SharedLib")));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
