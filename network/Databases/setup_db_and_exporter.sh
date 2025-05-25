@@ -3,14 +3,8 @@
 set -e  # Exit on first failure
 
 # Configuration
-MSSQL_USER="sander"
+MSSQL_USER="gotorz"
 MSSQL_PASSWORD="P8#tM3@kL7nZ5&"
-
-echo "🔄 Starting MSSQL container stack..."
-docker compose -f compose.mssql.yml up -d
-
-echo "⏳ Waiting 60 seconds for MSSQL to initialize..."
-sleep 60
 
 echo "🚀 Running MSSQL initialization container..."
 docker compose -f compose.init.yml up --abort-on-container-exit --exit-code-from mssql_init

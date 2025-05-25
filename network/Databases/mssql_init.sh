@@ -4,8 +4,8 @@ MSSQL_HOST="mssql"
 MSSQL_PORT="1433"
 SA_USER="sa"
 SA_PASSWORD="YourStrongPassword123"
-NEW_USER="sander"
-NEW_PASSWORD="P8#tM3@kL7\$nZ5&"  # Escaped for shell
+NEW_USER="gotorz"
+NEW_PASSWORD="P8#tM3@kL7nZ5&"  # Escaped for shell
 
 MAX_RETRIES=60
 RETRY_INTERVAL=5
