@@ -17,16 +17,27 @@ using Prometheus;
 
 var builder = WebApplication.CreateBuilder(args);
 
+
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents()
     .AddInteractiveWebAssemblyComponents()
     .AddAuthenticationStateSerialization();
 
-var redis = ConnectionMultiplexer.Connect("192.168.1.88:6379"); // Replace with actual Redis server IP
+var configuration = builder.Configuration;
+var redisConnString = configuration.GetConnectionString("redisDb");
+var mssqlConnString = configuration.GetConnectionString("mssqlDb");
+
+var redis = ConnectionMultiplexer.Connect(redisConnString);
 builder.Services.AddDataProtection()
     .PersistKeysToStackExchangeRedis(redis, "DataProtection-Keys")
     .SetApplicationName("GotorzApp");
+
+builder.Services.AddStackExchangeRedisCache(options =>
+{
+    options.Configuration = redis.Configuration;
+    options.InstanceName = "GotorzApp"; // optional namespace prefix
+});
 
 builder.Services.AddSignalR();
 builder.Services.AddResponseCompression(options =>
@@ -44,6 +55,7 @@ builder.Services.AddScoped<IService<Flightpath>, FlightpathService>();
 builder.Services.AddScoped<IIataLocationService, IataLocationService>();
 builder.Services.AddScoped<ICurrentWeatherService, CurrentWeatherService>();
 builder.Services.AddScoped<ChatService>();
+builder.Services.AddScoped<IPhotoService, PhotoService>();
 
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddScoped<IdentityUserAccessor>();
@@ -60,7 +72,7 @@ builder.Services.AddAuthentication(options =>
 // Add database context
 builder.Services.AddDbContextFactory<GotorzContext>(options =>
     options.UseSqlServer(
-        builder.Configuration.GetConnectionString("DbConnectionString"),
+        mssqlConnString,
         b => b.MigrationsAssembly("SharedLib")));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 

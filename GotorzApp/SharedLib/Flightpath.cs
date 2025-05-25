@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace SharedLib;
 
@@ -54,11 +55,15 @@ public static class FlightpathValidator
 // datacontext Flithpath model
 public partial class Flightpath
 {
+    [JsonIgnore]
     public virtual int OutboundFlightId { get; set; }
 
+    [JsonIgnore]
     public virtual int HomeboundFlightId { get; set; }
 
+    [JsonIgnore]
     public virtual int TravelPackageId { get; set; }
 
+    [JsonIgnore]
     public virtual TravelPackage? TravelPackage { get; set; }
 }

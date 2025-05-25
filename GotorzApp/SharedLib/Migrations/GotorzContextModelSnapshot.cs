@@ -386,6 +386,27 @@ namespace SharedLib.Migrations
                     b.ToTable("IATA_locations", (string)null);
                 });
 
+            modelBuilder.Entity("SharedLib.Photo", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<byte[]>("PhotoData")
+                        .IsRequired()
+                        .HasColumnType("varbinary(max)");
+
+                    b.Property<string>("PhotoName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Photos");
+                });
+
             modelBuilder.Entity("SharedLib.TravelPackage", b =>
                 {
                     b.Property<int>("Id")
@@ -401,6 +422,9 @@ namespace SharedLib.Migrations
                     b.Property<int>("HotelId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("PhotoId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -409,41 +433,9 @@ namespace SharedLib.Migrations
 
                     b.HasIndex("HotelId");
 
+                    b.HasIndex("PhotoId");
+
                     b.ToTable("TravelPackages");
-                });
-
-            modelBuilder.Entity("SharedLib.VwFlight", b =>
-                {
-                    b.Property<DateTime>("ArrivalTime")
-                        .HasColumnType("datetime");
-
-                    b.Property<DateTime>("DepartureTime")
-                        .HasColumnType("datetime");
-
-                    b.Property<string>("Destination")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("IataDestination")
-                        .IsRequired()
-                        .HasMaxLength(3)
-                        .HasColumnType("nvarchar(3)");
-
-                    b.Property<string>("IataOrigin")
-                        .IsRequired()
-                        .HasMaxLength(3)
-                        .HasColumnType("nvarchar(3)");
-
-                    b.Property<int>("Id")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Origin")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.ToTable((string)null);
-
-                    b.ToView("vwFlights", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -562,7 +554,14 @@ namespace SharedLib.Migrations
                         .IsRequired()
                         .HasConstraintName("FK1_TravelPackages_Hotels");
 
+                    b.HasOne("SharedLib.Photo", "Photo")
+                        .WithMany("TravelPackages")
+                        .HasForeignKey("PhotoId")
+                        .HasConstraintName("FK2_TravelPackages_Photos");
+
                     b.Navigation("Hotel");
+
+                    b.Navigation("Photo");
                 });
 
             modelBuilder.Entity("SharedLib.Flight", b =>
@@ -582,6 +581,11 @@ namespace SharedLib.Migrations
                     b.Navigation("FlightIatadestinations");
 
                     b.Navigation("FlightIataorigins");
+                });
+
+            modelBuilder.Entity("SharedLib.Photo", b =>
+                {
+                    b.Navigation("TravelPackages");
                 });
 
             modelBuilder.Entity("SharedLib.TravelPackage", b =>

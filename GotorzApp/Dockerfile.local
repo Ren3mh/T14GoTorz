@@ -1,45 +1,29 @@
-# Use Ubuntu as the base image for the build stage
-FROM ubuntu:20.04 AS build
-
-# Install dependencies for .NET
-RUN apt-get update && \
-    apt-get install -y wget apt-transport-https software-properties-common && \
-    wget https://packages.microsoft.com/config/ubuntu/20.04/packages-microsoft-prod.deb && \
-    dpkg -i packages-microsoft-prod.deb && \
-    apt-get update && \
-    apt-get install -y dotnet-sdk-9.0
+# Use the official .NET SDK image for the build stage
+FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 
 # Set the working directory
 WORKDIR /src
 
-# Copy the project files and restore dependencies
+# Copy only the project files needed for dependency restoration
 COPY GotorzApp/GotorzApp.csproj ./GotorzApp/
 COPY GotorzApp.Client/GotorzApp.Client.csproj ./GotorzApp.Client/
 COPY SharedLib/SharedLib.csproj ./SharedLib/
+
+# Restore dependencies
 RUN dotnet restore ./GotorzApp/GotorzApp.csproj
 
-# Copy the rest of the source code for the specified projects
-COPY GotorzApp/ ./GotorzApp/
-COPY GotorzApp.Client/ ./GotorzApp.Client/
-COPY SharedLib/ ./SharedLib/
+# Copy the rest of the source code
+COPY . .
 
-# Build the application specifying the project file
+# Build the application
 RUN dotnet build ./GotorzApp/GotorzApp.csproj -c Release -o /app/build
 
 # Publish the application
 FROM build AS publish
 RUN dotnet publish ./GotorzApp/GotorzApp.csproj -c Release -o /app/publish
 
-# Use Ubuntu as the base image for the runtime stage
-FROM ubuntu:20.04 AS final
-
-# Install dependencies for .NET runtime
-RUN apt-get update && \
-    apt-get install -y wget apt-transport-https software-properties-common && \
-    wget https://packages.microsoft.com/config/ubuntu/20.04/packages-microsoft-prod.deb && \
-    dpkg -i packages-microsoft-prod.deb && \
-    apt-get update && \
-    apt-get install -y aspnetcore-runtime-9.0
+# Use the official .NET runtime image for the final stage
+FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS final
 
 # Set the working directory
 WORKDIR /app
@@ -49,6 +33,10 @@ COPY --from=publish /app/publish .
 
 # Expose port 80
 EXPOSE 80
+
+
+# Set the ASPNETCORE_ENVIRONMENT environment variable
+ENV ASPNETCORE_ENVIRONMENT=Development
 
 # Set the entry point
 ENTRYPOINT ["dotnet", "GotorzApp.dll"]

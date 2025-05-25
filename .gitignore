@@ -399,8 +399,9 @@ FodyWeavers.xsd
 # JetBrains Rider
 *.sln.iml
 
-# appsettings
-appsettings.json
+# json settings
+#**/appsettings.json
+**/appsettings.*.json
 
 # settings file to present folders in Windows
 desktop.ini
