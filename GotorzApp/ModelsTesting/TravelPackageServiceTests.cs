@@ -64,8 +64,6 @@ public class TravelPackageServiceTests
                     {
                         DepartureTime = DateTime.Now.AddDays(1),
                         ArrivalTime = DateTime.Now.AddDays(1).AddHours(2),
-                        //IataOrigin = Iatas[1],
-                        //IataDestination = Iatas[2],
                         IataOriginId = 2,
                         IataDestinationId = 3
                     },
@@ -73,8 +71,6 @@ public class TravelPackageServiceTests
                     {
                         DepartureTime = DateTime.Now.AddDays(2),
                         ArrivalTime = DateTime.Now.AddDays(2).AddHours(2),
-                        //IataOrigin = Iatas[2],
-                        //IataDestination = Iatas[1],
                         IataDestinationId = 2,
                         IataOriginId = 3
                     },

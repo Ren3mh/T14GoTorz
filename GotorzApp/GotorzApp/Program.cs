@@ -24,7 +24,7 @@ builder.Services.AddRazorComponents()
     .AddInteractiveWebAssemblyComponents()
     .AddAuthenticationStateSerialization();
 
-var redis = ConnectionMultiplexer.Connect("192.168.1.88:6379"); // Replace with actual Redis server IP
+var redis = ConnectionMultiplexer.Connect("192.168.1.174:6379"); // Replace with actual Redis server IP 88
 builder.Services.AddDataProtection()
     .PersistKeysToStackExchangeRedis(redis, "DataProtection-Keys")
     .SetApplicationName("GotorzApp");
@@ -68,7 +68,7 @@ builder.Services.AddAuthentication(options =>
 // Add database context
 builder.Services.AddDbContextFactory<GotorzContext>(options =>
     options.UseSqlServer(
-        builder.Configuration.GetConnectionString("DbConnectionString"),
+        builder.Configuration.GetConnectionString("Docker"),
         b => b.MigrationsAssembly("SharedLib")));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 

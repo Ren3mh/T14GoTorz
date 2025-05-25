@@ -1,5 +1,6 @@
 ﻿using SharedLib;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace SharedLib;
 
@@ -103,11 +104,15 @@ public class ArrivalAfterDepartureWithinLimitAttribute : ValidationAttribute
 // dataContext Flight model
 public partial class Flight
 {
+    [JsonIgnore]
     public virtual ICollection<Flightpath> FlightpathHomeboundFlights { get; set; }
 
+    [JsonIgnore]
     public virtual ICollection<Flightpath> FlightpathOutboundFlights { get; set; }
 
+    [JsonIgnore]
     public int IataDestinationId { get; set; }
 
+    [JsonIgnore]
     public int IataOriginId { get; set; }
 }

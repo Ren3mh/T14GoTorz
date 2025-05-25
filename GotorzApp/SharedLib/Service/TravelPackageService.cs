@@ -22,44 +22,72 @@ public class TravelPackageService : ITravelPackageService
 
     public async Task<List<TravelPackage>> GetAll()
     {
-        var cached = await _cache.GetStringAsync(CacheKey);
-        if (cached != null)
-        {
-            return JsonSerializer.Deserialize<List<TravelPackage>>(cached, new JsonSerializerOptions
+        var travelpackages = new List<TravelPackage>();
+        try
+        { 
+            var cached = await _cache.GetStringAsync(CacheKey);
+            if (cached != null)
             {
-                PropertyNameCaseInsensitive = true,
-                ReferenceHandler = ReferenceHandler.IgnoreCycles
+                return JsonSerializer.Deserialize<List<TravelPackage>>(cached, new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true,
+                    ReferenceHandler = ReferenceHandler.IgnoreCycles
+                });
+            }
+
+            using var context = _dbContextFactory.CreateDbContext();
+            travelpackages = await context.TravelPackages
+                .Include(e => e.Flightpaths)
+                    .ThenInclude(o => o.OutboundFlight.IataDestination)
+                .Include(e => e.Flightpaths)
+                    .ThenInclude(o => o.OutboundFlight.IataOrigin)
+                .Include(e => e.Flightpaths)
+                    .ThenInclude(h => h.HomeboundFlight.IataDestination)
+                .Include(e => e.Flightpaths)
+                    .ThenInclude(h => h.HomeboundFlight.IataOrigin)
+                .Include(e => e.Hotel)
+                .Include(e => e.Photo)
+                .ToListAsync();
+
+            var options = new DistributedCacheEntryOptions
+            {
+                AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10)
+            };
+
+            var json = JsonSerializer.Serialize(travelpackages, new JsonSerializerOptions
+            {
+                ReferenceHandler = ReferenceHandler.IgnoreCycles,
+                WriteIndented = false
             });
+
+            await _cache.SetStringAsync(CacheKey, json, options);
+        
         }
-
-        using var context = _dbContextFactory.CreateDbContext();
-        var travelpackages = await context.TravelPackages
-            .Include(e => e.Flightpaths)
-                .ThenInclude(o => o.OutboundFlight.IataDestination)
-            .Include(e => e.Flightpaths)
-                .ThenInclude(o => o.OutboundFlight.IataOrigin)
-            .Include(e => e.Flightpaths)
-                .ThenInclude(h => h.HomeboundFlight.IataDestination)
-            .Include(e => e.Flightpaths)
-                .ThenInclude(h => h.HomeboundFlight.IataOrigin)
-            .Include(e => e.Hotel)
-            .Include(e => e.Photo)
-            .ToListAsync();
-
-        var options = new DistributedCacheEntryOptions
+        catch (Exception ex)
         {
-            AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10)
-        };
+            Console.WriteLine("Error occurred while fetching travel packages: " + ex.Message);
+            await _cache.RemoveAsync(CacheKey);
 
-        var json = JsonSerializer.Serialize(travelpackages, new JsonSerializerOptions
-        {
-            ReferenceHandler = ReferenceHandler.IgnoreCycles,
-            WriteIndented = false
-        });
+            using var context = _dbContextFactory.CreateDbContext();
+            travelpackages = await context.TravelPackages
+                .Include(e => e.Flightpaths)
+                    .ThenInclude(o => o.OutboundFlight.IataDestination)
+                .Include(e => e.Flightpaths)
+                    .ThenInclude(o => o.OutboundFlight.IataOrigin)
+                .Include(e => e.Flightpaths)
+                    .ThenInclude(h => h.HomeboundFlight.IataDestination)
+                .Include(e => e.Flightpaths)
+                    .ThenInclude(h => h.HomeboundFlight.IataOrigin)
+                .Include(e => e.Hotel)
+                .Include(e => e.Photo)
+                .ToListAsync();
 
-        await _cache.SetStringAsync(CacheKey, json, options);
+            return travelpackages;
 
+        }
+        
         return travelpackages;
+
     }
 
     public Task<TravelPackage> GetById(int id)
@@ -110,14 +138,32 @@ public class TravelPackageService : ITravelPackageService
                 .Include(e => e.Flightpaths)
                 .ThenInclude(h => h.HomeboundFlight.IataOrigin)
                 .Include(e => e.Hotel)
+                .Include(e => e.Photo)
                 .FirstOrDefault(tp => tp.Id == updatedTravelPackage.Id);
 
             if (existingTravelPackage == null)
             {
                 return false;
             }
+                        
+            
+
             context.Entry(existingTravelPackage).CurrentValues.SetValues(updatedTravelPackage);
-            context.Entry(existingTravelPackage.Hotel).CurrentValues.SetValues(updatedTravelPackage.Hotel);
+
+            if (existingTravelPackage.Hotel != updatedTravelPackage.Hotel)
+                context.Entry(existingTravelPackage.Hotel).CurrentValues.SetValues(updatedTravelPackage.Hotel);
+
+            if (updatedTravelPackage.Photo != null)
+            {
+                if (existingTravelPackage.Photo == null)
+                {
+                    existingTravelPackage.Photo = updatedTravelPackage.Photo;
+                }
+                else
+                {
+                    context.Entry(existingTravelPackage.Photo).CurrentValues.SetValues(updatedTravelPackage.Photo);
+                }
+            }
             context.SaveChanges();
             transaction.Commit();
             return true;
@@ -143,15 +189,33 @@ public class TravelPackageService : ITravelPackageService
         using var transaction = await context.Database.BeginTransactionAsync();
         try
         {
-            if (travelPackage == null)
+
+            var existingTravelPackage = context.TravelPackages
+               .Include(e => e.Flightpaths)
+               .ThenInclude(o => o.OutboundFlight.IataDestination)
+               .Include(e => e.Flightpaths)
+               .ThenInclude(o => o.OutboundFlight.IataOrigin)
+               .Include(e => e.Flightpaths)
+               .ThenInclude(h => h.HomeboundFlight.IataDestination)
+               .Include(e => e.Flightpaths)
+               .ThenInclude(h => h.HomeboundFlight.IataOrigin)
+               .Include(e => e.Hotel)
+               .Include(e => e.Photo)
+               .FirstOrDefault(tp => tp.Id == travelPackage.Id);
+
+            if (existingTravelPackage == null)
             {
                 return false;
             }
 
-            context.Flightpaths.RemoveRange(travelPackage.Flightpaths);
-            context.Flights.RemoveRange(travelPackage.Flightpaths.SelectMany(fp => new[] { fp.OutboundFlight, fp.HomeboundFlight }));
-            context.TravelPackages.Remove(travelPackage);
-            context.Hotels.Remove(travelPackage.Hotel);
+            context.Flightpaths.RemoveRange(existingTravelPackage.Flightpaths);
+            context.Flights.RemoveRange(existingTravelPackage.Flightpaths.SelectMany(fp => new[] { fp.OutboundFlight, fp.HomeboundFlight }));
+            context.TravelPackages.Remove(existingTravelPackage);
+            context.Hotels.Remove(existingTravelPackage.Hotel);
+            if (existingTravelPackage.Photo != null)
+            {
+                context.Photos.Remove(existingTravelPackage.Photo);
+            }
             context.SaveChanges();
 
             transaction.Commit();
