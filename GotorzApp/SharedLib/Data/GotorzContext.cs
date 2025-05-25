@@ -27,10 +27,19 @@ public partial class GotorzContext : IdentityDbContext<GotorzAppUser>
 
     public virtual DbSet<Chat> Chats { get; set; }
 
+    public DbSet<Photo> Photos { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+
+        modelBuilder.Entity<Photo>(p =>
+        {
+            p.HasKey(e => e.Id).HasName("PK_Photos");
+            p.Property(e => e.Id).ValueGeneratedOnAdd();
+            p.Property(e => e.PhotoName).IsRequired();
+            p.Property(e => e.PhotoData).IsRequired();
+        });
 
         modelBuilder.Entity<Chat>(entity =>
         {
@@ -117,6 +126,11 @@ public partial class GotorzContext : IdentityDbContext<GotorzAppUser>
                 .HasForeignKey(d => d.HotelId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK1_TravelPackages_Hotels");
+
+            entity.HasOne(d => d.Photo).WithMany(p => p.TravelPackages)
+                .HasForeignKey(d => d.PhotoId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK2_TravelPackages_Photos");
         });
 
         modelBuilder.Entity<VwFlight>(entity =>

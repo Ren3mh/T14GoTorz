@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SharedLib.Data;
 
@@ -11,9 +12,11 @@ using SharedLib.Data;
 namespace SharedLib.Migrations
 {
     [DbContext(typeof(GotorzContext))]
-    partial class GotorzContextModelSnapshot : ModelSnapshot
+    [Migration("20250525074735_AddedPhoto")]
+    partial class AddedPhoto
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

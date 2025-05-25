@@ -21,6 +21,8 @@ public partial class TravelPackage
 
     [Required]
     public Hotel Hotel { get; set; }
+
+    public Photo? Photo { get; set; }
 }
 
 public static class TravelPackageValidator
@@ -40,4 +42,6 @@ public static class TravelPackageValidator
 public partial class TravelPackage
 {
     public virtual int HotelId { get; set; }
+
+    public virtual int PhotoId { get; set; }
 }
