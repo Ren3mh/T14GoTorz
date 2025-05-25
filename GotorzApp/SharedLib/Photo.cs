@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace SharedLib;
@@ -40,5 +41,6 @@ public partial class Photo
 
 public partial class Photo
 {
+    [JsonIgnore]
     public virtual ICollection<TravelPackage> TravelPackages { get; set; } = new List<TravelPackage>();
 }

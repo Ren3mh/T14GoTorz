@@ -18,42 +18,49 @@ else
 {
     <div class="container">
         <div class="row">
-    <div style="margin-top: 10px" class="col">
-        <label style="width: auto; margin-bottom: -100px" for="leavingFrom" class="form-label">Rejser fra:</label>
-        @* <input style="width:290px; height:25px" type="datetime" @bind-value="EarliestDeparture" /> *@
-        <InputDate Type="InputDateType.Date"
-                   min="@DateTime.Now.ToString("yyyy-MM-dd")"
-                   style="width: 360px; height: 30px" @bind-Value="EarliestDeparture" />
-    </div>
-    <div style="margin-top: 10px" class="col">
-        <label style="width: auto; margin-bottom: -100px" for="leavingFrom" class="form-label">Rejser fra:</label>
-            <InputSelect style="width: 360px; height: 30px" id="leavingFrom" @bind-Value="selectedIataCode">
-            @if (iataLocations.Count() == 0)
-            {
-                <span>Loading...</span>
-            }
-            else
-            {@foreach (var iata in iataLocations)
-                {
-                    <option value="@iata.Id">@iata.Iata (@iata.City)</option>
-                }
-            }
-        </InputSelect>
-    </div>
+            <div style="margin-top: 10px" class="col">
+                <label style="width: auto; margin-bottom: -100px" for="leavingFrom" class="form-label">Rejser fra:</label>
+                @* <input style="width:290px; height:25px" type="datetime" @bind-value="EarliestDeparture" /> *@
+                <InputDate Type="InputDateType.Date"
+                min="@DateTime.Now.ToString("yyyy-MM-dd")"
+                style="width: 360px; height: 30px" @bind-Value="EarliestDeparture" />
+            </div>
+            <div style="margin-top: 10px" class="col">
+                <label style="width: auto; margin-bottom: -100px" for="leavingFrom" class="form-label">Rejser fra:</label>
+                <InputSelect style="width: 360px; height: 30px" id="leavingFrom" @bind-Value="selectedIataCode">
+                    @if (iataLocations.Count() == 0)
+                    {
+                        <span>Loading...</span>
+                    }
+                    else
+                    {@foreach (var iata in iataLocations)
+                        {
+                            <option value="@iata.Id">@iata.Iata (@iata.City)</option>
+                        }
+                    }
+                </InputSelect>
+            </div>
         </div>
-    <div style="margin-top: 10px" class="col">
-        <button @onclick="FilterPackages">Opdater</button>
-    </div>
-    <div style="margin-top: 10px" class="col">
-        <button @onclick="SwapSorting">Sorted by lowest price: @SortLowestPrice</button>
-    </div>
+        <div style="margin-top: 10px" class="col">
+            <button @onclick="FilterPackages">Opdater</button>
+        </div>
+        <div style="margin-top: 10px" class="col">
+            <button @onclick="SwapSorting">Sorted by lowest price: @SortLowestPrice</button>
+        </div>
     </div>
     <CardGroup style="margin-top: 15px">
         @foreach (var travelPackage in filteredTravelPackages)
         {
             <div style="margin-bottom: 15px" class="col d-flex">
                 <Card class="h-100 d-flex flex-column" style="width: 23rem">
-                    <img src="@travelPackage.Photo.PreviewImage()" class="card-img-top" alt="Picture of a hotel" />
+                    @if (travelPackage.Photo == null)
+                    {
+                        <img src="/images/hotel.jpg" class="card-img-top" alt="Placeholder image" />
+                    }
+                    else
+                    {
+                        <img src="@travelPackage.Photo.PreviewImage()" class="card-img-top" alt="Picture of a hotel" />
+                    }
                     <CardBody>
                         <CardTitle style="font-weight: bold">@travelPackage.Title</CardTitle>
                         <CardText style="font-style: italic; height: 60px">@travelPackage.Description</CardText>

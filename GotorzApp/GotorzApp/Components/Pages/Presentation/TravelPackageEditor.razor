@@ -1,4 +1,5 @@
-﻿@if (isEditing)
+﻿@using GotorzApp.Components.Pages.PackageCreationComponents
+@if (isEditing)
 {
     <input id="title" style="font-weight:bold" type="text" class="form-control mb-2" @bind="editedTravelPackage.Title" />
 }
@@ -111,8 +112,25 @@ else
         </div>
     </div>
 </div>
+@if (SelectedPackage.Photo != null)
+{
+    <div class="col">
+        <img src="@SelectedPackage.Photo.PreviewImage()" alt="Travel Package Image" style="max-width: 100%; max-height: 300px; object-fit: cover;" />
+    </div>
+}
+else if (isEditing)
+{
+    <AddPhoto @ref="photoForm" OnValidSubmit="HandleValidPhotoSubmit" />
+}
 
 @code {
+    AddPhoto photoForm = new AddPhoto();
+    private void HandleValidPhotoSubmit(Photo photo)
+    {
+        SelectedPackage.Photo = photo;
+        editedTravelPackage.Photo = photo;
+    }
+
     [Parameter]
     public TravelPackage SelectedPackage { get; set; }
     TravelPackage editedTravelPackage;
@@ -120,30 +138,6 @@ else
     [Parameter]
     public CurrentWeather CurrentWeather { get; set; }
 
-    protected override void OnInitialized()
-    {
-        editedTravelPackage = new TravelPackage()
-            {
-                Id = SelectedPackage.Id,
-                Title = SelectedPackage.Title,
-                Description = SelectedPackage.Description,
-                Flightpaths = SelectedPackage.Flightpaths,
-                Hotel = new Hotel()
-                {
-                    Id = SelectedPackage.Hotel.Id,
-                    CheckIn = SelectedPackage.Hotel.CheckIn,
-                    CheckOut = SelectedPackage.Hotel.CheckOut,
-                    Rate = SelectedPackage.Hotel.Rate,
-                    Name = SelectedPackage.Hotel.Name,
-                    Address = SelectedPackage.Hotel.Address,
-                    Telephonenumber = SelectedPackage.Hotel.Telephonenumber,
-                    Email = SelectedPackage.Hotel.Email,
-                    Description = SelectedPackage.Hotel.Description,
-                    TravelPackages = SelectedPackage.Hotel.TravelPackages
-                },
-                HotelId = SelectedPackage.HotelId,
-            };
-    }
 
     [Parameter]
     public EventCallback<TravelPackage> OnDelete { get; set; }
@@ -154,9 +148,6 @@ else
     void edit()
     {
         swapEditing();
-    }
-    void cancel()
-    {
         editedTravelPackage = new TravelPackage()
             {
                 Id = SelectedPackage.Id,
@@ -177,7 +168,12 @@ else
                     TravelPackages = SelectedPackage.Hotel.TravelPackages
                 },
                 HotelId = SelectedPackage.HotelId,
+                Photo = SelectedPackage.Photo
             };
+    }
+    void cancel()
+    {
+        editedTravelPackage = new TravelPackage();
         swapEditing();
     }
 
@@ -185,6 +181,7 @@ else
     {
         SelectedPackage.Hotel = editedTravelPackage.Hotel;
         SelectedPackage.Title = editedTravelPackage.Title;
+        SelectedPackage.Photo = editedTravelPackage.Photo;
         swapEditing();
         OnSaveChanges.InvokeAsync();
     }

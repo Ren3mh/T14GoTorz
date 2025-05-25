@@ -2,6 +2,7 @@
 #nullable disable
 using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace SharedLib;
 
@@ -19,6 +20,9 @@ public partial class IataLocation
 
 public partial class IataLocation
 {
+    [JsonIgnore]
     public virtual ICollection<Flight> FlightIatadestinations { get; set; } = new List<Flight>();
+
+    [JsonIgnore]
     public virtual ICollection<Flight> FlightIataorigins { get; set; } = new List<Flight>();
 }
