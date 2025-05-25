@@ -28,6 +28,12 @@ builder.Services.AddDataProtection()
     .PersistKeysToStackExchangeRedis(redis, "DataProtection-Keys")
     .SetApplicationName("GotorzApp");
 
+builder.Services.AddStackExchangeRedisCache(options =>
+{
+    options.Configuration = redis.Configuration;
+    options.InstanceName = "GotorzApp"; // optional namespace prefix
+});
+
 builder.Services.AddSignalR();
 builder.Services.AddResponseCompression(options =>
 {

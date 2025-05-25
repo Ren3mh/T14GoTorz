@@ -1,5 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Distributed;
 using SharedLib.Data;
+using System.Text.Json.Serialization;
+using System.Text.Json;
 
 namespace SharedLib.Service;
 
@@ -7,31 +10,55 @@ public class TravelPackageService : ITravelPackageService
 {
 
     private readonly IDbContextFactory<GotorzContext> _dbContextFactory;
+    private readonly IDistributedCache _cache;
 
+    private const string CacheKey = "travelpackages_with_photos";
 
-    public TravelPackageService(IDbContextFactory<GotorzContext> dbContextFactory)
+    public TravelPackageService(IDbContextFactory<GotorzContext> dbContextFactory, IDistributedCache cache)
     {
         _dbContextFactory = dbContextFactory;
+        _cache = cache;
     }
 
     public async Task<List<TravelPackage>> GetAll()
     {
+        var cached = await _cache.GetStringAsync(CacheKey);
+        if (cached != null)
+        {
+            return JsonSerializer.Deserialize<List<TravelPackage>>(cached, new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true,
+                ReferenceHandler = ReferenceHandler.IgnoreCycles
+            });
+        }
+
         using var context = _dbContextFactory.CreateDbContext();
         var travelpackages = await context.TravelPackages
             .Include(e => e.Flightpaths)
-            .ThenInclude(o => o.OutboundFlight.IataDestination)
+                .ThenInclude(o => o.OutboundFlight.IataDestination)
             .Include(e => e.Flightpaths)
-            .ThenInclude(o => o.OutboundFlight.IataOrigin)
-
+                .ThenInclude(o => o.OutboundFlight.IataOrigin)
             .Include(e => e.Flightpaths)
-            .ThenInclude(h => h.HomeboundFlight.IataDestination)
+                .ThenInclude(h => h.HomeboundFlight.IataDestination)
             .Include(e => e.Flightpaths)
-            .ThenInclude(h => h.HomeboundFlight.IataOrigin)
-
+                .ThenInclude(h => h.HomeboundFlight.IataOrigin)
             .Include(e => e.Hotel)
-
             .Include(e => e.Photo)
             .ToListAsync();
+
+        var options = new DistributedCacheEntryOptions
+        {
+            AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10)
+        };
+
+        var json = JsonSerializer.Serialize(travelpackages, new JsonSerializerOptions
+        {
+            ReferenceHandler = ReferenceHandler.IgnoreCycles,
+            WriteIndented = false
+        });
+
+        await _cache.SetStringAsync(CacheKey, json, options);
+
         return travelpackages;
     }
 
@@ -59,6 +86,11 @@ public class TravelPackageService : ITravelPackageService
             Console.WriteLine("Error occurred while adding travel package: " + newTravelPackage.Title);
             Console.WriteLine($"Exception: {ex.Message}");
             return false;
+        }
+        finally
+        {
+            // Clear the cache after adding a new travel package
+            await _cache.RemoveAsync(CacheKey);
         }
     }
 
@@ -98,6 +130,11 @@ public class TravelPackageService : ITravelPackageService
             Console.WriteLine($"Exception: {ex.Message}");
             return false;
         }
+        finally
+        {
+            // Clear the cache after updating a travel package
+            await _cache.RemoveAsync(CacheKey);
+        }
     }
 
     public async Task<bool> Delete(TravelPackage travelPackage)
@@ -127,6 +164,11 @@ public class TravelPackageService : ITravelPackageService
             Console.WriteLine("Error occurred while deleting travel package");
             Console.WriteLine($"Exception: {ex.Message}");
             return false;
+        }
+        finally
+        {
+            // Clear the cache after deleting a travel package
+            await _cache.RemoveAsync(CacheKey);
         }
     }
 }
