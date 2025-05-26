@@ -26,9 +26,12 @@ builder.Services.AddRazorComponents()
 
 var configuration = builder.Configuration;
 var redisConnString = configuration.GetConnectionString("redisDb");
-var mssqlConnString = configuration.GetConnectionString("mssqlDb");
+Console.WriteLine(redisConnString);
 
-var redis = ConnectionMultiplexer.Connect(redisConnString);
+var mssqlConnString = configuration.GetConnectionString("mssqlDb");
+Console.WriteLine(mssqlConnString);
+
+var redis = ConnectionMultiplexer.Connect("192.168.1.1");
 builder.Services.AddDataProtection()
     .PersistKeysToStackExchangeRedis(redis, "DataProtection-Keys")
     .SetApplicationName("GotorzApp");

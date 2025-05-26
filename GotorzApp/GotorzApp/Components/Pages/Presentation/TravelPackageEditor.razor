@@ -1,4 +1,6 @@
 ﻿@using GotorzApp.Components.Pages.PackageCreationComponents
+@inject ICurrentWeatherService CurrentWeatherService
+
 @if (isEditing)
 {
     <input id="title" style="font-weight:bold" type="text" class="form-control mb-2" @bind="editedTravelPackage.Title" />
@@ -168,7 +170,8 @@ else if (isEditing)
                     TravelPackages = SelectedPackage.Hotel.TravelPackages
                 },
                 HotelId = SelectedPackage.HotelId,
-                Photo = SelectedPackage.Photo
+                Photo = SelectedPackage.Photo,
+                LocalTemperature = SelectedPackage.LocalTemperature,
             };
     }
     void cancel()
@@ -177,18 +180,37 @@ else if (isEditing)
         swapEditing();
     }
 
-    void save()
+    async void save()
     {
         SelectedPackage.Hotel = editedTravelPackage.Hotel;
         SelectedPackage.Title = editedTravelPackage.Title;
         SelectedPackage.Photo = editedTravelPackage.Photo;
+        SelectedPackage.LocalTemperature = await GetandSaveTemptoPackage();
         swapEditing();
-        OnSaveChanges.InvokeAsync();
+        await OnSaveChanges.InvokeAsync();
     }
 
     bool isEditing = false;
     void swapEditing()
     {
         isEditing = !isEditing;
+    }
+
+    private async Task<double> GetandSaveTemptoPackage()
+    {
+        if (SelectedPackage != null)
+        {
+            // Get the current weather for the destination city
+            var city = SelectedPackage.Flightpaths.First().OutboundFlight.IataDestination.City;
+            
+            // Fetch the current weather data
+            CurrentWeather = await CurrentWeatherService.GetCurrentWeather(city);
+
+            // Update the package with the current weather data
+            return CurrentWeather.Main.TempMax;
+        }
+
+        return 0.0;
+
     }
 }

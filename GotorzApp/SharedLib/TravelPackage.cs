@@ -24,6 +24,8 @@ public partial class TravelPackage
     public Hotel Hotel { get; set; }
 
     public Photo? Photo { get; set; }
+
+    public Double? LocalTemperature { get; set; } = null;
 }
 
 public static class TravelPackageValidator
