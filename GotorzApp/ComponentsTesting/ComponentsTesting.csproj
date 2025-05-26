@@ -31,7 +31,7 @@
 	<ItemGroup>
 	  <ProjectReference Include="..\GotorzApp.Client\GotorzApp.Client.csproj" />
 	  <ProjectReference Include="..\GotorzApp\GotorzApp.csproj" />
-	  <ProjectReference Include="..\Shared\Shared.csproj" />
+	  <ProjectReference Include="..\SharedLib\SharedLib.csproj" />
 	</ItemGroup>
 
 

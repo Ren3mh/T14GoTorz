@@ -3,8 +3,8 @@ using GotorzApp.Components.Pages.Presentation;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
-using Shared;
-using Shared.Service;
+using SharedLib;
+using SharedLib.Service;
 using System.Collections.Generic;
 using System;
 using Xunit;
@@ -64,7 +64,6 @@ public class PackageViewTest : TestContext
         // Act
         var cut = RenderComponent<TravelPackageEditor>(parameters => parameters
             .Add(p => p.SelectedPackage, selectedPackage)  //måske denne bare KUN skulle render PackagesView?
-            .Add(p => p.CurrentWeather, currentWeather)
         );
 
         // Assert: Input with id 10000 should not exist initially
@@ -97,7 +96,6 @@ public class PackageViewTest : TestContext
         // Act
         var cut = RenderComponent<TravelPackageEditor>(parameters => parameters
             .Add(p => p.SelectedPackage, selectedPackage)  //måske denne bare KUN skulle render PackagesView?
-            .Add(p => p.CurrentWeather, currentWeather)
         );
         // Assert initial state
         Assert.Throws<ElementNotFoundException>(() => cut.Find("input#HotelNameInput")); // Input should not exist initially
@@ -137,7 +135,6 @@ public class PackageViewTest : TestContext
         // Act
         var cut = RenderComponent<TravelPackageEditor>(parameters => parameters
             .Add(p => p.SelectedPackage, selectedPackage)  //måske denne bare KUN skulle render PackagesView?
-            .Add(p => p.CurrentWeather, currentWeather)
         );
 
         cut.Find("button#edit").Click(); // Find the edit button by its ID or selector

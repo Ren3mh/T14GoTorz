@@ -11,7 +11,7 @@ else if (unsortedTravelPackages.Count == 0)
 {
     <span>No packages available.</span>
 }
-else 
+else
 {
     <h2>Rejsepakker</h2>
 
@@ -36,7 +36,7 @@ else
     </div>
 
     @* Travelpackages *@
-    <div >
+    <div>
         <div class="row">
             <div class="col-md-6">
                 <table class="table">
@@ -61,7 +61,7 @@ else
 
             @* Selected package *@
             <div class="col">
-                <TravelPackageEditor OnDelete="HandleDelete" OnSaveChanges="HandleSaveChanges" SelectedPackage="SelectedPackage" CurrentWeather="currentWeather" />
+                <TravelPackageEditor OnDelete="HandleDelete" OnSaveChanges="HandleSaveChanges" SelectedPackage="SelectedPackage" />
             </div>
         </div>
     </div>
@@ -114,7 +114,15 @@ else
     async Task SelectPackage(int packageId)
     {
         SelectedPackage = unsortedTravelPackages.Find(tp => tp.Id == packageId);
-        //currentWeather = await CurrentWeatherService.GetCurrentWeather(SelectedPackage.Flightpaths.First().OutboundFlight.IataDestination.City, "fr");
+
+        if (SelectedPackage.LocalTemperature == null)
+        {
+
+            var city = SelectedPackage.Flightpaths.First().OutboundFlight.IataDestination.City;
+            var CurrentWeather = await CurrentWeatherService.GetCurrentWeather(city);
+
+            SelectedPackage.LocalTemperature = CurrentWeather.Main.TempMax;
+        }
     }
     public TravelPackage? SelectedPackage { get; set; }
 
@@ -143,16 +151,7 @@ else
                 }
             }
             SelectedPackage = unsortedTravelPackages.First();
-            //currentWeather = await CurrentWeatherService.GetCurrentWeather(SelectedPackage.Flightpaths.First().OutboundFlight.IataDestination.City, "fr");
-            currentWeather = new CurrentWeather
-                {
-                    Main = new Main
-                    {
-                        TempMax = 25,
-                        TempMin = 15
-                    }
-                };
-
+            
             EarliestDeparture = DateTime.Today;
         }
         catch (Exception ex)
@@ -201,7 +200,7 @@ else
     {
 
         if (selectedIataCode != null)
-        {  
+        {
             travelPackages = travelPackages
                 .Where(tp => tp.Flightpaths.Any(f => f.OutboundFlight.IataOrigin.Id == selectedIataCode))
                 .ToList();

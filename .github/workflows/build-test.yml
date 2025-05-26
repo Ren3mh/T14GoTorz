@@ -2,9 +2,9 @@ name: Build and Test
 
 on:
   push:
-    branches: [ main, Development ]
+    branches: [ '*' ]
   pull_request:
-    branches: [ main, Development ]
+    branches: [ '*' ]
 
 jobs:
   build:
@@ -12,19 +12,33 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: '9.0.x' 
-    
+
     - name: Restore dependencies
       run: dotnet restore GotorzApp/
     
     - name: Build
       run: dotnet build GotorzApp/ --no-restore
-    
+
     - name: Test
       run: dotnet test GotorzApp/ --no-build --verbosity normal
+    
+    - name: Test with code coverage
+      run: dotnet test --collect:"XPlat Code Coverage" GotorzApp/ --no-build --no-restore --verbosity normal
 
+    - name: Generate coverage report
+      uses: danielpalme/ReportGenerator-GitHub-Action@5.1.9
 
+      with:
+        reports: '**/*cobertura.xml'
+        targetdir: 'coveragereport'
+        reporttypes: 'HtmlInline_AzurePipelines_Dark'
+
+    - name: Upload coverage report
+      uses: actions/upload-artifact@v4
+      with:
+        name: coverage-report
+        path: coveragereport

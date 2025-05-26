@@ -1,0 +1,6 @@
+FROM prom/prometheus:latest
+
+COPY prometheus.yml /etc/prometheus/prometheus.yml
+
+# Set the default command (optional override)
+CMD [ "--config.file=/etc/prometheus/prometheus.yml", "--storage.tsdb.retention.time=30d" ]
