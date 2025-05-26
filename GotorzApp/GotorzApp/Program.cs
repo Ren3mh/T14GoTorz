@@ -58,7 +58,6 @@ builder.Services.AddScoped<IService<Flightpath>, FlightpathService>();
 builder.Services.AddScoped<IIataLocationService, IataLocationService>();
 builder.Services.AddScoped<ICurrentWeatherService, CurrentWeatherService>();
 builder.Services.AddScoped<ChatService>();
-builder.Services.AddScoped<IPhotoService, PhotoService>();
 
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddScoped<IdentityUserAccessor>();
