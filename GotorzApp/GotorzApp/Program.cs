@@ -31,7 +31,7 @@ Console.WriteLine(redisConnString);
 var mssqlConnString = configuration.GetConnectionString("mssqlDb");
 Console.WriteLine(mssqlConnString);
 
-var redis = ConnectionMultiplexer.Connect("192.168.1.1");
+var redis = ConnectionMultiplexer.Connect(redisConnString);
 builder.Services.AddDataProtection()
     .PersistKeysToStackExchangeRedis(redis, "DataProtection-Keys")
     .SetApplicationName("GotorzApp");
