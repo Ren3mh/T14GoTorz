@@ -62,7 +62,7 @@ else
 
                 <div class="col">
                     <h5 style="text-decoration-line: underline;">Temp.</h5>
-                    <p>@CurrentWeather.Main.TempMax</p>
+                    <p>@(SelectedPackage.LocalTemperature ?? 0.0)</p>
 
                     <h5 style="text-decoration-line: underline;">Price</h5>
                     @if (isEditing)
@@ -138,10 +138,6 @@ else if (isEditing)
     TravelPackage editedTravelPackage;
 
     [Parameter]
-    public CurrentWeather CurrentWeather { get; set; }
-
-
-    [Parameter]
     public EventCallback<TravelPackage> OnDelete { get; set; }
 
     [Parameter]
@@ -204,10 +200,10 @@ else if (isEditing)
             var city = SelectedPackage.Flightpaths.First().OutboundFlight.IataDestination.City;
             
             // Fetch the current weather data
-            CurrentWeather = await CurrentWeatherService.GetCurrentWeather(city);
+            var currentWeather = await CurrentWeatherService.GetCurrentWeather(city);
 
             // Update the package with the current weather data
-            return CurrentWeather.Main.TempMax;
+            return currentWeather.Main.TempMax;
         }
 
         return 0.0;

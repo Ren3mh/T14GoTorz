@@ -147,6 +147,7 @@ public class TravelPackageService : ITravelPackageService
             }
             
             updatedTravelPackage.HotelId = existingTravelPackage.HotelId;
+            updatedTravelPackage.PhotoId = existingTravelPackage.PhotoId;
 
             context.Entry(existingTravelPackage).CurrentValues.SetValues(updatedTravelPackage);
 

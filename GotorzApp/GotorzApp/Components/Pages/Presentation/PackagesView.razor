@@ -61,7 +61,7 @@ else
 
             @* Selected package *@
             <div class="col">
-                <TravelPackageEditor OnDelete="HandleDelete" OnSaveChanges="HandleSaveChanges" SelectedPackage="SelectedPackage" CurrentWeather="currentWeather" />
+                <TravelPackageEditor OnDelete="HandleDelete" OnSaveChanges="HandleSaveChanges" SelectedPackage="SelectedPackage" />
             </div>
         </div>
     </div>
@@ -151,8 +151,7 @@ else
                 }
             }
             SelectedPackage = unsortedTravelPackages.First();
-            currentWeather = await CurrentWeatherService.GetCurrentWeather(SelectedPackage.Flightpaths.First().OutboundFlight.IataDestination.City);
-
+            
             EarliestDeparture = DateTime.Today;
         }
         catch (Exception ex)
