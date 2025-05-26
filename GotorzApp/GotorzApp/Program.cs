@@ -1,113 +1,139 @@
-﻿using GotorzApp.Components;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Shared;
-using Shared.Data;
-using Shared.Service;
-using Microsoft.AspNetCore.ResponseCompression;
-using GotorzApp.Hubs;
+using GotorzApp.Components;
 using GotorzApp.Components.Account;
-
+using SharedLib.Data;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using SharedLib;
+using StackExchange.Redis;
+using Microsoft.AspNetCore.DataProtection;
+using SharedLib.Service;
+using GotorzApp.Hubs;
+using Microsoft.AspNetCore.ResponseCompression;
+using Microsoft.Identity.Client;
 
-namespace GotorzApp
+using Prometheus;
+
+
+var builder = WebApplication.CreateBuilder(args);
+
+
+// Add services to the container.
+builder.Services.AddRazorComponents()
+    .AddInteractiveServerComponents()
+    .AddInteractiveWebAssemblyComponents()
+    .AddAuthenticationStateSerialization();
+
+var configuration = builder.Configuration;
+var redisConnString = configuration.GetConnectionString("redisDb");
+Console.WriteLine(redisConnString);
+
+var mssqlConnString = configuration.GetConnectionString("mssqlDb");
+Console.WriteLine(mssqlConnString);
+
+var redis = ConnectionMultiplexer.Connect(redisConnString);
+builder.Services.AddDataProtection()
+    .PersistKeysToStackExchangeRedis(redis, "DataProtection-Keys")
+    .SetApplicationName("GotorzApp");
+
+builder.Services.AddStackExchangeRedisCache(options =>
 {
-    public class Program
+    options.Configuration = redis.Configuration;
+    options.InstanceName = "GotorzApp"; // optional namespace prefix
+});
+
+builder.Services.AddSignalR();
+builder.Services.AddResponseCompression(options =>
+{
+    //options.EnableForHttps = true;
+    options.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(
+        new[] { "application/octet-stream" });
+});
+
+builder.Services.AddHttpClient<CurrentWeatherService>();
+builder.Services.AddScoped<IFlightService, FlightService>();
+builder.Services.AddScoped<IHotelService, HotelService>();
+builder.Services.AddScoped<ITravelPackageService, TravelPackageService>();
+builder.Services.AddScoped<IService<Flightpath>, FlightpathService>();
+builder.Services.AddScoped<IIataLocationService, IataLocationService>();
+builder.Services.AddScoped<ICurrentWeatherService, CurrentWeatherService>();
+builder.Services.AddScoped<ChatService>();
+builder.Services.AddScoped<IPhotoService, PhotoService>();
+
+builder.Services.AddCascadingAuthenticationState();
+builder.Services.AddScoped<IdentityUserAccessor>();
+builder.Services.AddScoped<IdentityRedirectManager>();
+builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
+
+builder.Services.AddAuthentication(options =>
     {
-        public static void Main(string[] args)
-        {
-            var builder = WebApplication.CreateBuilder(args);
+        options.DefaultScheme = IdentityConstants.ApplicationScheme;
+        options.DefaultSignInScheme = IdentityConstants.ExternalScheme;
+    })
+    .AddIdentityCookies();
 
-            // Add services to the container.
-            builder.Services.AddRazorComponents()
-                .AddInteractiveServerComponents()
-                .AddInteractiveWebAssemblyComponents();
+// Add database context
+builder.Services.AddDbContextFactory<GotorzContext>(options =>
+    options.UseSqlServer(
+        mssqlConnString,
+        b => b.MigrationsAssembly("SharedLib")));
+builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-            builder.Services.AddSignalR();
-            builder.Services.AddResponseCompression(options =>
-            {
-                options.EnableForHttps = true;
-                options.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(
-                    new[] { "application/octet-stream" });
-            });
+builder.Services.AddIdentityCore<GotorzAppUser>(options => options.SignIn.RequireConfirmedAccount = true)
+    .AddEntityFrameworkStores<GotorzContext>()
+    .AddSignInManager()
+    .AddDefaultTokenProviders();
 
-            builder.Services.AddBlazorBootstrap();
+builder.Services.AddSingleton<IEmailSender<GotorzAppUser>, IdentityNoOpEmailSender>();
 
-            //Add database context
-            builder.Services.AddDbContextFactory<GotorzContext>(options =>
-                options.UseSqlServer(
-                    builder.Configuration.GetConnectionString("GotorzAppContext"),// GotorzAppContext eller DbConnectionString (Husk db factory)
-                    b => b.MigrationsAssembly("GotorzApp"))); //Fordi den er i Shared
-            builder.Services.AddHttpClient<CurrentWeatherService>();
+var app = builder.Build();
 
-            builder.Services.AddDefaultIdentity<IdentityUser>()
-            .AddEntityFrameworkStores<GotorzContext>(); // ← din DbContext
+// This adds the /metrics endpoint
+app.UseMetricServer();
 
+// Optional: Middleware to count visitors (for example, each HTTP request)
+var counter = Prometheus.Metrics.CreateCounter("visitor_count", "Number of visitors");
 
-            builder.Services.AddScoped<IFlightService, FlightService>();
-            builder.Services.AddScoped<IHotelService, HotelService>();
-            builder.Services.AddScoped<ITravelPackageService, TravelPackageService>();
-            builder.Services.AddScoped<IService<Flightpath>, FlightpathService>();
-            builder.Services.AddScoped<IIataLocationService, IataLocationService>();
-            builder.Services.AddScoped<ICurrentWeatherService, CurrentWeatherService>();
-            builder.Services.AddScoped<ChatService>();
-
-
-            builder.Services.AddCascadingAuthenticationState();
-
-            builder.Services.AddScoped<IdentityUserAccessor>();
-
-            builder.Services.AddScoped<IdentityRedirectManager>();
-
-            builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
-
-
-            builder.Services.AddIdentityCore<GotorzAppUser>(options => options.SignIn.RequireConfirmedAccount = true)
-            .AddRoles<IdentityRole>() // TILFØJET for roller
-            .AddEntityFrameworkStores<GotorzContext>()
-            .AddSignInManager()
-            .AddDefaultTokenProviders();
-
-            builder.Services.ConfigureApplicationCookie(options =>
-            {
-                options.LoginPath = "/account/login";
-            });
-
-            builder.Services.AddSingleton<IEmailSender<GotorzAppUser>, IdentityNoOpEmailSender>();
-           
-
-            var app = builder.Build();
-
-            app.UseResponseCompression();
-
-            // Configure the HTTP request pipeline.
-            if (app.Environment.IsDevelopment())
-            {
-                app.UseWebAssemblyDebugging();
-            }
-            else
-            {
-                app.UseExceptionHandler("/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-                app.UseHsts();
-            }
-
-            app.UseHttpsRedirection();
-
-            app.UseStaticFiles();
-            app.UseAntiforgery();
-
-
-            app.MapRazorComponents<App>()
-                .AddInteractiveServerRenderMode()
-                .AddInteractiveWebAssemblyRenderMode()
-                .AddAdditionalAssemblies(typeof(Client._Imports).Assembly);
-
-            app.MapHub<ChatHub>("/chathub");
-            app.MapAdditionalIdentityEndpoints();;
-
-            app.Run();
-        }
+app.Use(async (context, next) =>
+{
+    if (context.Request.Path != "/metrics")
+    {
+        counter.Inc();
     }
+    await next();
+});
+
+app.UseResponseCompression();
+
+// Configure the HTTP request pipeline.
+if (app.Environment.IsDevelopment())
+{
+    app.UseWebAssemblyDebugging();
+    app.UseMigrationsEndPoint();
 }
+else
+{
+    app.UseExceptionHandler("/Error", createScopeForErrors: true);
+    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+    app.UseHsts();
+}
+
+app.UseHttpsRedirection();
+
+
+app.UseAntiforgery();
+
+app.MapStaticAssets();
+app.MapRazorComponents<App>()
+    .AddInteractiveServerRenderMode()
+    .AddInteractiveWebAssemblyRenderMode()
+    .AddAdditionalAssemblies(typeof(GotorzApp.Client._Imports).Assembly);
+
+
+
+// Add additional endpoints required by the Identity /Account Razor components.
+app.MapAdditionalIdentityEndpoints();
+
+app.MapHub<ChatHub>("/chathub");
+
+app.Run();

@@ -44,6 +44,9 @@ COPY --from=publish /app/publish .
 # Expose port 80
 EXPOSE 80
 
+# Set the ASPNETCORE_ENVIRONMENT environment variable
+ENV ASPNETCORE_ENVIRONMENT=Production
+
 # Set the entry point
 ENTRYPOINT ["dotnet", "GotorzApp.dll"]
 

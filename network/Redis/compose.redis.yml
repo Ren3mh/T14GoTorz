@@ -1,0 +1,17 @@
+
+# make sure 'redis-nw' is running.
+
+services:
+  redis:
+    image: redis:7.2-alpine
+    container_name: redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    networks:
+      - redis-nw
+    command: redis-server --save "" --appendonly no
+
+networks:
+  redis-nw:
+    driver: bridge

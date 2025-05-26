@@ -5,7 +5,7 @@
 @attribute [StreamRendering]
 
 @using Microsoft.AspNetCore.Authorization
-@attribute [Authorize(Roles = "Guide, Admin, Customer")] 
+@attribute [Authorize(Roles = "Guide, Admin, Customer")]
 @* HER skriver man rollerne ^ *@
 
 <AuthorizeView Roles="Admin">
@@ -36,6 +36,14 @@
         </TitleTemplate>
         <Content>
             <HotelCreation @ref="hotelForm" OnValidSubmit="HandleValidHotelSubmit" />
+        </Content>
+    </AccordionItem>
+    <AccordionItem>
+        <TitleTemplate>
+            <Icon Name="IconName.FileEarmarkImageFill" Class="me-1" /> Add Photo
+        </TitleTemplate>
+        <Content>
+            <AddPhoto @ref="photoForm" OnValidSubmit="HandleValidPhotoSubmit" />
         </Content>
     </AccordionItem>
 </Accordion>
@@ -83,8 +91,10 @@
 @code {
     private Accordion accordion = default!;
     private async Task ShowHotelCreationAsync() => await accordion.ShowAccordionItemByIndexAsync(1);
+    private async Task ShowPhotoCreationAsync() => await accordion.ShowAccordionItemByIndexAsync(2);
 
     private async Task HideFlightpathCreationAsync() => await accordion.HideAccordionItemByIndexAsync(0);
+    private async Task HideHotelCreationAsync() => await accordion.HideAccordionItemByIndexAsync(1);
     private Task HideAllAccordionItemsAsync() => accordion.HideAllAccordionItemsAsync();
 
     FPCreation flightpathForm = new FPCreation();
@@ -101,6 +111,14 @@
     private void HandleValidHotelSubmit(Hotel hotel)
     {
         newTravelPackage.Hotel = hotel;
+        HideHotelCreationAsync();
+        ShowPhotoCreationAsync();
+    }
+
+    AddPhoto photoForm = new AddPhoto();
+    private void HandleValidPhotoSubmit(Photo photo)
+    {
+        newTravelPackage.Photo = photo;
         HideAllAccordionItemsAsync();
     }
 
@@ -142,7 +160,8 @@
                 Title = newTravelPackage.Title,
                 Description = newTravelPackage.Description,
                 Flightpaths = new List<Flightpath> { newTravelPackage.Flightpaths.First() },
-                Hotel = newTravelPackage.Hotel
+                Hotel = newTravelPackage.Hotel,
+                Photo = newTravelPackage.Photo
             };
         travelPackageToInsert.Flightpaths.First().OutboundFlight.IataOrigin = null;
         travelPackageToInsert.Flightpaths.First().OutboundFlight.IataDestination = null;

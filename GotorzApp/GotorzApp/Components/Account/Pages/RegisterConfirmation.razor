@@ -3,7 +3,7 @@
 @using System.Text
 @using Microsoft.AspNetCore.Identity
 @using Microsoft.AspNetCore.WebUtilities
-
+@using SharedLib
 
 @inject UserManager<GotorzAppUser> UserManager
 @inject IEmailSender<GotorzAppUser> EmailSender
@@ -25,7 +25,7 @@
 }
 else
 {
-    <p>Please check your email to confirm your account.</p>
+    <p role="alert">Please check your email to confirm your account.</p>
 }
 
 @code {

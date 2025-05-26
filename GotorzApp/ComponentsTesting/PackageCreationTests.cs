@@ -3,18 +3,14 @@ using GotorzApp.Components.Pages.Presentation;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Moq;
-using Shared;
-using Shared.Data;
-using Shared.Service;
+using SharedLib;
+using SharedLib.Data;
+using SharedLib.Service;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-
-using Microsoft.AspNetCore.Components.Authorization;
-using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace ComponentsTesting;
@@ -25,6 +21,7 @@ public class PackageCreationTests : TestContext
     private readonly Mock<IHotelService> hotelServiceMock;
     private readonly Mock<IIataLocationService> iataLocationServiceMock;
     private readonly Mock<ICurrentWeatherService> currentWeatherServiceMock;
+
     public PackageCreationTests()
     {
         // Your existing service mocks
@@ -92,27 +89,27 @@ public class PackageCreationTests : TestContext
             Title = "Test Package",
             Description = "Test Description",
             Flightpaths = new List<Flightpath>
-        {
-            new Flightpath
             {
-                Fare = 1000,
-                Luggage = true,
-                OutboundFlight = new Flight()
+                new Flightpath
                 {
-                    DepartureTime = DateTime.Now.AddDays(1),
-                    ArrivalTime = DateTime.Now.AddDays(1).AddHours(2),
-                    IataOriginId = 2,
-                    IataDestinationId = 3
-                },
-                HomeboundFlight = new Flight()
-                {
-                    DepartureTime = DateTime.Now.AddDays(2),
-                    ArrivalTime = DateTime.Now.AddDays(2).AddHours(2),
-                    IataDestinationId = 2,
-                    IataOriginId = 3
+                    Fare = 1000,
+                    Luggage = true,
+                    OutboundFlight = new Flight()
+                    {
+                        DepartureTime = DateTime.Now.AddDays(1),
+                        ArrivalTime = DateTime.Now.AddDays(1).AddHours(2),
+                        IataOriginId = 2,
+                        IataDestinationId = 3
+                    },
+                    HomeboundFlight = new Flight()
+                    {
+                        DepartureTime = DateTime.Now.AddDays(2),
+                        ArrivalTime = DateTime.Now.AddDays(2).AddHours(2),
+                        IataDestinationId = 2,
+                        IataOriginId = 3
+                    },
                 },
             },
-        },
             Hotel = new Hotel()
             {
                 CheckIn = DateTime.Now.AddDays(1),
@@ -123,6 +120,11 @@ public class PackageCreationTests : TestContext
                 Email = "test@email.com",
                 Rate = 200,
                 Description = "Test Hotel Description"
+            },
+            Photo = new Photo()
+            {
+                PhotoName = "testphoto.jpg",
+                PhotoData = new byte[] { 1, 2, 3, 4 }
             }
         };
 

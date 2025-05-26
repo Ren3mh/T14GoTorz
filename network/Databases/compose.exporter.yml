@@ -1,0 +1,9 @@
+services:
+  mssql_exporter:
+    image: danieloliver/mssql_exporter:latest
+    container_name: mssql_exporter
+    environment:
+      PROMETHEUS_MSSQL_DataSource: "Server=mssql;User Id=${MSSQL_USER};Password=${MSSQL_PASSWORD};Database=master"
+      PROMETHEUS_MSSQL_ServerPort: "4000"
+    ports:
+      - "4000:4000"

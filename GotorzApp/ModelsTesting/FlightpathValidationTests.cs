@@ -1,4 +1,4 @@
-﻿using Shared;
+﻿using SharedLib;
 using System.ComponentModel.DataAnnotations;
 
 namespace ModelsTesting;
