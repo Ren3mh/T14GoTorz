@@ -145,8 +145,8 @@ public class TravelPackageService : ITravelPackageService
             {
                 return false;
             }
-                        
             
+            updatedTravelPackage.HotelId = existingTravelPackage.HotelId;
 
             context.Entry(existingTravelPackage).CurrentValues.SetValues(updatedTravelPackage);
 
