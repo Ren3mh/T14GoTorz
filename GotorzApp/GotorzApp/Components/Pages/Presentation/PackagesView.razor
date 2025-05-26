@@ -1,6 +1,6 @@
 ﻿@page "/packages"
 @inject ITravelPackageService TravelPackageService
-@* @inject ICurrentWeatherService CurrentWeatherService *@
+@inject ICurrentWeatherService CurrentWeatherService
 @rendermode InteractiveServer
 
 @if (unsortedTravelPackages == null)
@@ -113,6 +113,14 @@ else
 
     async Task SelectPackage(int packageId)
     {
+        // if localtemp er null så Go
+        if (SelectedPackage.LocalTemperature == null)
+        {
+            var city = SelectedPackage.Flightpaths.First().OutboundFlight.IataDestination.City;
+            var CurrentWeather = await CurrentWeatherService.GetCurrentWeather(city);
+            // Update the package with the current weather data
+            SelectedPackage.LocalTemperature = CurrentWeather.Main.TempMax;
+        }
         SelectedPackage = unsortedTravelPackages.Find(tp => tp.Id == packageId);
         // currentWeather = await CurrentWeatherService.GetCurrentWeather(SelectedPackage.Flightpaths.First().OutboundFlight.IataDestination.City);
     }

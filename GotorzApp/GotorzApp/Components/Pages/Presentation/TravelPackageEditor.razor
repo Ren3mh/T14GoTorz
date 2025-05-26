@@ -119,34 +119,9 @@ else
     public TravelPackage SelectedPackage { get; set; }
     TravelPackage editedTravelPackage;
 
-    // [Parameter]
+    [Parameter]
     public CurrentWeather CurrentWeather { get; set; }
 
-    protected override void OnInitialized()
-    {
-        editedTravelPackage = new TravelPackage()
-            {
-                Id = SelectedPackage.Id,
-                Title = SelectedPackage.Title,
-                Description = SelectedPackage.Description,
-                Flightpaths = SelectedPackage.Flightpaths,
-                Hotel = new Hotel()
-                {
-                    Id = SelectedPackage.Hotel.Id,
-                    CheckIn = SelectedPackage.Hotel.CheckIn,
-                    CheckOut = SelectedPackage.Hotel.CheckOut,
-                    Rate = SelectedPackage.Hotel.Rate,
-                    Name = SelectedPackage.Hotel.Name,
-                    Address = SelectedPackage.Hotel.Address,
-                    Telephonenumber = SelectedPackage.Hotel.Telephonenumber,
-                    Email = SelectedPackage.Hotel.Email,
-                    Description = SelectedPackage.Hotel.Description,
-                    TravelPackages = SelectedPackage.Hotel.TravelPackages
-                },
-                HotelId = SelectedPackage.HotelId,
-            };
-        GetandSaveTemptoPackage();
-    }
 
     [Parameter]
     public EventCallback<TravelPackage> OnDelete { get; set; }
@@ -157,14 +132,12 @@ else
     void edit()
     {
         swapEditing();
-    }
-    void cancel()
-    {
         editedTravelPackage = new TravelPackage()
             {
                 Id = SelectedPackage.Id,
                 Title = SelectedPackage.Title,
                 Description = SelectedPackage.Description,
+                LocalTemperature = SelectedPackage.LocalTemperature,
                 Flightpaths = SelectedPackage.Flightpaths,
                 Hotel = new Hotel()
                 {
@@ -180,14 +153,21 @@ else
                     TravelPackages = SelectedPackage.Hotel.TravelPackages
                 },
                 HotelId = SelectedPackage.HotelId,
+            // Photo = SelectedPackage.Photo
             };
+    }
+    void cancel()
+    {
+        editedTravelPackage = new TravelPackage();
         swapEditing();
     }
 
-    void save()
+    async void save()
     {
         SelectedPackage.Hotel = editedTravelPackage.Hotel;
         SelectedPackage.Title = editedTravelPackage.Title;
+        SelectedPackage.LocalTemperature = await GetandSaveTemptoPackage();
+        // SelectedPackage.Photo = editedTravelPackage.Photo;
         swapEditing();
         OnSaveChanges.InvokeAsync();
     }
@@ -197,22 +177,22 @@ else
     {
         isEditing = !isEditing;
     }
+    private async Task<double> GetandSaveTemptoPackage()
 
+    {
+        if (SelectedPackage != null)
+        {
+            // Get the current weather for the destination city
+            var city = SelectedPackage.Flightpaths.First().OutboundFlight.IataDestination.City;
 
-    private async Task GetandSaveTemptoPackage()
-
-	{
-		if (SelectedPackage != null)
-		{
-			// Get the current weather for the destination city
-			var city = SelectedPackage.Flightpaths.First().OutboundFlight.IataDestination.City;
-			var countryCode = "fr"; // Example country code, replace with actual if needed
-			// Fetch the current weather data
-			CurrentWeather = await CurrentWeatherService.GetCurrentWeather(city);
-			// Update the package with the current weather data
-			SelectedPackage.LocalTemperature = CurrentWeather.Main.TempMax;
+            // Fetch the current weather data
+            CurrentWeather = await CurrentWeatherService.GetCurrentWeather(city);
+            // Update the package with the current weather data
+            // SelectedPackage.LocalTemperature = CurrentWeather.Main.TempMax;
+            return CurrentWeather.Main.TempMax;
 
 		}
+        return 0.0; 
 	}
 
 }

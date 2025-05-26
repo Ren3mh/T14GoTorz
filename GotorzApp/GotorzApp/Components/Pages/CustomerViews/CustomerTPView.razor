@@ -58,6 +58,9 @@ else
                         <CardTitle style="font-weight: bold">@travelPackage.Title</CardTitle>
                         <CardText style="font-style: italic; height: 60px">@travelPackage.Description</CardText>
                         <CardText style="text-decoration: underline">@travelPackage.Hotel.Name</CardText>
+                        <CardText style="font-style: italic">
+                            Temperature at @travelPackage.Flightpaths.First().OutboundFlight.IataDestination.City @(@travelPackage.LocalTemperature ?? 20.1337) °
+                        </CardText>
                     </CardBody>
                     <CardFooter>
                         <div class="row">
