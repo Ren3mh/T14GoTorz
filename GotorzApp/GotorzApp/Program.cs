@@ -58,8 +58,6 @@ builder.Services.AddScoped<IIataLocationService, IataLocationService>();
 builder.Services.AddScoped<ICurrentWeatherService, CurrentWeatherService>();
 builder.Services.AddScoped<ChatService>();
 
-builder.Services.AddScoped<UserManagerService>();
-builder.Services.AddScoped<RoleManagerService>();
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddScoped<IdentityUserAccessor>();
 builder.Services.AddScoped<IdentityRedirectManager>();

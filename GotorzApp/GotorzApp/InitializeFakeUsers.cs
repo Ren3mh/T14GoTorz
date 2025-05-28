@@ -1,13 +1,13 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using GotorzApp.Components.Account.Pages.Manage;
+using Microsoft.AspNetCore.Identity;
 using SharedLib;
-using SharedLib.Service;
 
 namespace GotorzApp;
 
 public class InitializeFakeUsers
 {
-    private readonly RoleManagerService _roleManagerService;
-    private readonly UserManagerService _userManagerService;
+    private readonly RoleManager<IdentityRole> _roleManager;
+    private readonly UserManager<GotorzAppUser> _userManager;
 
     public GotorzAppUser[] users =
     [
@@ -23,10 +23,10 @@ public class InitializeFakeUsers
 
     public string[] roles = ["Admin", "Customer", "Employee"];
 
-    public InitializeFakeUsers(RoleManagerService roleManagerService, UserManagerService userManagerService)
+    public InitializeFakeUsers(RoleManager<IdentityRole> roleManager, UserManager<GotorzAppUser> userManager)
     {
-        _roleManagerService = roleManagerService;
-        _userManagerService = userManagerService;
+        _roleManager = roleManager;
+        _userManager = userManager;
     }
 
     public async Task InitializeAsync()
@@ -34,11 +34,26 @@ public class InitializeFakeUsers
         await InitializeUsersAsync();
         await InitializeRolesAsync();
 
-        // Example: Assign a role to a user
-        await _roleManagerService.AssignRoleToUserAsync(users[0].Email, "Admin");
-        await _roleManagerService.AssignRoleToUserAsync(users[1].Email, "Employee");
-        await _roleManagerService.AssignRoleToUserAsync(users[2].Email, "Employee");
-        await _roleManagerService.AssignRoleToUserAsync(users[3].Email, "Customer");
+        var user1 = await _userManager.FindByEmailAsync(users[0].Email);
+        if (user1 != null)
+        {
+            await _userManager.AddToRoleAsync(user1, "Admin");
+        }
+        var user2 = await _userManager.FindByEmailAsync(users[1].Email);
+        if (user2 != null)
+        {
+            await _userManager.AddToRoleAsync(user2, "Employee");
+        }
+        var user3 = await _userManager.FindByEmailAsync(users[2].Email);
+        if (user3 != null)
+        {
+            await _userManager.AddToRoleAsync(user3, "Employee");
+        }
+        var user4 = await _userManager.FindByEmailAsync(users[3].Email);
+        if (user4 != null)
+        {
+            await _userManager.AddToRoleAsync(user4, "Customer");
+        }
     }
 
 
@@ -46,9 +61,9 @@ public class InitializeFakeUsers
     {
         foreach (var user in users)
         {
-            if (await _userManagerService.FindUserByEmailAsync(user.Email) == null)
+            if (await _userManager.FindByEmailAsync(user.Email) == null)
             {
-                await _userManagerService.CreateUserAsync(user, defaultPassword);
+                await _userManager.CreateAsync(user, defaultPassword);
             }
         }
     }
@@ -57,9 +72,9 @@ public class InitializeFakeUsers
     {
         foreach (var role in roles)
         {
-            if (!await _roleManagerService.RoleExistsAsync(role))
+            if (!await _roleManager.RoleExistsAsync(role))
             {
-                await _roleManagerService.CreateRoleAsync(role);
+                await _roleManager.CreateAsync(new IdentityRole(role));
             }
         }
     }
