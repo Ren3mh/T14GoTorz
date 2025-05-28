@@ -66,23 +66,22 @@
     {
         byte[] byteArray;
 
-        if (e.File == null)
+        try
         {
-            message = "Please select a file.";
-            return;
+            byteArray = await Photo.CreateByteArrayFromFile(e.File);
+            imagePreview = $"data:{e.File.ContentType};base64,{Convert.ToBase64String(byteArray)}";
+            newPhoto.PhotoData = byteArray;
+            newPhoto.PhotoName = e.File.Name;
         }
-
-        // Validate file size (e.g., 5MB limit)
-        const long maxFileSize = 5 * 1024 * 1024; // 5MB
-        if (e.File.Size > maxFileSize)
+        catch (InvalidOperationException ex)
         {
-            message = "File size exceeds the limit of 5MB.";
-            return;
+            message = $"Error processing image: {ex.Message}";
+            imagePreview = null;
         }
-
-        byteArray = await Photo.CreateByteArrayFromFile(e.File);
-        imagePreview = $"data:{e.File.ContentType};base64,{Convert.ToBase64String(byteArray)}";
-        newPhoto.PhotoData = byteArray;
-        
+        catch (ArgumentNullException ex)
+        {
+            message = $"An unexpected error occurred";
+            imagePreview = null;
+        }
     }
 }
