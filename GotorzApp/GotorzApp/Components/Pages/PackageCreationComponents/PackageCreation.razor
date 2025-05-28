@@ -4,9 +4,7 @@
 @rendermode InteractiveServer
 @attribute [StreamRendering]
 
-@using Microsoft.AspNetCore.Authorization
-@attribute [Authorize(Roles = "Guide, Admin, Customer")]
-@* HER skriver man rollerne ^ *@
+@attribute [Authorize(Roles = "Guide, Admin")]
 
 <AuthorizeView Roles="Admin">
     <Authorized>

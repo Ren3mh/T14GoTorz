@@ -1,0 +1,36 @@
+﻿<div class="row">
+    <div class="col-5 col-md-3 text-end">Username :</div>
+    <div class="col-7 col-md-9">@UserToDelete.UserName</div>
+</div>
+<div class="row">
+    <div class="col-5 col-md-3 text-end">User email :</div>
+    <div class="col-7 col-md-9">@UserToDelete.Email</div>
+</div>
+
+<button class="btn btn-secondary" @onclick="CancelDelete">Cancel</button>
+<button class="btn btn-danger" @onclick="DeleteUserConfirmed">Delete</button>
+
+@code {
+    private GotorzAppUser? _user;
+
+    [Parameter] public GotorzAppUser UserToDelete { get; set; }
+
+    [Parameter] public EventCallback<MouseEventArgs> OnClickDelete { get; set; }
+
+    [Parameter] public EventCallback<MouseEventArgs> OnClickCancel { get; set; }
+
+    public void CancelDelete()
+    {
+        OnClickCancel.InvokeAsync();
+    }
+
+    public void DeleteUserConfirmed()
+    {
+        OnClickDelete.InvokeAsync();
+    }
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+    }
+}

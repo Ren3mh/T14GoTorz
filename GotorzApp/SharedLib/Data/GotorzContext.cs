@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Reflection.Metadata;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore; // ✅
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 
 namespace SharedLib.Data;
 
-public partial class GotorzContext : IdentityDbContext<GotorzAppUser>
+public partial class GotorzContext
+    : IdentityDbContext<GotorzAppUser, IdentityRole, string>
 {
     public GotorzContext(DbContextOptions<GotorzContext> options)
         : base(options)
@@ -14,17 +13,11 @@ public partial class GotorzContext : IdentityDbContext<GotorzAppUser>
     }
 
     public virtual DbSet<Flight> Flights { get; set; }
-
     public virtual DbSet<Flightpath> Flightpaths { get; set; }
-
     public virtual DbSet<Hotel> Hotels { get; set; }
-
     public virtual DbSet<IataLocation> IataLocations { get; set; }
-
     public virtual DbSet<TravelPackage> TravelPackages { get; set; }
-
-    public virtual DbSet<Chat> Chats { get; set; }
-
+    public DbSet<Chat> Chats { get; set; }
     public DbSet<Photo> Photos { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
