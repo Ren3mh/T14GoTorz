@@ -74,6 +74,7 @@ public class InitializeFakeUsers
             if (await _userManager.FindByEmailAsync(user.Email) == null)
             {
                 await _userManager.CreateAsync(user, defaultPassword);
+                await _userManager.ConfirmEmailAsync(user, await _userManager.GenerateEmailConfirmationTokenAsync(user));
             }
         }
     }
