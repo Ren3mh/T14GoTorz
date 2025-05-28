@@ -42,7 +42,11 @@ builder.Services.AddStackExchangeRedisCache(options =>
     options.InstanceName = "GotorzApp"; // optional namespace prefix
 });
 
-builder.Services.AddSignalR();
+builder.Services.AddSignalR()
+    .AddStackExchangeRedis(redisConnString, options =>
+    {
+        options.Configuration.ChannelPrefix = "GotorzApp"; // optional channel prefix
+    });
 builder.Services.AddResponseCompression(options =>
 {
     //options.EnableForHttps = true;

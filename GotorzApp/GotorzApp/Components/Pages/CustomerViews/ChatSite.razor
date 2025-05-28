@@ -71,44 +71,30 @@
 
     protected override async Task OnInitializedAsync()
     {
-
         hubConnection = new HubConnectionBuilder()
             .WithUrl(Navigation.ToAbsoluteUri("/chathub"))
             .Build();
 
-        hubConnection.On<string, string, string>("ReceiveMessage", (senderUserName, receiverUserName, message) =>
+        hubConnection.On<string, string>("ReceiveMessage", (user, message) =>
         {
-            var encodedMsg = new Chat(senderUserName, receiverUserName, message);
-            messages.Add(encodedMsg);
+            var newChat = new Chat
+                {
+                    SenderUserName = user,
+                    Message = message,
+                    SentAt = DateTime.Now
+                };
+            messages.Add(newChat);
             InvokeAsync(StateHasChanged);
         });
 
-
         await hubConnection.StartAsync();
-
-        context = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-        messages = await chatService.GetUserChatsAsync(userName);
-        activeChats = await chatService.GetChatUsernamesAsync(userName);
     }
 
-    // [Authorize]
     private async Task Send()
     {
-        if (IsConnected && !string.IsNullOrWhiteSpace(userName) && !string.IsNullOrWhiteSpace(messageInput))
+        if (hubConnection is not null)
         {
-            await hubConnection.SendAsync("SendMessage", userName, userReceiver, messageInput);
-            
-            ClaimsPrincipal claim = context.User;
-            var newChat = new Chat
-                {
-                    SenderUserName = userName,
-                    ReceiverUserName = userReceiver,
-                    Message = messageInput,
-                    SentAt = DateTime.Now,
-                };
-            await chatService.SaveMessageAsync(newChat, claim);
-
-            messageInput = ""; // Clear the input after sending
+            await hubConnection.SendAsync("SendMessage", userName, messageInput);
         }
     }
 
