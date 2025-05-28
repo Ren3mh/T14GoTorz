@@ -1,0 +1,138 @@
+﻿@page "/all-users"
+@using Microsoft.AspNetCore.Identity
+
+@rendermode InteractiveServer
+@inject UserManager<GotorzAppUser> UserManager
+@inject RoleManager<IdentityRole> RoleManager
+
+<h3 class="text-xl font-bold mb-4">All Users</h3>
+
+<div class="mb-4">
+    <label for="roleFilter" class="mr-2">Filter by Role:</label>
+    <select id="roleFilter" class="border rounded p-2" @onchange="OnRoleFilterChanged">
+        <option value="">-- All --</option>
+        @foreach (var role in roles)
+        {
+            <option value="@role">@role</option>
+        }
+    </select>
+</div>
+
+@if (filteredUsers == null)
+{
+    <p>Loading...</p>
+}
+else if (!filteredUsers.Any())
+{
+    <p>No users found for the selected role.</p>
+}
+else
+{
+    <table class="table-auto w-full border border-gray-300">
+        <thead class="bg-gray-100">
+            <tr>
+                <th class="px-4 py-2 border">Email</th>
+                <th class="px-4 py-2 border">Username</th>
+                <th class="px-4 py-2 border">Roles</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var user in filteredUsers)
+            {
+                <tr>
+                    <td class="px-4 py-2 border">@user.Email</td>
+                    <td class="px-4 py-2 border">@user.UserName</td>
+                    <td class="px-4 py-2 border">@string.Join(", ", userRoles[user.Id])</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<UserToShow>? allUsers;
+    private List<UserToShow> filteredUsers = [];
+    private Dictionary<string, IList<string>> userRoles = [];
+    private List<string> roles = [];
+    private string selectedRole = string.Empty;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        allUsers = await GetAllUsersAsync();
+        roles = await GetAllRolesAsync();
+
+        foreach (var user in allUsers)
+        {
+            var rolesForUser = await UserManager.GetRolesAsync(user);
+            userRoles[user.Id] = rolesForUser;
+        }
+
+        filteredUsers = allUsers;
+    }
+
+    public async Task<List<string>> GetAllRolesAsync()
+    {
+        return await Task.FromResult(RoleManager.Roles.Select(r => r.Name!).ToList());
+    }
+
+    public async Task<List<UserToShow>> GetAllUsersAsync()
+    {
+        var newUsers = new List<UserToShow>();
+        var users = await Task.FromResult(UserManager.Users.ToList());
+
+        if (users == null || !users.Any())
+        {
+            return newUsers;
+        }
+        else
+        {
+            newUsers = users.Select(u => new UserToShow(u)).ToList();
+        }
+
+        foreach (var user in newUsers)
+        {
+            var roles = await UserManager.GetRolesAsync(user);
+            user.Roles = roles.ToList();
+        }
+
+        return newUsers;
+    }
+
+    private void OnRoleFilterChanged(ChangeEventArgs e)
+    {
+        selectedRole = e.Value?.ToString() ?? string.Empty;
+
+        if (string.IsNullOrEmpty(selectedRole))
+        {
+            filteredUsers = allUsers;
+        }
+        else
+        {
+            filteredUsers = allUsers
+                .Where(u => userRoles.TryGetValue(u.Id, out var roles) && roles.Contains(selectedRole))
+                .ToList();
+        }
+    }
+
+    public class UserToShow : GotorzAppUser
+    {
+        public List<string> Roles { get; set; } = new List<string>();
+
+        public UserToShow(GotorzAppUser oldUser)
+        {
+            Id = oldUser.Id;
+            UserName = oldUser.UserName;
+            Email = oldUser.Email;
+            NormalizedUserName = oldUser.NormalizedUserName;
+            NormalizedEmail = oldUser.NormalizedEmail;
+            EmailConfirmed = oldUser.EmailConfirmed;
+            PhoneNumber = oldUser.PhoneNumber;
+            PhoneNumberConfirmed = oldUser.PhoneNumberConfirmed;
+            TwoFactorEnabled = oldUser.TwoFactorEnabled;
+            LockoutEnabled = oldUser.LockoutEnabled;
+            AccessFailedCount = oldUser.AccessFailedCount;
+        }
+    }
+
+}

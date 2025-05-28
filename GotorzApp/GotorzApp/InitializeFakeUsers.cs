@@ -54,6 +54,16 @@ public class InitializeFakeUsers
         {
             await _userManager.AddToRoleAsync(user4, "Customer");
         }
+        var user5 = await _userManager.FindByEmailAsync(users[4].Email);
+        if (user5 != null)
+        {
+            await _userManager.AddToRoleAsync(user5, "Customer");
+        }
+        var user6 = await _userManager.FindByEmailAsync(users[5].Email);
+        if (user6 != null)
+        {
+            await _userManager.AddToRoleAsync(user6, "Customer");
+        }
     }
 
 
