@@ -4,6 +4,7 @@
 @inject NavigationManager Navigation
 @rendermode InteractiveServer
 @inject UserManager<GotorzAppUser> UserManager
+@attribute [Authorize(Policy = "Employee")]
 
 <h3>Customer Chats</h3>
 

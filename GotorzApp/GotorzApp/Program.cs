@@ -16,6 +16,12 @@ using GotorzApp;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("Employee", policy =>
+          policy.RequireRole("Admin", "Guide"));
+});
+
 builder.Services.AddBlazorBootstrap();
 
 // Add services to the container.

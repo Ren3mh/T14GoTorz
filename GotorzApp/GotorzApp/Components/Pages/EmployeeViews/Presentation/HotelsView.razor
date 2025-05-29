@@ -1,6 +1,7 @@
 ﻿@page "/hotels"
 @inject IHotelService HotelService
 @inject NavigationManager NavigationManager
+@attribute [Authorize(Roles = "Employee")]
 
 <h1>Hotel List</h1>
 

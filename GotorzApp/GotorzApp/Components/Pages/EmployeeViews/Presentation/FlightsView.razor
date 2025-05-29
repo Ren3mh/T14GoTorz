@@ -1,6 +1,7 @@
 ﻿@page "/flights"
 @inject IFlightService FlightService
 @inject NavigationManager NavigationManager
+@attribute [Authorize(Policy = "Employee")]
 
 <h3>Flight List</h3>
 

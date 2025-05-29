@@ -21,7 +21,7 @@ public class InitializeFakeUsers
 
     private readonly string defaultPassword = "Pwd!23";
 
-    public string[] roles = ["Admin", "Customer", "Employee"];
+    public string[] roles = ["Admin", "Customer", "Guide"];
 
     public InitializeFakeUsers(RoleManager<IdentityRole> roleManager, UserManager<GotorzAppUser> userManager)
     {
@@ -42,12 +42,12 @@ public class InitializeFakeUsers
         var user2 = await _userManager.FindByEmailAsync(users[1].Email);
         if (user2 != null)
         {
-            await _userManager.AddToRoleAsync(user2, "Employee");
+            await _userManager.AddToRoleAsync(user2, "Guide");
         }
         var user3 = await _userManager.FindByEmailAsync(users[2].Email);
         if (user3 != null)
         {
-            await _userManager.AddToRoleAsync(user3, "Employee");
+            await _userManager.AddToRoleAsync(user3, "Guide");
         }
         var user4 = await _userManager.FindByEmailAsync(users[3].Email);
         if (user4 != null)

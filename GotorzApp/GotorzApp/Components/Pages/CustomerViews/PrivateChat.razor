@@ -1,19 +1,31 @@
 ﻿@page "/chat/customer/{customerId}"
 @using Microsoft.AspNetCore.SignalR.Client
 @inject NavigationManager Navigation
-@inject AuthenticationStateProvider AuthProvider
+@inject UserManager<GotorzAppUser> UserManager
+@inject IAuthorizationService AuthorizationService
+@using System.Security.Claims;
 
-<h3>Chat for Customer @customerId</h3>
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
-<ul>
-    @foreach (var msg in messages)
-    {
-        <li>@msg</li>
-    }
-</ul>
 
-<input @bind="messageText" />
-<button @onclick="SendMessage">Send</button>
+@if (customer == null)
+{
+    <p>The customer with id: @customerId, doesn't exists.</p>
+}
+else
+{
+    <h3>Chat for Customer @customerId</h3>
+
+    <ul>
+        @foreach (var msg in messages)
+        {
+            <li>@msg</li>
+        }
+    </ul>
+
+    <input @bind="messageText" />
+    <button @onclick="SendMessage">Send</button>
+}
 
 @code {
     [Parameter]
@@ -23,11 +35,40 @@
     private List<string> messages = new();
     private string messageText;
     private string currentUserId;
+    private GotorzAppUser customer;
 
     protected override async Task OnInitializedAsync()
     {
-        var authState = await AuthProvider.GetAuthenticationStateAsync();
-        currentUserId = authState.User.Identity.Name;
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity is { IsAuthenticated: false })
+        {
+            Navigation.NavigateTo("/Account/Login");
+            return;
+        }
+
+        currentUserId = user.FindFirst(c => c.Type == "sub" || c.Type == ClaimTypes.NameIdentifier)?.Value;
+        var loggedInUser = await UserManager.FindByIdAsync(currentUserId);
+        var userRoles = await UserManager.GetRolesAsync(loggedInUser);
+        var isEmployee = await AuthorizationService.AuthorizeAsync(user, "Employee");
+
+        if (currentUserId != customerId && !isEmployee.Succeeded)
+        {
+            Navigation.NavigateTo($"/chat/customer/{customerId}");
+            return;
+        }
+        else if (userRoles.Contains("Employee"))
+        {
+            var customerExists = await UserManager.FindByIdAsync(customerId) != null;
+            if (!customerExists)
+            {
+                Navigation.NavigateTo("/chat/customers");
+                return;
+            }
+        }
+
+        customer = await UserManager.FindByIdAsync(customerId);
 
         hubConnection = new HubConnectionBuilder()
             .WithUrl(Navigation.ToAbsoluteUri("/chathub"))
