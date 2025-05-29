@@ -1,30 +1,35 @@
-﻿using System;
-using Microsoft.AspNetCore.Identity;
+﻿
+using System.ComponentModel.DataAnnotations;
 
 namespace SharedLib;
 
 public class Chat
 {
     public int Id { get; set; }
-    public string SenderUserName { get; set; } // FK to AspNetUsers
-    public string ReceiverUserName { get; set; } // FK to AspNetUsers
+    public string? SenderUserName => Sender?.UserName;
+    public string? ReceiverUserName => Receiver?.UserName;
+
+    [Required]
     public string Message { get; set; }
+
+    [Required]
     public DateTime SentAt { get; set; } = DateTime.UtcNow;
 
-    // Navigation property to the user
-    public virtual GotorzAppUser User { get; set; }
-    public string UserId { get; set; } // FK to AspNetUsers
+    public virtual GotorzAppUser? Sender { get; set; }
+    public virtual string SenderUserId { get; set; }
 
-    public Chat()
+    public virtual GotorzAppUser? Receiver { get; set; }
+    public virtual string ReceiverUserId { get; set; }
+
+    public Chat(string message, string senderUserId, DateTime sentAt)
     {
-        // Default constructor
+        Message = message;
+        SenderUserId = senderUserId;
+        SentAt = sentAt;
     }
 
-    public Chat(string senderUserName, string receiverUserName, string message)
+    public Chat(string message, string senderUserId, string receiverUserId, DateTime sentAt) : this(message, senderUserId, sentAt)
     {
-        SenderUserName = senderUserName;
-        ReceiverUserName = receiverUserName;
-        Message = message;
-        SentAt = DateTime.UtcNow;
+        ReceiverUserId = receiverUserId;
     }
 }

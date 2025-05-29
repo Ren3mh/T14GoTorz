@@ -1,0 +1,152 @@
+﻿@using System.ComponentModel.DataAnnotations;
+
+<h1>Hotel Creation</h1>
+<div class="row">
+    <div class="col-md-8">
+        <EditForm method="post" Model="newHotel" OnValidSubmit="SubmitHotel" FormName="CreateHotel" Enhance>
+            <DataAnnotationsValidator />
+            <ValidationSummary class="text-danger" />
+
+            <div class="mb-3">
+                <label for="CheckIn" class="form-label">Check-In:</label>
+                <InputDate Type="InputDateType.DateTimeLocal"
+                min="@DateTime.Now.ToString("yyyy-MM-dd HH:mm")"
+                id="CheckIn" @bind-Value="newHotel.CheckIn" class="form-control" />
+                <ValidationMessage For="() => newHotel.CheckIn" class="text-danger" />
+            </div>
+
+            <div class="mb-3">
+                <label for="CheckOut" class="form-label">Check-Out:</label>
+                <InputDate Type="InputDateType.DateTimeLocal"
+                min="@DateTime.Now.ToString("yyyy-MM-dd HH:mm")"
+                id="CheckOut" @bind-Value="newHotel.CheckOut" class="form-control" />
+                <ValidationMessage For="() => newHotel.CheckOut" class="text-danger" />
+            </div>
+
+            <div class="mb-3">
+                <label for="Rate" class="form-label">Rate:</label>
+                <InputNumber id="Rate" @bind-Value="newHotel.Rate" class="form-control" />
+                <ValidationMessage For="() => newHotel.Rate" class="text-danger" />
+            </div>
+
+            <div class="mb-3">
+                <label for="Name" class="form-label">Name:</label>
+                <InputText id="Name" @bind-Value="newHotel.Name" class="form-control" />
+                <ValidationMessage For="() => newHotel.Name" class="text-danger" />
+            </div>
+
+            <div class="mb-3">
+                <label for="TelephoneNumber" class="form-label">Telephone Number:</label>
+                <InputText id="TelephoneNumber" @bind-Value="newHotel.Telephonenumber" class="form-control" />
+                <ValidationMessage For="() => newHotel.Telephonenumber" class="text-danger" />
+            </div>
+
+            <div class="mb-3">
+                <label for="Email" class="form-label">Email:</label>
+                <InputText id="Email" @bind-Value="newHotel.Email" class="form-control" />
+                <ValidationMessage For="() => newHotel.Email" class="text-danger" />
+            </div>
+
+            <div class="mb-3">
+                <label for="Description" class="form-label">Description:</label>
+                <InputTextArea id="Description" @bind-Value="newHotel.Description" class="form-control" />
+                <ValidationMessage For="() => newHotel.Description" class="text-danger" />
+            </div>
+
+            <button type="submit" disabled="@(!IsValid())" class="btn btn-primary">Create Hotel</button>
+        </EditForm>
+    </div>
+
+    <div class="col-md-8">
+        <div class="mb-3">
+            <label class="form-label">Street Number:</label>
+            <InputText id="streetNumber" @bind-Value="streetNumber" class="form-control" />
+        </div>
+
+        <div class="mb-3">
+            <label for="Street" class="form-label">Street:</label>
+            <InputText id="street" @bind-Value="street" class="form-control" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">City:</label>
+            <InputText id="city" @bind-Value="city" class="form-control" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Zip Code:</label>
+            <InputText id="zipCode" @bind-Value="zipCode" class="form-control" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Country:</label>
+            <InputText id="country" @bind-Value="country" class="form-control" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Additional info:</label>
+            <InputText id="other" @bind-Value="other" class="form-control" />
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public EventCallback<Hotel> OnValidSubmit { get; set; }
+
+    [SupplyParameterFromForm(FormName = "CreateHotel")]
+    Hotel newHotel { get; set; } = new()
+    {
+        Address = "new address",
+        CheckIn = DateTime.Now,
+        CheckOut = DateTime.Now.AddDays(1),
+    };
+
+    string streetNumber = string.Empty;
+    string street = string.Empty;
+    string city = string.Empty;
+    string zipCode = string.Empty;
+    string country = string.Empty;
+    string? other = string.Empty;
+
+    private async Task SubmitHotel()
+    {
+        if (OnValidSubmit.HasDelegate)
+        {
+            var _newHotel = newHotel;
+            var _other = other == "" ? null : $"({other}) ";
+            var _newHotelAddress = $"{streetNumber} {_other}{street}, {zipCode} {city}, {country}";
+            _newHotel.Address = _newHotelAddress;
+
+            await OnValidSubmit.InvokeAsync(_newHotel);
+        }
+    }
+
+    private IList<ValidationResult> ValidateModel(object model)
+    {
+        var results = new List<ValidationResult>();
+        var context = new ValidationContext(model, serviceProvider: null, items: null);
+        Validator.TryValidateObject(model, context, results, validateAllProperties: true);
+        return results;
+    }
+
+    bool IsValid()
+    {
+        var isValid = false;
+        
+        if (newHotel == null || 
+            string.IsNullOrEmpty(streetNumber) || 
+            string.IsNullOrEmpty(street) || 
+            string.IsNullOrEmpty(zipCode) || 
+            string.IsNullOrEmpty(city) || 
+            string.IsNullOrEmpty(country))
+            return isValid;
+
+        var hotelResults = ValidateModel(newHotel);
+
+        if (!hotelResults.Any())
+            isValid = true;
+
+        return isValid;
+    }
+}

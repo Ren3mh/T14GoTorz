@@ -167,24 +167,22 @@ namespace SharedLib.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ReceiverUserName")
+                    b.Property<string>("ReceiverUserId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("SenderUserName")
+                    b.Property<string>("SenderUserId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime>("SentAt")
                         .HasColumnType("datetime");
 
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("ReceiverUserId");
+
+                    b.HasIndex("SenderUserId");
 
                     b.ToTable("Chats");
                 });
@@ -494,13 +492,22 @@ namespace SharedLib.Migrations
 
             modelBuilder.Entity("SharedLib.Chat", b =>
                 {
-                    b.HasOne("SharedLib.GotorzAppUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
+                    b.HasOne("SharedLib.GotorzAppUser", "Receiver")
+                        .WithMany("ReceivedChats")
+                        .HasForeignKey("ReceiverUserId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("FK2_Chats_Users");
 
-                    b.Navigation("User");
+                    b.HasOne("SharedLib.GotorzAppUser", "Sender")
+                        .WithMany("SentChats")
+                        .HasForeignKey("SenderUserId")
+                        .IsRequired()
+                        .HasConstraintName("FK1_Chats_Users");
+
+                    b.Navigation("Receiver");
+
+                    b.Navigation("Sender");
                 });
 
             modelBuilder.Entity("SharedLib.Flight", b =>
@@ -572,6 +579,13 @@ namespace SharedLib.Migrations
                     b.Navigation("FlightpathHomeboundFlights");
 
                     b.Navigation("FlightpathOutboundFlights");
+                });
+
+            modelBuilder.Entity("SharedLib.GotorzAppUser", b =>
+                {
+                    b.Navigation("ReceivedChats");
+
+                    b.Navigation("SentChats");
                 });
 
             modelBuilder.Entity("SharedLib.Hotel", b =>

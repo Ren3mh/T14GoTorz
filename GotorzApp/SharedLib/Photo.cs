@@ -24,10 +24,20 @@ public partial class Photo
 
     public static async Task<byte[]> CreateByteArrayFromFile(IBrowserFile file)
     {
+        const long maxFileSize = 1024 * 1024 * 15;
+        if (file.Size > maxFileSize)
+        {
+            throw new InvalidOperationException($"File size exceeds the maximum limit of {maxFileSize / (1024 * 1024)} MB.");
+        }
+        if (file == null)
+        {
+            throw new ArgumentNullException(nameof(file), "File cannot be null.");
+        }
+
+        using var stream = file.OpenReadStream(maxFileSize);
         using var memoryStream = new MemoryStream();
-        await file.OpenReadStream().CopyToAsync(memoryStream);
-        byte[] fileBytes = memoryStream.ToArray();
-        return fileBytes;
+        await stream.CopyToAsync(memoryStream);
+        return memoryStream.ToArray();
     }
 
     public string PreviewImage()

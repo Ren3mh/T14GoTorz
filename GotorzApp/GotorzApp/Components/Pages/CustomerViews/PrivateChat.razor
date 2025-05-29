@@ -1,0 +1,124 @@
+﻿@page "/chat/customer/{customerId}"
+@using Microsoft.AspNetCore.SignalR.Client
+@inject NavigationManager Navigation
+@inject UserManager<GotorzAppUser> UserManager
+@inject IAuthorizationService AuthorizationService
+@using System.Security.Claims;
+@rendermode InteractiveServer
+@inject ChatService ChatService
+
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+
+@if (customer == null)
+{
+    <p>The customer with id: @customerId, doesn't exists.</p>
+}
+else
+{
+    <h3>Chat for Customer @customer.UserName</h3>
+
+    <ul>
+        @foreach (var chat in chats)
+        {
+            @if (chat.SenderUserId != currentUserId)
+            {
+                <li><strong>@customer.UserName</strong> (@chat.SentAt): @chat.Message</li>
+            }
+            else
+            {
+                <li><strong>You</strong> (@chat.SentAt): @chat.Message</li>
+            }
+        }
+    </ul>
+
+    <input @bind="messageText" />
+    <button @onclick="SendMessage">Send</button>
+}
+
+@code {
+    [Parameter]
+    public string customerId { get; set; }
+
+    private HubConnection hubConnection;
+    private List<Chat> chats = new();
+    private string messageText;
+    private string currentUserId;
+    private GotorzAppUser customer;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity is { IsAuthenticated: false })
+        {
+            Navigation.NavigateTo("/Account/Login");
+            return;
+        }
+
+        currentUserId = user.FindFirst(c => c.Type == "sub" || c.Type == ClaimTypes.NameIdentifier)?.Value;
+        var loggedInUser = await UserManager.FindByIdAsync(currentUserId);
+        var userRoles = await UserManager.GetRolesAsync(loggedInUser);
+        var isEmployee = await AuthorizationService.AuthorizeAsync(user, "Employee");
+
+        if (currentUserId != customerId && !isEmployee.Succeeded)
+        {
+            Navigation.NavigateTo($"/chat/customer/{customerId}");
+            return;
+        }
+        else if (userRoles.Contains("Employee"))
+        {
+            var customerExists = await UserManager.FindByIdAsync(customerId) != null;
+            if (!customerExists)
+            {
+                Navigation.NavigateTo("/chat/customers");
+                return;
+            }
+        }
+
+        customer = await UserManager.FindByIdAsync(customerId);
+
+        hubConnection = new HubConnectionBuilder()
+            .WithUrl(Navigation.ToAbsoluteUri("/chathub"))
+            .Build();
+
+        hubConnection.On<string, string, DateTime>("ReceiveMessage", (fromUserId, message, sentAt) =>
+        {
+            var chat = new Chat(
+                message: message, 
+                senderUserId: fromUserId, 
+                sentAt: sentAt
+            );
+
+            chats.Add(chat);
+
+            InvokeAsync(StateHasChanged);
+        });
+
+        chats = await ChatService.GetUserChatsAsync(customerId);
+
+        await hubConnection.StartAsync();
+
+        // Join a group based on CustomerId
+        await hubConnection.InvokeAsync("JoinPrivateChat", customerId);
+
+    }
+
+    private async Task SendMessage()
+    {
+        if (!string.IsNullOrWhiteSpace(messageText))
+        {
+            await hubConnection.InvokeAsync("SendMessageToGroup", customerId, currentUserId, messageText);
+            messageText = "";
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (hubConnection != null)
+        {
+            await hubConnection.DisposeAsync();
+        }
+    }
+}

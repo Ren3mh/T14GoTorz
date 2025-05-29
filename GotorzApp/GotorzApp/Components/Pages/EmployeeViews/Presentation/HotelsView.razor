@@ -1,0 +1,85 @@
+﻿@page "/hotels"
+@inject IHotelService HotelService
+@inject NavigationManager NavigationManager
+@attribute [Authorize(Roles = "Employee")]
+
+<h1>Hotel List</h1>
+
+@if (hotels == null)
+{
+    <span>Loading...</span>
+}
+else if(hotels.Count == 0)
+{
+    <span>No hotels found.</span>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    Hotel Name
+                </th>
+                <th>
+                    Check In
+                </th>
+                <th>
+                    Check Out
+                </th>
+                <th>
+                    Address
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var hotel in hotels)
+            {
+                <tr>
+                    <td>
+                        @hotel.Name @*@<a @onclick="Clicked"</a>*@
+                    </td>
+                    <td>
+                        @hotel.CheckIn
+                    </td>
+                    <td>
+                        @hotel.CheckOut
+                    </td>
+                    <td>
+                        @hotel.Address
+                    </td>
+                    <td>
+                        <a asp-page="./Edit" asp-route-id="@hotel.Id">Edit</a> |
+                        <a asp-page="./Details" asp-route-id="@hotel.Id">Details</a> |
+                        <a asp-page="./Delete" asp-route-id="@hotel.Id">Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+@code
+{
+    private List<Hotel> hotels;
+
+    protected override async Task OnInitializedAsync()
+    {
+        hotels = await HotelService.GetAll() ?? new List<Hotel>();
+    }
+
+    public static List<Hotel> GetDummy()
+    {
+        var hotels = new List<Hotel>
+        {
+            new Hotel
+            {
+                Id = 1, Name = "Sunshine Hotel", Address = "123 Sunny St", Telephonenumber = "123-456-7890",
+                Email = "sunshine@hotel.com", Description = "A bright and sunny hotel",
+                CheckIn = DateTime.Now, CheckOut = DateTime.Now.AddDays(5), Rate = 150.00m
+            }
+
+        };
+        return hotels;
+    }
+}

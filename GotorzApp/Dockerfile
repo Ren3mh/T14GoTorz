@@ -51,4 +51,4 @@ ENV ASPNETCORE_ENVIRONMENT=Production
 ENTRYPOINT ["dotnet", "GotorzApp.dll"]
 
 ARG APPSETTINGS_JSON_BASE64
-RUN echo "$APPSETTINGS_JSON_BASE64" | base64 -d > /app/appsettings.json
+RUN echo "$APPSETTINGS_JSON_BASE64" | base64 -d > /app/appsettings.Production.json
