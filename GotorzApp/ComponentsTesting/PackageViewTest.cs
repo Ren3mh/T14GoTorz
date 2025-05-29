@@ -1,5 +1,5 @@
 ﻿using Bunit;
-using GotorzApp.Components.Pages.Presentation;
+using GotorzApp.Components.Pages.EmployeeViews.Presentation;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;

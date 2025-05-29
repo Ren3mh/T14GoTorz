@@ -8,4 +8,7 @@ namespace SharedLib;
 public class GotorzAppUser : IdentityUser
 {
     public static string DefaultRole = "Customer";
+
+    public List<Chat> SentChats { get; set; } = new List<Chat>();
+    public List<Chat> ReceivedChats { get; set; } = new List<Chat>();
 }

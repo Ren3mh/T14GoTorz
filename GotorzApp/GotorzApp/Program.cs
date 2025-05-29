@@ -16,6 +16,12 @@ using GotorzApp;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("Employee", policy =>
+          policy.RequireRole("Admin", "Guide"));
+});
+
 builder.Services.AddBlazorBootstrap();
 
 // Add services to the container.
@@ -42,7 +48,11 @@ builder.Services.AddStackExchangeRedisCache(options =>
     options.InstanceName = "GotorzApp"; // optional namespace prefix
 });
 
-builder.Services.AddSignalR();
+builder.Services.AddSignalR()
+    .AddStackExchangeRedis(redisConnString, options =>
+    {
+        options.Configuration.ChannelPrefix = "GotorzApp"; // optional channel prefix
+    });
 builder.Services.AddResponseCompression(options =>
 {
     //options.EnableForHttps = true;
