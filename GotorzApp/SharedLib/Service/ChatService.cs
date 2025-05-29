@@ -16,59 +16,36 @@ namespace SharedLib.Service
             _userManager = userManager;
         }
 
-        // Save a chat message
-        public async Task SaveMessageAsync(Chat newChat, ClaimsPrincipal identity)
+        public async Task<bool> SaveMessageAsync(Chat newChat)
         {
             var _context = await _dbContextFactory.CreateDbContextAsync();
-            var user = await _userManager.GetUserAsync(identity);
-            if (user != null)
+            if (newChat != null)
             {
-                newChat.UserId = user.Id; // Set the UserId property 
-
                 _context.Chats.Add(newChat);
                 await _context.SaveChangesAsync();
+                return true;
             }
+
+            return false;
+
         }
 
-        // Retrieve all messages for a user (sent or received)
-        public async Task<List<Chat>> GetUserChatsAsync(string userId)
-        {
-            var _context = await _dbContextFactory.CreateDbContextAsync();
+        //public async Task<List<Chat>> GetUserChatsAsync(string userId)
+        //{
+        //    var _context = await _dbContextFactory.CreateDbContextAsync();
 
-            return await _context.Chats
-                .Where(c => c.SenderUserName == userId || c.ReceiverUserName == userId)
-                .ToListAsync();
-        }
+        //    return await _context.Chats
+        //        .Where(c => c.SenderUserName == userId || c.ReceiverUserName == userId)
+        //        .ToListAsync();
+        //}
 
-        // Retrieve all messages between two users
-        public async Task<List<Chat>> GetChatHistoryAsync(string userId1, string userId2)
-        {
-            var _context = await _dbContextFactory.CreateDbContextAsync();
-            return await _context.Chats
-                .Where(c => (c.SenderUserName == userId1 && c.ReceiverUserName == userId2) ||
-                            (c.SenderUserName == userId2 && c.ReceiverUserName == userId1))
-                .ToListAsync();
-        }
-
-        // Retrieve all usernames and ids a user has chatted with
-        public async Task<List<string>> GetChatUsernamesAsync(string userId)
-        {
-            var _context = await _dbContextFactory.CreateDbContextAsync();
-            return await _context.Chats
-                .Where(c => c.SenderUserName == userId || c.ReceiverUserName == userId)
-                .Select(c => c.SenderUserName == userId ? c.ReceiverUserName : c.SenderUserName) // Er Sender dig? Ja, så Receiver. Nej, så Sender.
-                .Distinct()
-                .ToListAsync();
-        }
-
-        public async Task<string> GetUserId(string userName)
-        {
-            var _context = await _dbContextFactory.CreateDbContextAsync();
-            return await _context.Users
-                .Where(u => u.UserName == userName)
-                .Select(u => u.Id)
-                .FirstOrDefaultAsync();
-        }
-
+        //public async Task<List<Chat>> GetChatHistoryAsync(string userId1, string userId2)
+        //{
+        //    var _context = await _dbContextFactory.CreateDbContextAsync();
+        //    return await _context.Chats
+        //        .Where(c => (c.SenderUserName == userId1 && c.ReceiverUserName == userId2) ||
+        //                    (c.SenderUserName == userId2 && c.ReceiverUserName == userId1))
+        //        .ToListAsync();
+        //}
     }
 }

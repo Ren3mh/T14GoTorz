@@ -32,15 +32,18 @@ public partial class GotorzContext
 
         modelBuilder.Entity<Chat>(entity =>
         {
-            entity.Property(e => e.Message).IsRequired();
-            entity.Property(e => e.SenderUserName).IsRequired();
             entity.Property(e => e.SentAt).HasColumnType("datetime");
 
-            entity.HasOne(c => c.User)
-                .WithMany()
-                .HasForeignKey(c => c.UserId);
-        });
+            entity.HasOne(d => d.Sender).WithMany(p => p.SentChats)
+                .HasForeignKey(d => d.SenderUserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK1_Chats_Users");
 
+            entity.HasOne(d => d.Receiver).WithMany(p => p.ReceivedChats)
+                .HasForeignKey(d => d.ReceiverUserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK2_Chats_Users");
+        });
 
         modelBuilder.Entity<Flight>(entity =>
         {
@@ -120,6 +123,7 @@ public partial class GotorzContext
                 .HasForeignKey(d => d.PhotoId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK2_TravelPackages_Photos");
+
         });
     }
 

@@ -4,6 +4,7 @@
 @inject UserManager<GotorzAppUser> UserManager
 @inject IAuthorizationService AuthorizationService
 @using System.Security.Claims;
+@rendermode InteractiveServer
 
 @inject AuthenticationStateProvider AuthenticationStateProvider
 
@@ -14,7 +15,7 @@
 }
 else
 {
-    <h3>Chat for Customer @customerId</h3>
+    <h3>Chat for Customer @customer.UserName</h3>
 
     <ul>
         @foreach (var msg in messages)
@@ -76,7 +77,15 @@ else
 
         hubConnection.On<string, string>("ReceiveMessage", (fromUserId, message) =>
         {
-            messages.Add($"{fromUserId}: {message}");
+            if (fromUserId != currentUserId)
+            {
+                var userName = UserManager.FindByIdAsync(fromUserId).Result?.UserName ?? "Unknown User";
+                messages.Add($"{userName}: {message}");
+            }
+            else
+            {
+                messages.Add($"Me: {message}");
+            }
             InvokeAsync(StateHasChanged);
         });
 
@@ -91,7 +100,6 @@ else
         if (!string.IsNullOrWhiteSpace(messageText))
         {
             await hubConnection.InvokeAsync("SendMessageToGroup", customerId, currentUserId, messageText);
-            messages.Add($"Me: {messageText}");
             messageText = "";
         }
     }
