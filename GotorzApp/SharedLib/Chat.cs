@@ -21,11 +21,15 @@ public class Chat
     public virtual GotorzAppUser? Receiver { get; set; }
     public virtual string ReceiverUserId { get; set; }
 
-    public Chat(string message,string senderUserId, string receiverUserId, DateTime sentAt)
+    public Chat(string message, string senderUserId, DateTime sentAt)
     {
         Message = message;
         SenderUserId = senderUserId;
-        ReceiverUserId = receiverUserId;
         SentAt = sentAt;
+    }
+
+    public Chat(string message, string senderUserId, string receiverUserId, DateTime sentAt) : this(message, senderUserId, sentAt)
+    {
+        ReceiverUserId = receiverUserId;
     }
 }

@@ -26,10 +26,11 @@ public class ChatHub : Hub
             throw new ArgumentException("Customer ID, from user ID, and message cannot be null or empty.");
         }
 
-        var sentChat = new Chat(message, fromUserId, customerId, DateTime.UtcNow);
+        var sentAt = DateTime.UtcNow;
+        var sentChat = new Chat(message, fromUserId, customerId, sentAt);
 
         var success = await _chatService.SaveMessageAsync(sentChat);
 
-        await Clients.Group(customerId).SendAsync("ReceiveMessage", fromUserId, message);
+        await Clients.Group(customerId).SendAsync("ReceiveMessage", fromUserId, message, sentAt);
     }
 }

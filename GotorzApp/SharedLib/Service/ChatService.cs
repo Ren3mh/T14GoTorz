@@ -30,14 +30,14 @@ namespace SharedLib.Service
 
         }
 
-        //public async Task<List<Chat>> GetUserChatsAsync(string userId)
-        //{
-        //    var _context = await _dbContextFactory.CreateDbContextAsync();
+        public async Task<List<Chat>> GetUserChatsAsync(string userId)
+        {
+            var _context = await _dbContextFactory.CreateDbContextAsync();
 
-        //    return await _context.Chats
-        //        .Where(c => c.SenderUserName == userId || c.ReceiverUserName == userId)
-        //        .ToListAsync();
-        //}
+            return await _context.Chats
+                .Where(c => c.ReceiverUserId == userId)
+                .ToListAsync();
+        }
 
         //public async Task<List<Chat>> GetChatHistoryAsync(string userId1, string userId2)
         //{

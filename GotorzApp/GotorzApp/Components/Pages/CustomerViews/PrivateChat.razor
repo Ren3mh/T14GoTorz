@@ -5,6 +5,7 @@
 @inject IAuthorizationService AuthorizationService
 @using System.Security.Claims;
 @rendermode InteractiveServer
+@inject ChatService ChatService
 
 @inject AuthenticationStateProvider AuthenticationStateProvider
 
@@ -18,9 +19,16 @@ else
     <h3>Chat for Customer @customer.UserName</h3>
 
     <ul>
-        @foreach (var msg in messages)
+        @foreach (var chat in chats)
         {
-            <li>@msg</li>
+            @if (chat.SenderUserId != currentUserId)
+            {
+                <li><strong>@customer.UserName</strong> (@chat.SentAt): @chat.Message</li>
+            }
+            else
+            {
+                <li><strong>You</strong> (@chat.SentAt): @chat.Message</li>
+            }
         }
     </ul>
 
@@ -33,7 +41,7 @@ else
     public string customerId { get; set; }
 
     private HubConnection hubConnection;
-    private List<string> messages = new();
+    private List<Chat> chats = new();
     private string messageText;
     private string currentUserId;
     private GotorzAppUser customer;
@@ -75,24 +83,26 @@ else
             .WithUrl(Navigation.ToAbsoluteUri("/chathub"))
             .Build();
 
-        hubConnection.On<string, string>("ReceiveMessage", (fromUserId, message) =>
+        hubConnection.On<string, string, DateTime>("ReceiveMessage", (fromUserId, message, sentAt) =>
         {
-            if (fromUserId != currentUserId)
-            {
-                var userName = UserManager.FindByIdAsync(fromUserId).Result?.UserName ?? "Unknown User";
-                messages.Add($"{userName}: {message}");
-            }
-            else
-            {
-                messages.Add($"Me: {message}");
-            }
+            var chat = new Chat(
+                message: message, 
+                senderUserId: fromUserId, 
+                sentAt: sentAt
+            );
+
+            chats.Add(chat);
+
             InvokeAsync(StateHasChanged);
         });
+
+        chats = await ChatService.GetUserChatsAsync(customerId);
 
         await hubConnection.StartAsync();
 
         // Join a group based on CustomerId
         await hubConnection.InvokeAsync("JoinPrivateChat", customerId);
+
     }
 
     private async Task SendMessage()
