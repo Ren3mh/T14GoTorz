@@ -41,7 +41,7 @@ public partial class GotorzContext
 
             entity.HasOne(d => d.Receiver).WithMany(p => p.ReceivedChats)
                 .HasForeignKey(d => d.ReceiverUserId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
+                .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("FK2_Chats_Users");
         });
 
