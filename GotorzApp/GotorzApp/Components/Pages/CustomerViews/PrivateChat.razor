@@ -1,0 +1,65 @@
+﻿@page "/chat/customer/{customerId}"
+@using Microsoft.AspNetCore.SignalR.Client
+@inject NavigationManager Navigation
+@inject AuthenticationStateProvider AuthProvider
+
+<h3>Chat for Customer @customerId</h3>
+
+<ul>
+    @foreach (var msg in messages)
+    {
+        <li>@msg</li>
+    }
+</ul>
+
+<input @bind="messageText" />
+<button @onclick="SendMessage">Send</button>
+
+@code {
+    [Parameter]
+    public string customerId { get; set; }
+
+    private HubConnection hubConnection;
+    private List<string> messages = new();
+    private string messageText;
+    private string currentUserId;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthProvider.GetAuthenticationStateAsync();
+        currentUserId = authState.User.Identity.Name;
+
+        hubConnection = new HubConnectionBuilder()
+            .WithUrl(Navigation.ToAbsoluteUri("/chathub"))
+            .Build();
+
+        hubConnection.On<string, string>("ReceiveMessage", (fromUserId, message) =>
+        {
+            messages.Add($"{fromUserId}: {message}");
+            InvokeAsync(StateHasChanged);
+        });
+
+        await hubConnection.StartAsync();
+
+        // Join a group based on CustomerId
+        await hubConnection.InvokeAsync("JoinPrivateChat", customerId);
+    }
+
+    private async Task SendMessage()
+    {
+        if (!string.IsNullOrWhiteSpace(messageText))
+        {
+            await hubConnection.InvokeAsync("SendMessageToGroup", customerId, currentUserId, messageText);
+            messages.Add($"Me: {messageText}");
+            messageText = "";
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (hubConnection != null)
+        {
+            await hubConnection.DisposeAsync();
+        }
+    }
+}

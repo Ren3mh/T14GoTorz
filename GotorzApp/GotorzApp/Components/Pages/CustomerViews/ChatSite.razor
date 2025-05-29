@@ -1,4 +1,4 @@
-﻿@page "/chat"
+﻿@* @page "/chat"
 @rendermode InteractiveServer
 @using Microsoft.AspNetCore.SignalR.Client
 @inject NavigationManager Navigation
@@ -117,4 +117,4 @@
         messages = await chatService.GetChatHistoryAsync(userName, selectedChatUser);
         StateHasChanged();
     }
-}
+} *@

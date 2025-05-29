@@ -1,7 +1,4 @@
-﻿using GotorzApp.Components.Pages.PackageCreationComponents;
-using GotorzApp.Components.Pages.Presentation;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Diagnostics;
+﻿using GotorzApp.Components.Pages.EmployeeViews.PackageCreationComponents;
 using Moq;
 using SharedLib;
 using SharedLib.Data;
