@@ -23,7 +23,7 @@ else
         {
             @if (chat.SenderUserId != currentUserId)
             {
-                <li><strong>@customer.UserName</strong> (@chat.SentAt): @chat.Message</li>
+                <li><strong>@chat.SenderUserName</strong> (@chat.SentAt): @chat.Message</li>
             }
             else
             {
@@ -50,8 +50,9 @@ else
     {
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
+        var isLoggedIn = user.Identity?.IsAuthenticated;
 
-        if (user.Identity is { IsAuthenticated: false })
+        if (!isLoggedIn ?? true)
         {
             Navigation.NavigateTo("/Account/Login");
             return;
@@ -64,7 +65,7 @@ else
 
         if (currentUserId != customerId && !isEmployee.Succeeded)
         {
-            Navigation.NavigateTo($"/chat/customer/{customerId}");
+            Navigation.NavigateTo($"/chat/customer/{currentUserId}");
             return;
         }
         else if (userRoles.Contains("Employee"))
@@ -83,13 +84,14 @@ else
             .WithUrl(Navigation.ToAbsoluteUri("/chathub"))
             .Build();
 
-        hubConnection.On<string, string, DateTime>("ReceiveMessage", (fromUserId, message, sentAt) =>
+        hubConnection.On<string, string, DateTime>("ReceiveMessage", async (fromUserId, message, sentAt) =>
         {
             var chat = new Chat(
-                message: message, 
-                senderUserId: fromUserId, 
+                message: message,
+                senderUserId: fromUserId,
                 sentAt: sentAt
-            );
+            )
+            { Sender = UserManager.FindByIdAsync(fromUserId).Result };
 
             chats.Add(chat);
 
