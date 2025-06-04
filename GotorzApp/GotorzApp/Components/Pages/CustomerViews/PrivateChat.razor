@@ -4,8 +4,10 @@
 @inject UserManager<GotorzAppUser> UserManager
 @inject IAuthorizationService AuthorizationService
 @using System.Security.Claims;
+@using Microsoft.EntityFrameworkCore
 @rendermode InteractiveServer
 @inject ChatService ChatService
+@inject IServiceScopeFactory ScopeFactory
 
 @inject AuthenticationStateProvider AuthenticationStateProvider
 
@@ -86,25 +88,49 @@ else
 
         hubConnection.On<string, string, DateTime>("ReceiveMessage", async (fromUserId, message, sentAt) =>
         {
-            var chat = new Chat(
-                message: message,
-                senderUserId: fromUserId,
-                sentAt: sentAt
-            )
-            { Sender = UserManager.FindByIdAsync(fromUserId).Result };
-
-            chats.Add(chat);
-
-            InvokeAsync(StateHasChanged);
+            await AddChat(fromUserId, message, sentAt);
         });
 
-        chats = await ChatService.GetUserChatsAsync(customerId);
-
+        chats = await GetOldChatsAsync(customerId);
+        
         await hubConnection.StartAsync();
 
         // Join a group based on CustomerId
         await hubConnection.InvokeAsync("JoinPrivateChat", customerId);
 
+    }
+
+    public async Task<List<Chat>> GetOldChatsAsync(string customerId)
+    {
+        var oldChats = await ChatService.GetUserChatsAsync(customerId);
+
+        var senderIds = oldChats.Select(c => c.SenderUserId).Distinct().ToList();
+        
+        using var scope = ScopeFactory.CreateScope();
+        var userManager = scope.ServiceProvider.GetRequiredService<UserManager<GotorzAppUser>>();
+        var users = await userManager.Users
+            .Where(u => senderIds.Contains(u.Id))
+            .ToListAsync();
+
+        foreach (var chat in oldChats)
+        {
+            chat.Sender = users.FirstOrDefault(u => u.Id == chat.SenderUserId);
+        }
+
+        return oldChats;
+    }
+
+    private async Task AddChat(string senderId, string message, DateTime sentAt)
+    {
+        var chat = new Chat(senderId, message, sentAt);
+
+        using var scope = ScopeFactory.CreateScope();
+        var userManager = scope.ServiceProvider.GetRequiredService<UserManager<GotorzAppUser>>();
+        var sender = await userManager.FindByIdAsync(chat.SenderUserId);
+        chat.Sender = sender;
+
+        chats.Add(chat);
+        await InvokeAsync(StateHasChanged);
     }
 
     private async Task SendMessage()

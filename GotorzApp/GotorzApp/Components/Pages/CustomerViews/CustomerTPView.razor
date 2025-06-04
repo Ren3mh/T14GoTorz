@@ -78,7 +78,9 @@ else
                                 <small class="text-muted">Fra <b style="color: black">@(travelPackage.Hotel.Rate + travelPackage.Flightpaths.FirstOrDefault().Fare)</b>.-</small>
                             </div>
                             <div class="col" style="text-align: right">
-                                <Button Color="ButtonColor.Primary" To="/chat/customer/x" type="ButtonType.Link">Rejs!</Button>
+                                <NavLink href="/chat/customer/x">
+                                    <Button Color="ButtonColor.Primary" type="ButtonType.Link">Rejs!</Button>
+                                </NavLink>
                             </div>
                         </div>
                     </CardFooter>
