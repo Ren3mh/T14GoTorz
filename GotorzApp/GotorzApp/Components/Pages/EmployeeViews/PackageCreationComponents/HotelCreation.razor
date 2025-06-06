@@ -95,12 +95,7 @@
     public EventCallback<Hotel> OnValidSubmit { get; set; }
 
     [SupplyParameterFromForm(FormName = "CreateHotel")]
-    Hotel newHotel { get; set; } = new()
-    {
-        Address = "new address",
-        CheckIn = DateTime.Now,
-        CheckOut = DateTime.Now.AddDays(1),
-    };
+    Hotel newHotel { get; set; } = new Hotel();
 
     string streetNumber = string.Empty;
     string street = string.Empty;
@@ -109,14 +104,31 @@
     string country = string.Empty;
     string? other = string.Empty;
 
+    protected override async Task OnInitializedAsync()
+    {
+        newHotel.CheckIn = DateTime.Now.AddDays(1);
+        newHotel.CheckOut = DateTime.Now.AddDays(2);
+        newHotel.Rate = 100.00m;
+        newHotel.Name = "Hotel Name";
+        newHotel.Telephonenumber = "89233278"; // for testing purposes
+        newHotel.Email = "hotel@email.ae";
+        newHotel.Description = "A nice hotel for testing purposes. This hotel is used to test the hotel creation component in the Gotorz application. It is not a real hotel and does not exist in real life.";
+        streetNumber = "123";
+        street = "Test Street";
+        city = "Test City";
+        zipCode = "12345";
+        country = "Test Country";
+        other = "Test Additional Info"; // Optional field for additional information
+        newHotel.Address = Hotel.CreateAddress(streetNumber, street, zipCode, city, country, other);
+    }
+
     private async Task SubmitHotel()
     {
         if (OnValidSubmit.HasDelegate)
         {
             var _newHotel = newHotel;
-            var _other = other == "" ? null : $"({other}) ";
-            var _newHotelAddress = $"{streetNumber} {_other}{street}, {zipCode} {city}, {country}";
-            _newHotel.Address = _newHotelAddress;
+            
+            _newHotel.Address = Hotel.CreateAddress(streetNumber, street, zipCode, city, country, other);
 
             await OnValidSubmit.InvokeAsync(_newHotel);
         }
@@ -143,9 +155,18 @@
             return isValid;
 
         var hotelResults = ValidateModel(newHotel);
-
-        if (!hotelResults.Any())
+        Console.WriteLine($"Hotel validation results: {hotelResults.Count} errors found.");
+        if (hotelResults.Any())
+        {
+            foreach (var result in hotelResults)
+            {
+                Console.WriteLine($"Validation Error: {result.ErrorMessage}");
+            }
+        }
+        else
+        {
             isValid = true;
+        }
 
         return isValid;
     }

@@ -3,6 +3,9 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.Metrics;
+using System.IO;
+using System.Reflection.Emit;
 using System.Text.Json.Serialization;
 
 namespace SharedLib;
@@ -39,6 +42,13 @@ public partial class Hotel
     public string Email { get; set; }
 
     public string? Description { get; set; }
+
+    public static string CreateAddress(string streetNumber, string street, string zipCode, string city, string country, string other)
+    {
+        var _other = other == "" ? null : $"({other}) ";
+        var hotelAddress = $"{streetNumber} {_other}{street}, {zipCode} {city}, {country}";
+        return hotelAddress;
+    }
 }
 
 public static class HotelValidator
