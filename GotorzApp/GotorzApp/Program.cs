@@ -10,13 +10,19 @@ using Microsoft.AspNetCore.DataProtection;
 using SharedLib.Service;
 using GotorzApp.Hubs;
 using Microsoft.AspNetCore.ResponseCompression;
-using Microsoft.Identity.Client;
 
 using Prometheus;
-
+using GotorzApp;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("Employee", policy =>
+          policy.RequireRole("Admin", "Guide"));
+});
+
+builder.Services.AddBlazorBootstrap();
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
@@ -42,7 +48,11 @@ builder.Services.AddStackExchangeRedisCache(options =>
     options.InstanceName = "GotorzApp"; // optional namespace prefix
 });
 
-builder.Services.AddSignalR();
+builder.Services.AddSignalR()
+    .AddStackExchangeRedis(redisConnString, options =>
+    {
+        options.Configuration.ChannelPrefix = "GotorzApp"; // optional channel prefix
+    });
 builder.Services.AddResponseCompression(options =>
 {
     //options.EnableForHttps = true;
@@ -64,13 +74,6 @@ builder.Services.AddScoped<IdentityUserAccessor>();
 builder.Services.AddScoped<IdentityRedirectManager>();
 builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
 
-builder.Services.AddAuthentication(options =>
-    {
-        options.DefaultScheme = IdentityConstants.ApplicationScheme;
-        options.DefaultSignInScheme = IdentityConstants.ExternalScheme;
-    })
-    .AddIdentityCookies();
-
 // Add database context
 builder.Services.AddDbContextFactory<GotorzContext>(options =>
     options.UseSqlServer(
@@ -78,14 +81,26 @@ builder.Services.AddDbContextFactory<GotorzContext>(options =>
         b => b.MigrationsAssembly("SharedLib")));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-builder.Services.AddIdentityCore<GotorzAppUser>(options => options.SignIn.RequireConfirmedAccount = true)
+builder.Services.AddIdentity<GotorzAppUser, IdentityRole>(options =>
+{
+    options.SignIn.RequireConfirmedAccount = true;
+})
     .AddEntityFrameworkStores<GotorzContext>()
-    .AddSignInManager()
     .AddDefaultTokenProviders();
 
 builder.Services.AddSingleton<IEmailSender<GotorzAppUser>, IdentityNoOpEmailSender>();
 
+// Add the initialization service
+builder.Services.AddScoped<InitializeFakeUsers>();
+
 var app = builder.Build();
+
+// Add fake users and roles
+using (var scope = app.Services.CreateScope())
+{
+    var initializationService = scope.ServiceProvider.GetRequiredService<InitializeFakeUsers>();
+    await initializationService.InitializeAsync();
+}
 
 // This adds the /metrics endpoint
 app.UseMetricServer();

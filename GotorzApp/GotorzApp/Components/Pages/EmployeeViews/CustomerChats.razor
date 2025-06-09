@@ -1,0 +1,42 @@
+﻿@page "/chat/customers"
+@using Microsoft.AspNetCore.Identity
+
+@inject NavigationManager Navigation
+@rendermode InteractiveServer
+@inject UserManager<GotorzAppUser> UserManager
+@attribute [Authorize(Policy = "Employee")]
+
+<h3>Customer Chats</h3>
+
+@if (customers == null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    @foreach (var customer in customers)
+    {
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="@($"chat/customer/{customer.Id}")">
+                <span class="bi bi-chat" aria-hidden="true"></span> Chat for @customer.UserName
+            </NavLink>
+        </div>
+    }
+}
+
+@code {
+    private List<GotorzAppUser> customers;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Replace with your real data source
+        customers = await GetCustomersAsync();
+    }
+
+    // Placeholder for loading customers
+    private async Task<List<GotorzAppUser>> GetCustomersAsync()
+    {
+        return await UserManager.GetUsersInRoleAsync("Customer")
+            .ContinueWith(task => task.Result.ToList());
+    }
+}

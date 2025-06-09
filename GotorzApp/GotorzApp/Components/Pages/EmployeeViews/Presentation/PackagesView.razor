@@ -1,0 +1,212 @@
+﻿@page "/packages"
+@inject ITravelPackageService TravelPackageService
+@inject ICurrentWeatherService CurrentWeatherService
+@rendermode InteractiveServer
+@attribute [Authorize(Policy = "Employee")]
+
+@if (unsortedTravelPackages == null)
+{
+    <span>Loading...</span>
+}
+else if (unsortedTravelPackages.Count == 0)
+{
+    <span>No packages available.</span>
+}
+else
+{
+    <h2>Rejsepakker</h2>
+
+    @* Filtering *@
+    <label for="leavingFrom" class="form-label">Rejser fra: </label>
+    <input style="width:290px; height:25px" type="datetime" @bind-value="EarliestDeparture" />
+    <div class="col">
+        <label for="leavingFrom" class="form-label">Rejser fra:</label>
+        <InputSelect style="width:290px; height:25px" id="leavingFrom" @bind-Value="selectedIataCode">
+            @if (iataLocations.Count() == 0)
+            {
+                <span>Loading...</span>
+            }
+            else
+            {@foreach (var iata in iataLocations)
+                {
+                    <option value="@iata.Id">@iata.Iata (@iata.City)</option>
+                }
+            }
+        </InputSelect>
+        <button @onclick="FilterPackages" style="margin-left:50px">OPDATER</button>
+    </div>
+
+    @* Travelpackages *@
+    <div>
+        <div class="row">
+            <div class="col-md-6">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>
+                                <button @onclick="SwapSorting">Sorted by lowest price: @SortLowestPrice</button>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var travelPackage in filteredTravelPackages)
+                        {
+                            <tr>
+                                <td><a class="link-offset-2 link-underline link-underline-opacity-0" @onclick="(() => SelectPackage(travelPackage.Id))">@travelPackage.Title</a></td>
+                                <td>@(travelPackage.Hotel.Rate + travelPackage.Flightpaths.FirstOrDefault().Fare)</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            @* Selected package *@
+            <div class="col">
+                <TravelPackageEditor OnDelete="HandleDelete" OnSaveChanges="HandleSaveChanges" SelectedPackage="SelectedPackage" />
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private async Task HandleDelete(TravelPackage packageToDelete)
+    {
+        if (packageToDelete != null)
+        {
+            var success = await TravelPackageService.Delete(packageToDelete);
+
+            if (success)
+            {
+                unsortedTravelPackages.Remove(packageToDelete);
+                filteredTravelPackages.Remove(packageToDelete);
+
+                SelectedPackage = filteredTravelPackages.FirstOrDefault();
+                StateHasChanged();
+            }
+            else
+            {
+                Console.WriteLine("Failed to delete the package.");
+            }
+        }
+    }
+
+    private async Task HandleSaveChanges()
+    {
+        if (SelectedPackage != null)
+        {
+            var success = await TravelPackageService.Update(SelectedPackage);
+            if (success)
+            {
+                var index = unsortedTravelPackages.FindIndex(tp => tp.Id == SelectedPackage.Id);
+                if (index != -1)
+                {
+                    unsortedTravelPackages[index] = SelectedPackage;
+                    filteredTravelPackages[index] = SelectedPackage;
+                }
+                StateHasChanged();
+            }
+            else
+            {
+                Console.WriteLine("Failed to save changes.");
+            }
+        }
+    }
+
+    async Task SelectPackage(int packageId)
+    {
+        SelectedPackage = unsortedTravelPackages.Find(tp => tp.Id == packageId);
+
+        if (SelectedPackage.LocalTemperature == null)
+        {
+
+            var city = SelectedPackage.Flightpaths.First().OutboundFlight.IataDestination.City;
+            var CurrentWeather = await CurrentWeatherService.GetCurrentWeather(city);
+
+            SelectedPackage.LocalTemperature = CurrentWeather.Main.TempMax;
+        }
+    }
+    public TravelPackage? SelectedPackage { get; set; }
+
+    DateTime EarliestDeparture;
+
+    CurrentWeather currentWeather;
+
+    List<TravelPackage> filteredTravelPackages = new List<TravelPackage>();
+    List<TravelPackage> unsortedTravelPackages;
+
+    List<IataLocation> iataLocations = new List<IataLocation>();
+    int selectedIataCode;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            unsortedTravelPackages = await TravelPackageService.GetAll() ?? new List<TravelPackage>();
+            filteredTravelPackages = new List<TravelPackage>(unsortedTravelPackages);
+            foreach (TravelPackage tp in unsortedTravelPackages)
+            {
+                foreach (Flightpath fp in tp.Flightpaths)
+                {
+                    if (!iataLocations.Exists(iata => iata.Id == fp.OutboundFlight.IataOrigin.Id))
+                        iataLocations.Add(fp.OutboundFlight.IataOrigin);
+                }
+            }
+            SelectedPackage = unsortedTravelPackages.First();
+            
+            EarliestDeparture = DateTime.Today;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"An error occurred: {ex.Message}");
+        }
+
+        SortLowestPrice = false;
+    }
+
+    void SortByPrice()
+    {
+        if (!SortLowestPrice)
+            filteredTravelPackages = filteredTravelPackages.OrderByDescending(tp => tp.Hotel.Rate + tp.Flightpaths.FirstOrDefault().Fare).ToList();
+        else
+            filteredTravelPackages = filteredTravelPackages.OrderBy(tp => tp.Hotel.Rate + tp.Flightpaths.FirstOrDefault().Fare).ToList();
+    }
+
+    void SwapSorting()
+    {
+        SortLowestPrice = !SortLowestPrice;
+        SortByPrice();
+    }
+    bool SortLowestPrice;
+
+    void FilterPackages()
+    {
+        var travelPackages = unsortedTravelPackages;
+
+        travelPackages = FilterByDate(travelPackages);
+        travelPackages = FilterByOrigin(travelPackages);
+
+        filteredTravelPackages = travelPackages;
+
+        SortByPrice();
+    }
+
+    private List<TravelPackage> FilterByDate(List<TravelPackage> travelPackages)
+    {
+        return travelPackages
+            .Where(tp => tp.Flightpaths.Any(f => f.OutboundFlight.DepartureTime >= EarliestDeparture))
+            .ToList();
+    }
+
+    private List<TravelPackage> FilterByOrigin(List<TravelPackage> travelPackages)
+    {
+
+        if (selectedIataCode != null)
+        {
+            travelPackages = travelPackages
+                .Where(tp => tp.Flightpaths.Any(f => f.OutboundFlight.IataOrigin.Id == selectedIataCode))
+                .ToList();
+        }
+
+        return travelPackages;
+    }
+}

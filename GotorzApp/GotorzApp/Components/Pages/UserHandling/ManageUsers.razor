@@ -1,0 +1,216 @@
+﻿@page "/user-management"
+@using Microsoft.AspNetCore.Identity
+@using System.Text.Encodings.Web
+@using BlazorBootstrap
+
+@rendermode InteractiveServer
+@inject UserManager<GotorzAppUser> UserManager
+@inject RoleManager<IdentityRole> RoleManager
+@attribute [Authorize(Roles = "Admin")]
+
+<PageTitle>Manage Users</PageTitle>
+
+<h3 class="text-xl font-bold mb-4">All Users</h3>
+
+<div class="mb-4">
+    <label for="roleFilter" class="mr-2">Filter by Role:</label>
+    <select id="roleFilter" class="form-select" @onchange="OnRoleFilterChanged">
+        <option value="">-- All --</option>
+        @foreach (var role in roles)
+        {
+            <option value="@role">@role</option>
+        }
+    </select>
+</div>
+
+@if (filteredUsers == null)
+{
+    <p>Loading...</p>
+}
+else if (!filteredUsers.Any())
+{
+    <p>No users found for the selected role.</p>
+}
+else
+{
+    <table class="table table-bordered">
+        <thead class="table-light">
+            <tr>
+                <th>Email</th>
+                <th>Username</th>
+                <th>Roles</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var user in filteredUsers)
+            {
+                <tr>
+                    <td>@user.Email</td>
+                    <td>@user.UserName</td>
+                    <td>@string.Join(", ", userRoles[user.Id])</td>
+                    <td>
+                        <button class="btn btn-sm btn-danger me-2" @onclick="() => ShowDeleteUserModel(user)">
+                            Delete
+                        </button>
+                        <button class="btn btn-sm btn-primary" @onclick="() => ShowEditUserModal(user)">
+                            Edit
+                        </button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+
+<Modal @ref="deleteModal" IsCentered="true" />
+<Modal @ref="editModal" IsCentered="true" />
+
+@code {
+    private List<GotorzAppUser>? allUsers;
+    private List<GotorzAppUser> filteredUsers = [];
+    private Dictionary<string, IList<string>> userRoles = [];
+    private List<string> roles = [];
+    private string selectedRole = string.Empty;
+
+    private GotorzAppUser? userToDelete;
+    private Modal? deleteModal = default!;
+    private Modal? editModal = default!;
+    private GotorzAppUser? userToEdit;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadUsersAndRolesAsync();
+    }
+
+    private async Task LoadUsersAndRolesAsync()
+    {
+        allUsers = await GetAllUsersAsync();
+        roles = await GetAllRolesAsync();
+
+        userRoles.Clear();
+        foreach (var user in allUsers)
+        {
+            var rolesForUser = await UserManager.GetRolesAsync(user);
+            userRoles[user.Id] = rolesForUser;
+        }
+
+        FilterUsers();
+    }
+
+    public async Task<List<string>> GetAllRolesAsync()
+    {
+        return await Task.FromResult(RoleManager.Roles.Select(r => r.Name!).ToList());
+    }
+
+    public async Task<List<GotorzAppUser>> GetAllUsersAsync()
+    {
+        return await Task.FromResult(UserManager.Users.ToList());
+    }
+
+    private void OnRoleFilterChanged(ChangeEventArgs e)
+    {
+        selectedRole = e.Value?.ToString() ?? string.Empty;
+        FilterUsers();
+    }
+
+    private void FilterUsers()
+    {
+        if (string.IsNullOrEmpty(selectedRole))
+        {
+            filteredUsers = allUsers!;
+        }
+        else
+        {
+            filteredUsers = allUsers!
+                .Where(u => userRoles.TryGetValue(u.Id, out var roles) && roles.Contains(selectedRole))
+                .ToList();
+        }
+    }
+
+    private async Task ShowEditUserModal(GotorzAppUser user)
+    {
+        userToEdit = user;
+        var currentRoles = await UserManager.GetRolesAsync(user);
+        var parameters = new Dictionary<string, object>
+    {
+        { "UserToEdit", user },
+        { "CurrentRoles", currentRoles },
+        { "AvailableRoles", roles },
+        { "OnClickSave", EventCallback.Factory.Create<List<string>>(this, HandleEditUserRolesConfirmed) },
+        { "OnClickCancel", EventCallback.Factory.Create<MouseEventArgs>(this, HandleEditCancel) }
+    };
+
+        await editModal!.ShowAsync<ModalEditUserRoles>(title: "Edit Roles", parameters: parameters);
+    }
+
+    private async void HandleEditCancel(MouseEventArgs e)
+    {
+        userToEdit = null;
+    }
+
+    private async Task HandleEditUserRolesConfirmed(List<string> updatedRoles)
+    {
+        if (userToEdit != null)
+        {
+            var currentRoles = await UserManager.GetRolesAsync(userToEdit);
+            var rolesToRemove = currentRoles.Except(updatedRoles).ToList();
+            var rolesToAdd = updatedRoles.Except(currentRoles).ToList();
+
+            if (rolesToRemove.Any())
+            {
+                await UserManager.RemoveFromRolesAsync(userToEdit, rolesToRemove);
+            }
+
+            if (rolesToAdd.Any())
+            {
+                await UserManager.AddToRolesAsync(userToEdit, rolesToAdd);
+            }
+
+            userRoles[userToEdit.Id] = await UserManager.GetRolesAsync(userToEdit);
+            FilterUsers();
+
+            userToEdit = null;
+            await editModal!.HideAsync();
+            StateHasChanged();
+        }
+    }
+
+    private async Task ShowDeleteUserModel(GotorzAppUser user)
+    {
+        userToDelete = user;
+        var parameters = new Dictionary<string, object>();
+        parameters.Add("UserToDelete", user);
+        parameters.Add("OnClickDelete", EventCallback.Factory.Create<MouseEventArgs>(this, HandleDeleteUserConfirmed));
+        parameters.Add("OnClickCancel", EventCallback.Factory.Create<MouseEventArgs>(this, HandleCancel));
+        await deleteModal.ShowAsync<ModalDeleteUser>(title: "Are you sure?", parameters: parameters);
+    }
+
+    private async void HandleCancel(MouseEventArgs e)
+    {
+        userToDelete = null;
+    }
+
+    private async void HandleDeleteUserConfirmed(MouseEventArgs e)
+    {
+        if (userToDelete != null)
+        {
+            var result = await UserManager.DeleteAsync(userToDelete);
+            if (result.Succeeded)
+            {
+                allUsers!.Remove(userToDelete);
+                FilterUsers();
+            }
+
+            userToDelete = null;
+            if (deleteModal != null)
+            {
+                await deleteModal.HideAsync();
+            }
+
+            userToDelete = null;
+            StateHasChanged();
+        }
+    }
+}

@@ -1,0 +1,152 @@
+﻿@page "/chat/customer/{customerId}"
+@using Microsoft.AspNetCore.SignalR.Client
+@inject NavigationManager Navigation
+@inject UserManager<GotorzAppUser> UserManager
+@inject IAuthorizationService AuthorizationService
+@using System.Security.Claims;
+@using Microsoft.EntityFrameworkCore
+@rendermode InteractiveServer
+@inject ChatService ChatService
+@inject IServiceScopeFactory ScopeFactory
+
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+
+@if (customer == null)
+{
+    <p>The customer with id: @customerId, doesn't exists.</p>
+}
+else
+{
+    <h3>Chat for Customer @customer.UserName</h3>
+
+    <ul>
+        @foreach (var chat in chats)
+        {
+            @if (chat.SenderUserId != currentUserId)
+            {
+                <li><strong>@chat.SenderUserName</strong> (@chat.SentAt): @chat.Message</li>
+            }
+            else
+            {
+                <li><strong>You</strong> (@chat.SentAt): @chat.Message</li>
+            }
+        }
+    </ul>
+
+    <input @bind="messageText" />
+    <button @onclick="SendMessage">Send</button>
+}
+
+@code {
+    [Parameter]
+    public string customerId { get; set; }
+
+    private HubConnection hubConnection;
+    private List<Chat> chats = new();
+    private string messageText;
+    private string currentUserId;
+    private GotorzAppUser customer;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        var isLoggedIn = user.Identity?.IsAuthenticated;
+
+        if (!isLoggedIn ?? true)
+        {
+            Navigation.NavigateTo("/Account/Login");
+            return;
+        }
+
+        currentUserId = user.FindFirst(c => c.Type == "sub" || c.Type == ClaimTypes.NameIdentifier)?.Value;
+        var loggedInUser = await UserManager.FindByIdAsync(currentUserId);
+        var userRoles = await UserManager.GetRolesAsync(loggedInUser);
+        var isEmployee = await AuthorizationService.AuthorizeAsync(user, "Employee");
+
+        if (currentUserId != customerId && !isEmployee.Succeeded)
+        {
+            Navigation.NavigateTo($"/chat/customer/{currentUserId}");
+            return;
+        }
+        else if (userRoles.Contains("Employee"))
+        {
+            var customerExists = await UserManager.FindByIdAsync(customerId) != null;
+            if (!customerExists)
+            {
+                Navigation.NavigateTo("/chat/customers");
+                return;
+            }
+        }
+
+        customer = await UserManager.FindByIdAsync(customerId);
+
+        hubConnection = new HubConnectionBuilder()
+            .WithUrl(Navigation.ToAbsoluteUri("/chathub"))
+            .Build();
+
+        hubConnection.On<string, string, DateTime>("ReceiveMessage", async (fromUserId, message, sentAt) =>
+        {
+            await AddChat(fromUserId, message, sentAt);
+        });
+
+        chats = await GetOldChatsAsync(customerId);
+        
+        await hubConnection.StartAsync();
+
+        // Join a group based on CustomerId
+        await hubConnection.InvokeAsync("JoinPrivateChat", customerId);
+
+    }
+
+    public async Task<List<Chat>> GetOldChatsAsync(string customerId)
+    {
+        var oldChats = await ChatService.GetUserChatsAsync(customerId);
+
+        var senderIds = oldChats.Select(c => c.SenderUserId).Distinct().ToList();
+        
+        using var scope = ScopeFactory.CreateScope();
+        var userManager = scope.ServiceProvider.GetRequiredService<UserManager<GotorzAppUser>>();
+        var users = await userManager.Users
+            .Where(u => senderIds.Contains(u.Id))
+            .ToListAsync();
+
+        foreach (var chat in oldChats)
+        {
+            chat.Sender = users.FirstOrDefault(u => u.Id == chat.SenderUserId);
+        }
+
+        return oldChats;
+    }
+
+    private async Task AddChat(string senderId, string message, DateTime sentAt)
+    {
+        var chat = new Chat(senderId, message, sentAt);
+
+        using var scope = ScopeFactory.CreateScope();
+        var userManager = scope.ServiceProvider.GetRequiredService<UserManager<GotorzAppUser>>();
+        var sender = await userManager.FindByIdAsync(chat.SenderUserId);
+        chat.Sender = sender;
+
+        chats.Add(chat);
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task SendMessage()
+    {
+        if (!string.IsNullOrWhiteSpace(messageText))
+        {
+            await hubConnection.InvokeAsync("SendMessageToGroup", customerId, currentUserId, messageText);
+            messageText = "";
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (hubConnection != null)
+        {
+            await hubConnection.DisposeAsync();
+        }
+    }
+}

@@ -1,0 +1,41 @@
+﻿@using Microsoft.AspNetCore.Identity
+
+<div>
+    <p>Edit roles for <strong>@UserToEdit?.Email</strong></p>
+
+    <div class="mb-3">
+        @foreach (var role in AvailableRoles)
+        {
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="@role" @bind="@SelectedRolesMap[role]" />
+                <label class="form-check-label" for="@role">@role</label>
+            </div>
+        }
+    </div>
+
+    <div class="d-flex justify-content-end">
+        <button class="btn btn-secondary me-2" @onclick="OnClickCancel">Cancel</button>
+        <button class="btn btn-primary" @onclick="SaveRoles">Save</button>
+    </div>
+</div>
+
+@code {
+    [Parameter] public GotorzAppUser? UserToEdit { get; set; }
+    [Parameter] public IList<string> CurrentRoles { get; set; } = [];
+    [Parameter] public List<string> AvailableRoles { get; set; } = [];
+    [Parameter] public EventCallback<MouseEventArgs> OnClickCancel { get; set; }
+    [Parameter] public EventCallback<List<string>> OnClickSave { get; set; }
+
+    private Dictionary<string, bool> SelectedRolesMap = [];
+
+    protected override void OnParametersSet()
+    {
+        SelectedRolesMap = AvailableRoles.ToDictionary(r => r, r => CurrentRoles.Contains(r));
+    }
+
+    private async Task SaveRoles()
+    {
+        var selectedRoles = SelectedRolesMap.Where(r => r.Value).Select(r => r.Key).ToList();
+        await OnClickSave.InvokeAsync(selectedRoles);
+    }
+}

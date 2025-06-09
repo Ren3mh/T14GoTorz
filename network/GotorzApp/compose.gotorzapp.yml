@@ -1,0 +1,18 @@
+
+services:
+  gotorzapp:
+    image: ghcr.io/ren3mh/t14gotorz/gotorzapp:latest
+    ports:
+      - 80:80
+    container_name: gotorzapp
+
+  watchtower:
+    image: containrrr/watchtower
+    container_name: watchtower
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /$HOME/.docker/config.json:/config.json
+    environment:
+      - WATCHTOWER_CLEANUP=true
+    command: --interval 15
+    privileged: true

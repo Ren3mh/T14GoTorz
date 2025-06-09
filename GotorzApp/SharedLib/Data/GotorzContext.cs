@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Reflection.Metadata;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore; // ✅
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 
 namespace SharedLib.Data;
 
-public partial class GotorzContext : IdentityDbContext<GotorzAppUser>
+public partial class GotorzContext
+    : IdentityDbContext<GotorzAppUser, IdentityRole, string>
 {
     public GotorzContext(DbContextOptions<GotorzContext> options)
         : base(options)
@@ -14,17 +13,11 @@ public partial class GotorzContext : IdentityDbContext<GotorzAppUser>
     }
 
     public virtual DbSet<Flight> Flights { get; set; }
-
     public virtual DbSet<Flightpath> Flightpaths { get; set; }
-
     public virtual DbSet<Hotel> Hotels { get; set; }
-
     public virtual DbSet<IataLocation> IataLocations { get; set; }
-
     public virtual DbSet<TravelPackage> TravelPackages { get; set; }
-
-    public virtual DbSet<Chat> Chats { get; set; }
-
+    public DbSet<Chat> Chats { get; set; }
     public DbSet<Photo> Photos { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -39,15 +32,18 @@ public partial class GotorzContext : IdentityDbContext<GotorzAppUser>
 
         modelBuilder.Entity<Chat>(entity =>
         {
-            entity.Property(e => e.Message).IsRequired();
-            entity.Property(e => e.SenderUserName).IsRequired();
             entity.Property(e => e.SentAt).HasColumnType("datetime");
 
-            entity.HasOne(c => c.User)
-                .WithMany()
-                .HasForeignKey(c => c.UserId);
-        });
+            entity.HasOne(d => d.Sender).WithMany(p => p.SentChats)
+                .HasForeignKey(d => d.SenderUserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK1_Chats_Users");
 
+            entity.HasOne(d => d.Receiver).WithMany(p => p.ReceivedChats)
+                .HasForeignKey(d => d.ReceiverUserId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("FK2_Chats_Users");
+        });
 
         modelBuilder.Entity<Flight>(entity =>
         {
@@ -127,6 +123,7 @@ public partial class GotorzContext : IdentityDbContext<GotorzAppUser>
                 .HasForeignKey(d => d.PhotoId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK2_TravelPackages_Photos");
+
         });
     }
 
