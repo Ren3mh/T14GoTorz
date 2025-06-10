@@ -1,4 +1,4 @@
-USE GotorzAppContext;
+USE GotorzAppTest;
 Go
 
 -- Insert IATA locations
@@ -35,175 +35,174 @@ VALUES
 ('GRU', 'São Paulo, Brazil'),
 ('ICN', 'Seoul, South Korea');
 
--- Insert 30 Hotels (10 per month from May to July 2025)
+-- Insert 30 Hotels (10 per month from July to September 2025)
 INSERT INTO Hotels (CheckIn, CheckOut, Rate, HotelName, Address, Telephonenumber, Email, Description)
 VALUES
--- May Hotels
-('2025-05-10 14:00:00', '2025-05-15 11:00:00', 180.00, 'Hotel F', '101 Sunset Blvd, Los Angeles', '111-222-3333', 'hotelF@example.com', 'Stylish stay in downtown LA.'),
-('2025-05-11 15:00:00', '2025-05-16 10:00:00', 220.00, 'Hotel G', '505 King St, London', '222-333-4444', 'hotelG@example.com', 'Elegant British charm in London.'),
-('2025-05-12 13:00:00', '2025-05-17 09:00:00', 160.00, 'Hotel H', '77 Champs-Élysées, Paris', '333-444-5555', 'hotelH@example.com', 'Parisian luxury with Eiffel views.'),
-('2025-05-13 14:00:00', '2025-05-18 12:00:00', 275.00, 'Hotel I', 'Palm Ave, Dubai', '444-555-6666', 'hotelI@example.com', 'Sleek oasis near Dubai Marina.'),
-('2025-05-14 15:00:00', '2025-05-19 11:00:00', 210.00, 'Hotel J', '123 Tokyo Tower Rd, Tokyo', '555-666-7777', 'hotelJ@example.com', 'Tokyo views near the tower.'),
-('2025-05-15 16:00:00', '2025-05-20 10:00:00', 190.00, 'Hotel K', 'Ocean Dr, Honolulu', '666-777-8888', 'hotelK@example.com', 'Steps away from the beach.'),
-('2025-05-16 13:00:00', '2025-05-21 09:00:00', 165.00, 'Hotel L', 'Colosseum St, Rome', '777-888-9999', 'hotelL@example.com', 'Roman charm near Colosseum.'),
-('2025-05-17 14:00:00', '2025-05-22 12:00:00', 240.00, 'Hotel M', 'Gondola Way, Venice', '888-999-0000', 'hotelM@example.com', 'Venetian elegance on the canal.'),
-('2025-05-18 15:00:00', '2025-05-23 11:00:00', 195.00, 'Hotel N', 'Harbourfront, Sydney', '999-000-1111', 'hotelN@example.com', 'Modern stay near Opera House.'),
-('2025-05-19 16:00:00', '2025-05-24 10:00:00', 230.00, 'Hotel O', 'Sagrada Plaza, Barcelona', '000-111-2222', 'hotelO@example.com', 'Next to the Sagrada Familia.'),
+-- July Hotels (was May)
+('2025-07-10 14:00:00', '2025-07-15 11:00:00', 180.00, 'Hotel F', '101 Sunset Blvd, Los Angeles', '111-222-3333', 'hotelF@example.com', 'Stylish stay in downtown LA.'),
+('2025-07-11 15:00:00', '2025-07-16 10:00:00', 220.00, 'Hotel G', '505 King St, London', '222-333-4444', 'hotelG@example.com', 'Elegant British charm in London.'),
+('2025-07-12 13:00:00', '2025-07-17 09:00:00', 160.00, 'Hotel H', '77 Champs-Élysées, Paris', '333-444-5555', 'hotelH@example.com', 'Parisian luxury with Eiffel views.'),
+('2025-07-13 14:00:00', '2025-07-18 12:00:00', 275.00, 'Hotel I', 'Palm Ave, Dubai', '444-555-6666', 'hotelI@example.com', 'Sleek oasis near Dubai Marina.'),
+('2025-07-14 15:00:00', '2025-07-19 11:00:00', 210.00, 'Hotel J', '123 Tokyo Tower Rd, Tokyo', '555-666-7777', 'hotelJ@example.com', 'Tokyo views near the tower.'),
+('2025-07-15 16:00:00', '2025-07-20 10:00:00', 190.00, 'Hotel K', 'Ocean Dr, Honolulu', '666-777-8888', 'hotelK@example.com', 'Steps away from the beach.'),
+('2025-07-16 13:00:00', '2025-07-21 09:00:00', 165.00, 'Hotel L', 'Colosseum St, Rome', '777-888-9999', 'hotelL@example.com', 'Roman charm near Colosseum.'),
+('2025-07-17 14:00:00', '2025-07-22 12:00:00', 240.00, 'Hotel M', 'Gondola Way, Venice', '888-999-0000', 'hotelM@example.com', 'Venetian elegance on the canal.'),
+('2025-07-18 15:00:00', '2025-07-23 11:00:00', 195.00, 'Hotel N', 'Harbourfront, Sydney', '999-000-1111', 'hotelN@example.com', 'Modern stay near Opera House.'),
+('2025-07-19 16:00:00', '2025-07-24 10:00:00', 230.00, 'Hotel O', 'Sagrada Plaza, Barcelona', '000-111-2222', 'hotelO@example.com', 'Next to the Sagrada Familia.'),
 
--- June Hotels
-('2025-06-01 14:00:00', '2025-06-06 12:00:00', 185.00, 'Hotel P', 'Canal St, Amsterdam', '123-987-4561', 'hotelP@example.com', 'Cozy and central in Amsterdam.'),
-('2025-06-02 15:00:00', '2025-06-07 11:00:00', 205.00, 'Hotel Q', 'Blue Lagoon Ave, Reykjavik', '321-654-9870', 'hotelQ@example.com', 'Icelandic vibes and hot springs.'),
-('2025-06-03 13:00:00', '2025-06-08 10:00:00', 195.00, 'Hotel R', 'Zocalo Plaza, Mexico City', '456-321-6549', 'hotelR@example.com', 'Cultural heart of Mexico City.'),
-('2025-06-04 14:00:00', '2025-06-09 09:00:00', 175.00, 'Hotel S', 'Golden Mile, Cape Town', '654-789-3210', 'hotelS@example.com', 'Spectacular views of Table Mountain.'),
-('2025-06-05 12:00:00', '2025-06-10 08:00:00', 280.00, 'Hotel T', 'Ayala Ave, Manila', '789-456-1230', 'hotelT@example.com', 'Metro Manila luxury and comfort.'),
-('2025-06-06 13:30:00', '2025-06-11 10:30:00', 215.00, 'Hotel U', 'Gangnam Blvd, Seoul', '456-789-1234', 'hotelU@example.com', 'Trendy spot in Seoul’s heart.'),
-('2025-06-07 15:00:00', '2025-06-12 11:00:00', 190.00, 'Hotel V', 'Chao Phraya Rd, Bangkok', '654-321-9876', 'hotelV@example.com', 'Riverside elegance in Bangkok.'),
-('2025-06-08 16:00:00', '2025-06-13 12:00:00', 250.00, 'Hotel W', 'Fifth Ave, New York', '321-123-4567', 'hotelW@example.com', 'Iconic views near Central Park.'),
-('2025-06-09 17:00:00', '2025-06-14 09:00:00', 270.00, 'Hotel X', 'Hollywood Blvd, LA', '987-321-6543', 'hotelX@example.com', 'Celebrity-style comfort in LA.'),
-('2025-06-10 18:00:00', '2025-06-15 08:00:00', 300.00, 'Hotel Y', 'Bayfront, Singapore', '123-654-7890', 'hotelY@example.com', 'Singapore skyline and Marina Bay.'),
+-- August Hotels (was June)
+('2025-08-01 14:00:00', '2025-08-06 12:00:00', 185.00, 'Hotel P', 'Canal St, Amsterdam', '123-987-4561', 'hotelP@example.com', 'Cozy and central in Amsterdam.'),
+('2025-08-02 15:00:00', '2025-08-07 11:00:00', 205.00, 'Hotel Q', 'Blue Lagoon Ave, Reykjavik', '321-654-9870', 'hotelQ@example.com', 'Icelandic vibes and hot springs.'),
+('2025-08-03 13:00:00', '2025-08-08 10:00:00', 195.00, 'Hotel R', 'Zocalo Plaza, Mexico City', '456-321-6549', 'hotelR@example.com', 'Cultural heart of Mexico City.'),
+('2025-08-04 14:00:00', '2025-08-09 09:00:00', 175.00, 'Hotel S', 'Golden Mile, Cape Town', '654-789-3210', 'hotelS@example.com', 'Spectacular views of Table Mountain.'),
+('2025-08-05 12:00:00', '2025-08-10 08:00:00', 280.00, 'Hotel T', 'Ayala Ave, Manila', '789-456-1230', 'hotelT@example.com', 'Metro Manila luxury and comfort.'),
+('2025-08-06 13:30:00', '2025-08-11 10:30:00', 215.00, 'Hotel U', 'Gangnam Blvd, Seoul', '456-789-1234', 'hotelU@example.com', 'Trendy spot in Seoul’s heart.'),
+('2025-08-07 15:00:00', '2025-08-12 11:00:00', 190.00, 'Hotel V', 'Chao Phraya Rd, Bangkok', '654-321-9876', 'hotelV@example.com', 'Riverside elegance in Bangkok.'),
+('2025-08-08 16:00:00', '2025-08-13 12:00:00', 250.00, 'Hotel W', 'Fifth Ave, New York', '321-123-4567', 'hotelW@example.com', 'Iconic views near Central Park.'),
+('2025-08-09 17:00:00', '2025-08-14 09:00:00', 270.00, 'Hotel X', 'Hollywood Blvd, LA', '987-321-6543', 'hotelX@example.com', 'Celebrity-style comfort in LA.'),
+('2025-08-10 18:00:00', '2025-08-15 08:00:00', 300.00, 'Hotel Y', 'Bayfront, Singapore', '123-654-7890', 'hotelY@example.com', 'Singapore skyline and Marina Bay.'),
 
--- July Hotels
-('2025-07-01 14:00:00', '2025-07-06 12:00:00', 200.00, 'Hotel Z', 'La Rambla, Barcelona', '654-321-7777', 'hotelZ@example.com', 'Culture and cuisine in Barcelona.'),
-('2025-07-02 15:00:00', '2025-07-07 11:00:00', 185.00, 'Hotel AA', 'Beach Rd, Bali', '321-555-7894', 'hotelAA@example.com', 'Beachfront bliss in Bali.'),
-('2025-07-03 13:00:00', '2025-07-08 09:00:00', 230.00, 'Hotel AB', 'Ipanema Ave, Rio', '777-888-9998', 'hotelAB@example.com', 'Vibrant Rio beach escape.'),
-('2025-07-04 14:00:00', '2025-07-09 10:00:00', 160.00, 'Hotel AC', 'Old Town, Marrakech', '999-111-3333', 'hotelAC@example.com', 'Moroccan magic in the medina.'),
-('2025-07-05 15:00:00', '2025-07-10 11:00:00', 220.00, 'Hotel AD', 'Santorini Cliffs, Greece', '123-456-9999', 'hotelAD@example.com', 'Sunsets and sea views.'),
-('2025-07-06 16:00:00', '2025-07-11 12:00:00', 210.00, 'Hotel AE', 'Zurich Lakefront', '222-333-8888', 'hotelAE@example.com', 'Swiss precision and lake breeze.'),
-('2025-07-07 17:00:00', '2025-07-12 10:00:00', 195.00, 'Hotel AF', 'Damrak St, Amsterdam', '333-444-9999', 'hotelAF@example.com', 'Dutch charm in central city.'),
-('2025-07-08 18:00:00', '2025-07-13 09:00:00', 240.00, 'Hotel AG', 'Victoria Harbour, Hong Kong', '444-555-1111', 'hotelAG@example.com', 'Luxury at the harbor.'),
-('2025-07-09 19:00:00', '2025-07-14 08:00:00', 205.00, 'Hotel AH', 'Gastown, Vancouver', '555-666-0000', 'hotelAH@example.com', 'Trendy retreat in Vancouver.'),
-('2025-07-10 20:00:00', '2025-07-15 08:00:00', 260.00, 'Hotel AI', 'Arctic View Rd, Alaska', '666-777-1111', 'hotelAI@example.com', 'Northern lights and comfort.');
+-- September Hotels (was July)
+('2025-09-01 14:00:00', '2025-09-06 12:00:00', 200.00, 'Hotel Z', 'La Rambla, Barcelona', '654-321-7777', 'hotelZ@example.com', 'Culture and cuisine in Barcelona.'),
+('2025-09-02 15:00:00', '2025-09-07 11:00:00', 185.00, 'Hotel AA', 'Beach Rd, Bali', '321-555-7894', 'hotelAA@example.com', 'Beachfront bliss in Bali.'),
+('2025-09-03 13:00:00', '2025-09-08 09:00:00', 230.00, 'Hotel AB', 'Ipanema Ave, Rio', '777-888-9998', 'hotelAB@example.com', 'Vibrant Rio beach escape.'),
+('2025-09-04 14:00:00', '2025-09-09 10:00:00', 160.00, 'Hotel AC', 'Old Town, Marrakech', '999-111-3333', 'hotelAC@example.com', 'Moroccan magic in the medina.'),
+('2025-09-05 15:00:00', '2025-09-10 11:00:00', 220.00, 'Hotel AD', 'Santorini Cliffs, Greece', '123-456-9999', 'hotelAD@example.com', 'Sunsets and sea views.'),
+('2025-09-06 16:00:00', '2025-09-11 12:00:00', 210.00, 'Hotel AE', 'Zurich Lakefront', '222-333-8888', 'hotelAE@example.com', 'Swiss precision and lake breeze.'),
+('2025-09-07 17:00:00', '2025-09-12 10:00:00', 195.00, 'Hotel AF', 'Damrak St, Amsterdam', '333-444-9999', 'hotelAF@example.com', 'Dutch charm in central city.'),
+('2025-09-08 18:00:00', '2025-09-13 09:00:00', 240.00, 'Hotel AG', 'Victoria Harbour, Hong Kong', '444-555-1111', 'hotelAG@example.com', 'Luxury at the harbor.'),
+('2025-09-09 19:00:00', '2025-09-14 08:00:00', 205.00, 'Hotel AH', 'Gastown, Vancouver', '555-666-0000', 'hotelAH@example.com', 'Trendy retreat in Vancouver.'),
+('2025-09-10 20:00:00', '2025-09-15 08:00:00', 260.00, 'Hotel AI', 'Arctic View Rd, Alaska', '666-777-1111', 'hotelAI@example.com', 'Northern lights and comfort.');
 
 
--- Insert more Flights for may
--- Insert dummy data into Flights table for May
+-- Insert dummy data into Flights table for July (originally May)
 INSERT INTO Flights (DepartureTime, ArrivalTime, IATADestinationId, IATAOriginId)
 VALUES
 -- Hotel F (Los Angeles, LAX, ID: 1)
-('2025-05-10 08:00:00', '2025-05-10 16:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'CDG'), (SELECT Id FROM IATA_locations WHERE IATA = 'LAX')), -- Depart from Paris (CDG)
-('2025-05-15 12:00:00', '2025-05-15 18:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'LAX'), (SELECT Id FROM IATA_locations WHERE IATA = 'CDG')), -- Return to Paris (CDG)
+('2025-07-10 08:00:00', '2025-07-10 16:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'CDG'), (SELECT Id FROM IATA_locations WHERE IATA = 'LAX')), -- Depart from Paris (CDG)
+('2025-07-15 12:00:00', '2025-07-15 18:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'LAX'), (SELECT Id FROM IATA_locations WHERE IATA = 'CDG')), -- Return to Paris (CDG)
 
 -- Hotel G (London, LHR, ID: 2)
-('2025-05-11 13:00:00', '2025-05-11 17:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'JFK'), (SELECT Id FROM IATA_locations WHERE IATA = 'LHR')), -- Depart from New York (JFK)
-('2025-05-16 10:00:00', '2025-05-16 14:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'LHR'), (SELECT Id FROM IATA_locations WHERE IATA = 'JFK')), -- Return to New York (JFK)
+('2025-07-11 13:00:00', '2025-07-11 17:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'JFK'), (SELECT Id FROM IATA_locations WHERE IATA = 'LHR')), -- Depart from New York (JFK)
+('2025-07-16 10:00:00', '2025-07-16 14:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'LHR'), (SELECT Id FROM IATA_locations WHERE IATA = 'JFK')), -- Return to New York (JFK)
 
 -- Hotel H (Paris, CDG, ID: 3)
-('2025-05-12 13:00:00', '2025-05-12 17:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'DXB'), (SELECT Id FROM IATA_locations WHERE IATA = 'CDG')), -- Depart from Dubai (DXB)
-('2025-05-17 09:00:00', '2025-05-17 13:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'CDG'), (SELECT Id FROM IATA_locations WHERE IATA = 'DXB')), -- Return to Dubai (DXB)
+('2025-07-12 13:00:00', '2025-07-12 17:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'DXB'), (SELECT Id FROM IATA_locations WHERE IATA = 'CDG')), -- Depart from Dubai (DXB)
+('2025-07-17 09:00:00', '2025-07-17 13:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'CDG'), (SELECT Id FROM IATA_locations WHERE IATA = 'DXB')), -- Return to Dubai (DXB)
 
 -- Hotel I (Dubai, DXB, ID: 4)
-('2025-05-13 14:00:00', '2025-05-13 18:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'HND'), (SELECT Id FROM IATA_locations WHERE IATA = 'DXB')), -- Depart from Tokyo (HND)
-('2025-05-18 12:00:00', '2025-05-18 16:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'DXB'), (SELECT Id FROM IATA_locations WHERE IATA = 'HND')), -- Return to Tokyo (HND)
+('2025-07-13 14:00:00', '2025-07-13 18:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'HND'), (SELECT Id FROM IATA_locations WHERE IATA = 'DXB')), -- Depart from Tokyo (HND)
+('2025-07-18 12:00:00', '2025-07-18 16:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'DXB'), (SELECT Id FROM IATA_locations WHERE IATA = 'HND')), -- Return to Tokyo (HND)
 
 -- Hotel J (Tokyo, HND, ID: 5)
-('2025-05-14 15:00:00', '2025-05-14 19:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'FCO'), (SELECT Id FROM IATA_locations WHERE IATA = 'HND')), -- Depart from Rome (FCO)
-('2025-05-19 11:00:00', '2025-05-19 15:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'HND'), (SELECT Id FROM IATA_locations WHERE IATA = 'FCO')), -- Return to Rome (FCO)
+('2025-07-14 15:00:00', '2025-07-14 19:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'FCO'), (SELECT Id FROM IATA_locations WHERE IATA = 'HND')), -- Depart from Rome (FCO)
+('2025-07-19 11:00:00', '2025-07-19 15:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'HND'), (SELECT Id FROM IATA_locations WHERE IATA = 'FCO')), -- Return to Rome (FCO)
 
 -- Hotel K (Honolulu, HNL, ID: 6)
-('2025-05-15 16:00:00', '2025-05-15 20:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'SYD'), (SELECT Id FROM IATA_locations WHERE IATA = 'HNL')), -- Depart from Sydney (SYD)
-('2025-05-20 10:00:00', '2025-05-20 14:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'HNL'), (SELECT Id FROM IATA_locations WHERE IATA = 'SYD')), -- Return to Sydney (SYD)
+('2025-07-15 16:00:00', '2025-07-15 20:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'SYD'), (SELECT Id FROM IATA_locations WHERE IATA = 'HNL')), -- Depart from Sydney (SYD)
+('2025-07-20 10:00:00', '2025-07-20 14:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'HNL'), (SELECT Id FROM IATA_locations WHERE IATA = 'SYD')), -- Return to Sydney (SYD)
 
 -- Hotel L (Rome, FCO, ID: 7)
-('2025-05-16 13:00:00', '2025-05-16 17:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'JTR'), (SELECT Id FROM IATA_locations WHERE IATA = 'FCO')), -- Depart from Santorini (JTR)
-('2025-05-21 09:00:00', '2025-05-21 13:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'FCO'), (SELECT Id FROM IATA_locations WHERE IATA = 'JTR')), -- Return to Santorini (JTR)
+('2025-07-16 13:00:00', '2025-07-16 17:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'JTR'), (SELECT Id FROM IATA_locations WHERE IATA = 'FCO')), -- Depart from Santorini (JTR)
+('2025-07-21 09:00:00', '2025-07-21 13:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'FCO'), (SELECT Id FROM IATA_locations WHERE IATA = 'JTR')), -- Return to Santorini (JTR)
 
 -- Hotel M (Venice, VCE, ID: 8)
-('2025-05-17 14:00:00', '2025-05-17 18:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'GIG'), (SELECT Id FROM IATA_locations WHERE IATA = 'VCE')), -- Depart from Rio de Janeiro (GIG)
-('2025-05-22 12:00:00', '2025-05-22 16:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'VCE'), (SELECT Id FROM IATA_locations WHERE IATA = 'GIG')), -- Return to Rio de Janeiro (GIG)
+('2025-07-17 14:00:00', '2025-07-17 18:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'GIG'), (SELECT Id FROM IATA_locations WHERE IATA = 'VCE')), -- Depart from Rio de Janeiro (GIG)
+('2025-07-22 12:00:00', '2025-07-22 16:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'VCE'), (SELECT Id FROM IATA_locations WHERE IATA = 'GIG')), -- Return to Rio de Janeiro (GIG)
 
 -- Hotel N (Sydney, SYD, ID: 9)
-('2025-05-18 15:00:00', '2025-05-18 19:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'ANC'), (SELECT Id FROM IATA_locations WHERE IATA = 'SYD')), -- Depart from Anchorage (ANC)
-('2025-05-23 11:00:00', '2025-05-23 15:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'SYD'), (SELECT Id FROM IATA_locations WHERE IATA = 'ANC')), -- Return to Anchorage (ANC)
+('2025-07-18 15:00:00', '2025-07-18 19:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'ANC'), (SELECT Id FROM IATA_locations WHERE IATA = 'SYD')), -- Depart from Anchorage (ANC)
+('2025-07-23 11:00:00', '2025-07-23 15:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'SYD'), (SELECT Id FROM IATA_locations WHERE IATA = 'ANC')), -- Return to Anchorage (ANC)
 
 -- Hotel O (Barcelona, BCN, ID: 10)
-('2025-05-19 16:00:00', '2025-05-19 20:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'KEF'), (SELECT Id FROM IATA_locations WHERE IATA = 'BCN')), -- Depart from Reykjavik (KEF)
-('2025-05-24 10:00:00', '2025-05-24 14:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'BCN'), (SELECT Id FROM IATA_locations WHERE IATA = 'KEF')); -- Return to Reykjavik (KEF)
+('2025-07-19 16:00:00', '2025-07-19 20:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'KEF'), (SELECT Id FROM IATA_locations WHERE IATA = 'BCN')), -- Depart from Reykjavik (KEF)
+('2025-07-24 10:00:00', '2025-07-24 14:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'BCN'), (SELECT Id FROM IATA_locations WHERE IATA = 'KEF')); -- Return to Reykjavik (KEF)
 
--- Insert dummy data into Flights table for June
+-- Insert dummy data into Flights table for August (was June)
 INSERT INTO Flights (DepartureTime, ArrivalTime, IATADestinationId, IATAOriginId)
 VALUES
--- Hotel P (Amsterdam, AMS, ID: 11)
-('2025-06-01 08:00:00', '2025-06-01 16:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'CDG'), (SELECT Id FROM IATA_locations WHERE IATA = 'AMS')), -- Depart from Paris (CDG)
-('2025-06-06 12:00:00', '2025-06-06 18:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'AMS'), (SELECT Id FROM IATA_locations WHERE IATA = 'CDG')), -- Return to Paris (CDG)
+-- Hotel P
+('2025-08-01 08:00:00', '2025-08-01 16:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'CDG'), (SELECT Id FROM IATA_locations WHERE IATA = 'AMS')),
+('2025-08-06 12:00:00', '2025-08-06 18:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'AMS'), (SELECT Id FROM IATA_locations WHERE IATA = 'CDG')),
 
--- Hotel Q (Reykjavik, KEF, ID: 12)
-('2025-06-02 13:00:00', '2025-06-02 17:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'JFK'), (SELECT Id FROM IATA_locations WHERE IATA = 'KEF')), -- Depart from New York (JFK)
-('2025-06-07 11:00:00', '2025-06-07 15:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'KEF'), (SELECT Id FROM IATA_locations WHERE IATA = 'JFK')), -- Return to New York (JFK)
+-- Hotel Q
+('2025-08-02 13:00:00', '2025-08-02 17:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'JFK'), (SELECT Id FROM IATA_locations WHERE IATA = 'KEF')),
+('2025-08-07 11:00:00', '2025-08-07 15:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'KEF'), (SELECT Id FROM IATA_locations WHERE IATA = 'JFK')),
 
--- Hotel R (Mexico City, MEX, ID: 13)
-('2025-06-03 13:00:00', '2025-06-03 17:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'LHR'), (SELECT Id FROM IATA_locations WHERE IATA = 'MEX')), -- Depart from London (LHR)
-('2025-06-08 10:00:00', '2025-06-08 14:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'MEX'), (SELECT Id FROM IATA_locations WHERE IATA = 'LHR')), -- Return to London (LHR)
+-- Hotel R
+('2025-08-03 13:00:00', '2025-08-03 17:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'LHR'), (SELECT Id FROM IATA_locations WHERE IATA = 'MEX')),
+('2025-08-08 10:00:00', '2025-08-08 14:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'MEX'), (SELECT Id FROM IATA_locations WHERE IATA = 'LHR')),
 
--- Hotel S (Cape Town, CPT, ID: 14)
-('2025-06-04 14:00:00', '2025-06-04 18:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'DXB'), (SELECT Id FROM IATA_locations WHERE IATA = 'CPT')), -- Depart from Dubai (DXB)
-('2025-06-09 09:00:00', '2025-06-09 13:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'CPT'), (SELECT Id FROM IATA_locations WHERE IATA = 'DXB')), -- Return to Dubai (DXB)
+-- Hotel S
+('2025-08-04 14:00:00', '2025-08-04 18:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'DXB'), (SELECT Id FROM IATA_locations WHERE IATA = 'CPT')),
+('2025-08-09 09:00:00', '2025-08-09 13:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'CPT'), (SELECT Id FROM IATA_locations WHERE IATA = 'DXB')),
 
--- Hotel T (Manila, MNL, ID: 15)
-('2025-06-05 12:00:00', '2025-06-05 16:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'HND'), (SELECT Id FROM IATA_locations WHERE IATA = 'MNL')), -- Depart from Tokyo (HND)
-('2025-06-10 08:00:00', '2025-06-10 12:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'MNL'), (SELECT Id FROM IATA_locations WHERE IATA = 'HND')), -- Return to Tokyo (HND)
+-- Hotel T
+('2025-08-05 12:00:00', '2025-08-05 16:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'HND'), (SELECT Id FROM IATA_locations WHERE IATA = 'MNL')),
+('2025-08-10 08:00:00', '2025-08-10 12:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'MNL'), (SELECT Id FROM IATA_locations WHERE IATA = 'HND')),
 
--- Hotel U (Seoul, ICN, ID: 16)
-('2025-06-06 13:30:00', '2025-06-06 17:30:00', (SELECT Id FROM IATA_locations WHERE IATA = 'LAX'), (SELECT Id FROM IATA_locations WHERE IATA = 'ICN')), -- Depart from Los Angeles (LAX)
-('2025-06-11 10:30:00', '2025-06-11 14:30:00', (SELECT Id FROM IATA_locations WHERE IATA = 'ICN'), (SELECT Id FROM IATA_locations WHERE IATA = 'LAX')), -- Return to Los Angeles (LAX)
+-- Hotel U
+('2025-08-06 13:30:00', '2025-08-06 17:30:00', (SELECT Id FROM IATA_locations WHERE IATA = 'LAX'), (SELECT Id FROM IATA_locations WHERE IATA = 'ICN')),
+('2025-08-11 10:30:00', '2025-08-11 14:30:00', (SELECT Id FROM IATA_locations WHERE IATA = 'ICN'), (SELECT Id FROM IATA_locations WHERE IATA = 'LAX')),
 
--- Hotel V (Bangkok, BKK, ID: 17)
-('2025-06-07 15:00:00', '2025-06-07 19:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'SYD'), (SELECT Id FROM IATA_locations WHERE IATA = 'BKK')), -- Depart from Sydney (SYD)
-('2025-06-12 11:00:00', '2025-06-12 15:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'BKK'), (SELECT Id FROM IATA_locations WHERE IATA = 'SYD')), -- Return to Sydney (SYD)
+-- Hotel V
+('2025-08-07 15:00:00', '2025-08-07 19:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'SYD'), (SELECT Id FROM IATA_locations WHERE IATA = 'BKK')),
+('2025-08-12 11:00:00', '2025-08-12 15:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'BKK'), (SELECT Id FROM IATA_locations WHERE IATA = 'SYD')),
 
--- Hotel W (New York, JFK, ID: 18)
-('2025-06-08 16:00:00', '2025-06-08 20:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'LHR'), (SELECT Id FROM IATA_locations WHERE IATA = 'JFK')), -- Depart from London (LHR)
-('2025-06-14 09:00:00', '2025-06-14 13:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'JFK'), (SELECT Id FROM IATA_locations WHERE IATA = 'LHR')), -- Return to London (LHR)
+-- Hotel W
+('2025-08-08 16:00:00', '2025-08-08 20:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'LHR'), (SELECT Id FROM IATA_locations WHERE IATA = 'JFK')),
+('2025-08-14 09:00:00', '2025-08-14 13:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'JFK'), (SELECT Id FROM IATA_locations WHERE IATA = 'LHR')),
 
--- Hotel X (Los Angeles, LAX, ID: 19)
-('2025-06-09 17:00:00', '2025-06-09 21:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'CDG'), (SELECT Id FROM IATA_locations WHERE IATA = 'LAX')), -- Depart from Paris (CDG)
-('2025-06-14 10:00:00', '2025-06-14 14:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'LAX'), (SELECT Id FROM IATA_locations WHERE IATA = 'CDG')), -- Return to Paris (CDG)
+-- Hotel X
+('2025-08-09 17:00:00', '2025-08-09 21:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'CDG'), (SELECT Id FROM IATA_locations WHERE IATA = 'LAX')),
+('2025-08-14 10:00:00', '2025-08-14 14:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'LAX'), (SELECT Id FROM IATA_locations WHERE IATA = 'CDG')),
 
--- Hotel Y (Singapore, SIN, ID: 20)
-('2025-06-10 18:00:00', '2025-06-10 22:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'HKG'), (SELECT Id FROM IATA_locations WHERE IATA = 'SIN')), -- Depart from Hong Kong (HKG)
-('2025-06-15 08:00:00', '2025-06-15 12:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'SIN'), (SELECT Id FROM IATA_locations WHERE IATA = 'HKG')); -- Return to Hong Kong (HKG)
+-- Hotel Y
+('2025-08-10 18:00:00', '2025-08-10 22:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'HKG'), (SELECT Id FROM IATA_locations WHERE IATA = 'SIN')),
+('2025-08-15 08:00:00', '2025-08-15 12:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'SIN'), (SELECT Id FROM IATA_locations WHERE IATA = 'HKG'));
 
--- Insert dummy data into Flights table for July
+-- Insert dummy data into Flights table for September (was July)
 INSERT INTO Flights (DepartureTime, ArrivalTime, IATADestinationId, IATAOriginId)
 VALUES
 -- Hotel Z (Barcelona, BCN, ID: 21)
-('2025-07-01 14:00:00', '2025-07-01 18:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'FCO'), (SELECT Id FROM IATA_locations WHERE IATA = 'BCN')), -- Depart from Rome (FCO)
-('2025-07-06 12:00:00', '2025-07-06 16:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'BCN'), (SELECT Id FROM IATA_locations WHERE IATA = 'FCO')), -- Return to Rome (FCO)
+('2025-09-01 14:00:00', '2025-09-01 18:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'FCO'), (SELECT Id FROM IATA_locations WHERE IATA = 'BCN')),
+('2025-09-06 12:00:00', '2025-09-06 16:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'BCN'), (SELECT Id FROM IATA_locations WHERE IATA = 'FCO')),
 
 -- Hotel AA (Bali, DPS, ID: 22)
-('2025-07-02 15:00:00', '2025-07-02 19:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'SYD'), (SELECT Id FROM IATA_locations WHERE IATA = 'DPS')), -- Depart from Sydney (SYD)
-('2025-07-07 11:00:00', '2025-07-07 15:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'DPS'), (SELECT Id FROM IATA_locations WHERE IATA = 'SYD')), -- Return to Sydney (SYD)
+('2025-09-02 15:00:00', '2025-09-02 19:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'SYD'), (SELECT Id FROM IATA_locations WHERE IATA = 'DPS')),
+('2025-09-07 11:00:00', '2025-09-07 15:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'DPS'), (SELECT Id FROM IATA_locations WHERE IATA = 'SYD')),
 
 -- Hotel AB (Rio de Janeiro, GIG, ID: 23)
-('2025-07-03 13:00:00', '2025-07-03 17:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'LHR'), (SELECT Id FROM IATA_locations WHERE IATA = 'GIG')), -- Depart from London (LHR)
-('2025-07-08 09:00:00', '2025-07-08 13:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'GIG'), (SELECT Id FROM IATA_locations WHERE IATA = 'LHR')), -- Return to London (LHR)
+('2025-09-03 13:00:00', '2025-09-03 17:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'LHR'), (SELECT Id FROM IATA_locations WHERE IATA = 'GIG')),
+('2025-09-08 09:00:00', '2025-09-08 13:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'GIG'), (SELECT Id FROM IATA_locations WHERE IATA = 'LHR')),
 
 -- Hotel AC (Marrakech, RAK, ID: 24)
-('2025-07-04 14:00:00', '2025-07-04 18:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'CDG'), (SELECT Id FROM IATA_locations WHERE IATA = 'RAK')), -- Depart from Paris (CDG)
-('2025-07-09 10:00:00', '2025-07-09 14:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'RAK'), (SELECT Id FROM IATA_locations WHERE IATA = 'CDG')), -- Return to Paris (CDG)
+('2025-09-04 14:00:00', '2025-09-04 18:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'CDG'), (SELECT Id FROM IATA_locations WHERE IATA = 'RAK')),
+('2025-09-09 10:00:00', '2025-09-09 14:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'RAK'), (SELECT Id FROM IATA_locations WHERE IATA = 'CDG')),
 
 -- Hotel AD (Santorini, JTR, ID: 25)
-('2025-07-05 15:00:00', '2025-07-05 19:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'FCO'), (SELECT Id FROM IATA_locations WHERE IATA = 'JTR')), -- Depart from Rome (FCO)
-('2025-07-10 11:00:00', '2025-07-10 15:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'JTR'), (SELECT Id FROM IATA_locations WHERE IATA = 'FCO')), -- Return to Rome (FCO)
+('2025-09-05 15:00:00', '2025-09-05 19:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'FCO'), (SELECT Id FROM IATA_locations WHERE IATA = 'JTR')),
+('2025-09-10 11:00:00', '2025-09-10 15:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'JTR'), (SELECT Id FROM IATA_locations WHERE IATA = 'FCO')),
 
 -- Hotel AE (Zurich, ZRH, ID: 26)
-('2025-07-06 16:00:00', '2025-07-06 20:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'AMS'), (SELECT Id FROM IATA_locations WHERE IATA = 'ZRH')), -- Depart from Amsterdam (AMS)
-('2025-07-11 12:00:00', '2025-07-11 16:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'ZRH'), (SELECT Id FROM IATA_locations WHERE IATA = 'AMS')), -- Return to Amsterdam (AMS)
+('2025-09-06 16:00:00', '2025-09-06 20:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'AMS'), (SELECT Id FROM IATA_locations WHERE IATA = 'ZRH')),
+('2025-09-11 12:00:00', '2025-09-11 16:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'ZRH'), (SELECT Id FROM IATA_locations WHERE IATA = 'AMS')),
 
 -- Hotel AF (Amsterdam, AMS, ID: 27)
-('2025-07-07 17:00:00', '2025-07-07 21:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'LHR'), (SELECT Id FROM IATA_locations WHERE IATA = 'AMS')), -- Depart from London (LHR)
-('2025-07-12 10:00:00', '2025-07-12 14:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'AMS'), (SELECT Id FROM IATA_locations WHERE IATA = 'LHR')), -- Return to London (LHR)
+('2025-09-07 17:00:00', '2025-09-07 21:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'LHR'), (SELECT Id FROM IATA_locations WHERE IATA = 'AMS')),
+('2025-09-12 10:00:00', '2025-09-12 14:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'AMS'), (SELECT Id FROM IATA_locations WHERE IATA = 'LHR')),
 
 -- Hotel AG (Hong Kong, HKG, ID: 28)
-('2025-07-08 18:00:00', '2025-07-08 22:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'SIN'), (SELECT Id FROM IATA_locations WHERE IATA = 'HKG')), -- Depart from Singapore (SIN)
-('2025-07-13 09:00:00', '2025-07-13 13:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'HKG'), (SELECT Id FROM IATA_locations WHERE IATA = 'SIN')), -- Return to Singapore (SIN)
+('2025-09-08 18:00:00', '2025-09-08 22:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'SIN'), (SELECT Id FROM IATA_locations WHERE IATA = 'HKG')),
+('2025-09-13 09:00:00', '2025-09-13 13:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'HKG'), (SELECT Id FROM IATA_locations WHERE IATA = 'SIN')),
 
 -- Hotel AH (Vancouver, YVR, ID: 29)
-('2025-07-09 19:00:00', '2025-07-09 23:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'LAX'), (SELECT Id FROM IATA_locations WHERE IATA = 'YVR')), -- Depart from Los Angeles (LAX)
-('2025-07-14 08:00:00', '2025-07-14 12:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'YVR'), (SELECT Id FROM IATA_locations WHERE IATA = 'LAX')), -- Return to Los Angeles (LAX)
+('2025-09-09 19:00:00', '2025-09-09 23:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'LAX'), (SELECT Id FROM IATA_locations WHERE IATA = 'YVR')),
+('2025-09-14 08:00:00', '2025-09-14 12:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'YVR'), (SELECT Id FROM IATA_locations WHERE IATA = 'LAX')),
 
 -- Hotel AI (Anchorage, ANC, ID: 30)
-('2025-07-10 20:00:00', '2025-07-11 00:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'HNL'), (SELECT Id FROM IATA_locations WHERE IATA = 'ANC')), -- Depart from Honolulu (HNL)
-('2025-07-15 08:00:00', '2025-07-15 12:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'ANC'), (SELECT Id FROM IATA_locations WHERE IATA = 'HNL')); -- Return to Honolulu (HNL)
+('2025-09-10 20:00:00', '2025-09-11 00:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'HNL'), (SELECT Id FROM IATA_locations WHERE IATA = 'ANC')),
+('2025-09-15 08:00:00', '2025-09-15 12:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'ANC'), (SELECT Id FROM IATA_locations WHERE IATA = 'HNL'));
 
 -- Insert 30 TravelPackages (one per hotel from HotelId 1 to 30)
 INSERT INTO TravelPackages (Title, Description, HotelId)
@@ -281,38 +280,38 @@ VALUES
 (3800.00, 0, 60, 59, 30);  -- No luggage
 
 
--- Extra flight for May
+-- Extra flight for July (was May)
 INSERT INTO Flights (DepartureTime, ArrivalTime, IATADestinationId, IATAOriginId)
 VALUES
 -- Hotel F (Los Angeles, LAX, ID: 1)
-('2025-05-10 08:00:00', '2025-05-10 16:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'JFK'), (SELECT Id FROM IATA_locations WHERE IATA = 'LAX')), -- Depart from New York (JFK)
-('2025-05-15 12:00:00', '2025-05-15 18:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'LAX'), (SELECT Id FROM IATA_locations WHERE IATA = 'JFK')), -- Return to New York (JFK) 
+('2025-07-10 08:00:00', '2025-07-10 16:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'JFK'), (SELECT Id FROM IATA_locations WHERE IATA = 'LAX')), 
+('2025-07-15 12:00:00', '2025-07-15 18:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'LAX'), (SELECT Id FROM IATA_locations WHERE IATA = 'JFK')), 
 
 -- Hotel G (London, LHR, ID: 2)
-('2025-05-11 13:00:00', '2025-05-11 17:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'CDG'), (SELECT Id FROM IATA_locations WHERE IATA = 'LHR')), -- Depart from Paris (CDG)
-('2025-05-16 10:00:00', '2025-05-16 14:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'LHR'), (SELECT Id FROM IATA_locations WHERE IATA = 'CDG')); -- Return to Paris (CDG)
+('2025-07-11 13:00:00', '2025-07-11 17:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'CDG'), (SELECT Id FROM IATA_locations WHERE IATA = 'LHR')), 
+('2025-07-16 10:00:00', '2025-07-16 14:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'LHR'), (SELECT Id FROM IATA_locations WHERE IATA = 'CDG')); 
 
--- Extra flight for June
+-- Extra flight for August (was June)
 INSERT INTO Flights (DepartureTime, ArrivalTime, IATADestinationId, IATAOriginId)
 VALUES
 -- Hotel P (Amsterdam, AMS, ID: 11)
-('2025-06-01 08:00:00', '2025-06-01 16:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'JFK'), (SELECT Id FROM IATA_locations WHERE IATA = 'AMS')), -- Depart from New York (JFK)
-('2025-06-06 12:00:00', '2025-06-06 18:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'AMS'), (SELECT Id FROM IATA_locations WHERE IATA = 'JFK')), -- Return to New York (JFK)
+('2025-08-01 08:00:00', '2025-08-01 16:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'JFK'), (SELECT Id FROM IATA_locations WHERE IATA = 'AMS')), 
+('2025-08-06 12:00:00', '2025-08-06 18:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'AMS'), (SELECT Id FROM IATA_locations WHERE IATA = 'JFK')), 
 
 -- Hotel Q (Reykjavik, KEF, ID: 12)
-('2025-06-02 13:00:00', '2025-06-02 17:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'CDG'), (SELECT Id FROM IATA_locations WHERE IATA = 'KEF')), -- Depart from Paris (CDG)
-('2025-06-07 11:00:00', '2025-06-07 15:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'KEF'), (SELECT Id FROM IATA_locations WHERE IATA = 'CDG')); -- Return to Paris (CDG)
+('2025-08-02 13:00:00', '2025-08-02 17:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'CDG'), (SELECT Id FROM IATA_locations WHERE IATA = 'KEF')), 
+('2025-08-07 11:00:00', '2025-08-07 15:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'KEF'), (SELECT Id FROM IATA_locations WHERE IATA = 'CDG')); 
 
--- Extra flight for July
+-- Extra flight for September (was July)
 INSERT INTO Flights (DepartureTime, ArrivalTime, IATADestinationId, IATAOriginId)
 VALUES
 -- Hotel Z (Barcelona, BCN, ID: 21)
-('2025-07-01 14:00:00', '2025-07-01 18:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'SYD'), (SELECT Id FROM IATA_locations WHERE IATA = 'BCN')), -- Depart from Sydney (SYD)
-('2025-07-06 12:00:00', '2025-07-06 16:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'BCN'), (SELECT Id FROM IATA_locations WHERE IATA = 'SYD')), -- Return to Sydney (SYD)
+('2025-09-01 14:00:00', '2025-09-01 18:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'SYD'), (SELECT Id FROM IATA_locations WHERE IATA = 'BCN')), 
+('2025-09-06 12:00:00', '2025-09-06 16:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'BCN'), (SELECT Id FROM IATA_locations WHERE IATA = 'SYD')), 
 
 -- Hotel AA (Bali, DPS, ID: 22)
-('2025-07-02 15:00:00', '2025-07-02 19:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'FCO'), (SELECT Id FROM IATA_locations WHERE IATA = 'DPS')), -- Depart from Rome (FCO)
-('2025-07-07 11:00:00', '2025-07-07 15:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'DPS'), (SELECT Id FROM IATA_locations WHERE IATA = 'FCO')); -- Return to Rome (FCO)
+('2025-09-02 15:00:00', '2025-09-02 19:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'FCO'), (SELECT Id FROM IATA_locations WHERE IATA = 'DPS')), 
+('2025-09-07 11:00:00', '2025-09-07 15:00:00', (SELECT Id FROM IATA_locations WHERE IATA = 'DPS'), (SELECT Id FROM IATA_locations WHERE IATA = 'FCO'));
 
 INSERT INTO Flightpaths (Fare, Luggage, OutboundFlightId, HomeboundFlightId, TravelPackageId)
 VALUES

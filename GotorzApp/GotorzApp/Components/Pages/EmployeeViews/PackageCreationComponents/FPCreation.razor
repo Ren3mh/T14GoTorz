@@ -140,16 +140,19 @@
 
         Iatas = await IataLocationService.GetAll() ?? new List<IataLocation>();
 
-        newFlightpath = new Flightpath();
+        selectedIataOriginId = Iatas.FirstOrDefault()?.Id ?? -1;
+        selectedIataDestinationId = Iatas.LastOrDefault()?.Id ?? -1;
+
+        newFlightpath = new Flightpath() { Fare = 99 };
         outbound = new Flight()
         {
-            DepartureTime = DateTime.Today,
-            ArrivalTime = DateTime.Today
+            DepartureTime = DateTime.Today.AddDays(1),
+            ArrivalTime = DateTime.Today.AddDays(1).AddHours(1)
         };
         homebound = new Flight()
         {
-            DepartureTime = DateTime.Today,
-            ArrivalTime = DateTime.Today
+            DepartureTime = DateTime.Today.AddDays(2),
+            ArrivalTime = DateTime.Today.AddDays(2).AddHours(1)
         };  
     }
 
