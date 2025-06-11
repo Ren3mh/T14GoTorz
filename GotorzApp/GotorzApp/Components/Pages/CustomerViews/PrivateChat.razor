@@ -122,7 +122,11 @@ else
 
     private async Task AddChat(string senderId, string message, DateTime sentAt)
     {
-        var chat = new Chat(senderId, message, sentAt);
+        var chat = new Chat(
+            message: message, 
+            senderUserId: senderId, 
+            sentAt: sentAt
+        );
 
         using var scope = ScopeFactory.CreateScope();
         var userManager = scope.ServiceProvider.GetRequiredService<UserManager<GotorzAppUser>>();
