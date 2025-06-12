@@ -116,14 +116,14 @@ else
     {
         SelectedPackage = unsortedTravelPackages.Find(tp => tp.Id == packageId);
 
-        if (SelectedPackage.LocalTemperature == null)
-        {
+        // if (SelectedPackage.LocalTemperature == null)
+        // {
 
-            var city = SelectedPackage.Flightpaths.First().OutboundFlight.IataDestination.City;
-            var CurrentWeather = await CurrentWeatherService.GetCurrentWeather(city);
+        //     var city = SelectedPackage.Flightpaths.First().OutboundFlight.IataDestination.City;
+        //     var CurrentWeather = await CurrentWeatherService.GetCurrentWeather(city);
 
-            SelectedPackage.LocalTemperature = CurrentWeather.Main.TempMax;
-        }
+        //     SelectedPackage.LocalTemperature = CurrentWeather.Main.TempMax;
+        // }
     }
     public TravelPackage? SelectedPackage { get; set; }
 
