@@ -123,8 +123,8 @@ else
     private async Task AddChat(string senderId, string message, DateTime sentAt)
     {
         var chat = new Chat(
-            message: message,
-            senderUserId: senderId,
+            message: senderId,
+            senderUserId: message,
             sentAt: sentAt
         );
 
