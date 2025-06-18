@@ -91,16 +91,16 @@ builder.Services.AddIdentity<GotorzAppUser, IdentityRole>(options =>
 builder.Services.AddSingleton<IEmailSender<GotorzAppUser>, IdentityNoOpEmailSender>();
 
 // Add the initialization service
-builder.Services.AddScoped<InitializeFakeUsers>();
+// builder.Services.AddScoped<InitializeFakeUsers>();
 
 var app = builder.Build();
 
 // Add fake users and roles
-using (var scope = app.Services.CreateScope())
-{
-    var initializationService = scope.ServiceProvider.GetRequiredService<InitializeFakeUsers>();
-    await initializationService.InitializeAsync();
-}
+//using (var scope = app.Services.CreateScope())
+//{
+//    var initializationService = scope.ServiceProvider.GetRequiredService<InitializeFakeUsers>();
+//    await initializationService.InitializeAsync();
+//}
 
 // This adds the /metrics endpoint
 app.UseMetricServer();
